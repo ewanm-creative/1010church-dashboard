@@ -13,14 +13,14 @@
   --text: #1A1A18;
   --text-2: #5C5C58;
   --text-3: #9A9A94;
-  --accent: #1A3A2A;
-  --proj-bg: #FEF5E7;  --proj-text: #7A4A00;
-  --ldd-bg: #E8F2EB;   --ldd-text: #1A5C2A;
-  --del-bg: #E3F0EE;   --del-text: #0D5040;
-  --route-bg: #E6EEF8; --route-text: #1A3A70;
-  --port-bg: #EDEBFC;  --port-text: #3A2A8A;
-  --rail-bg: #FAF0E8;  --rail-text: #703010;
-  --load-bg: #F0EFE8;  --load-text: #5A5A56;
+  --accent: #22735C;
+  --proj-bg: #EDF7F4;  --proj-text: #3A8070;
+  --ldd-bg: #D0EDE6;   --ldd-text: #0D5040;
+  --del-bg: #C4E6DC;   --del-text: #0D4535;
+  --route-bg: #D8F0E8; --route-text: #0D5040;
+  --port-bg: #C8EBE2;  --port-text: #0D4535;
+  --rail-bg: #DAEEE7;  --rail-text: #1A5C4A;
+  --load-bg: #E4F3EF;  --load-text: #2A7060;
   --open-bg: #FEF5E7;  --open-text: #7A4A00;
   --crit-bg: #FEECEC;  --crit-text: #7A1A1A;
   --closed-bg: #E8F2EB;--closed-text: #1A5C2A;
@@ -40,7 +40,7 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'S
 .mc .lbl { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 .mc .val { font-size: 22px; font-weight: 600; line-height: 1; }
 .mc .vsub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
-.tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--border); padding: 3px; border-radius: var(--radius); width: fit-content; }
+.tabs { display: flex; gap: 2px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); padding: 3px; border-radius: var(--radius); width: fit-content; }
 .tab { padding: 6px 14px; font-size: 12px; font-weight: 500; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--text-2); font-family: inherit; transition: background .12s, color .12s; }
 .tab:hover { background: var(--bg); color: var(--text); }
 .tab.on { background: var(--accent); color: #fff; }
@@ -48,7 +48,7 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'S
 .panel.on { display: block; }
 .bdg { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
 .b-D    { background: var(--del-bg);   color: var(--del-text);   }
-.b-PLD  { background: var(--del-bg);   color: var(--del-text);   }
+.b-INYRD{ background: var(--del-bg);   color: var(--del-text);   }
 .b-CHS  { background: var(--port-bg);  color: var(--port-text);  }
 .b-ENR  { background: var(--route-bg); color: var(--route-text); }
 .b-LDD  { background: var(--ldd-bg);   color: var(--ldd-text);   }
@@ -58,13 +58,13 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'S
 .b-closed{ background: var(--closed-bg);color: var(--closed-text);}
 .b-crit  { background: var(--crit-bg); color: var(--crit-text);  }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.d-D    { background: #0D7A60; }
-.d-PLD  { background: #0D7A60; }
-.d-CHS  { background: #5A4AAA; }
-.d-ENR  { background: #2A5AAA; }
-.d-LDD  { background: #2A7A3A; }
-.d-LDG  { background: #888880; }
-.d-PROJ { background: #D4890A; }
+.d-D    { background: #22735C; }
+.d-INYRD{ background: #2A8A6E; }
+.d-ENR  { background: #35A082; }
+.d-CHS  { background: #44B594; }
+.d-LDD  { background: #62C8A8; }
+.d-LDG  { background: #90D8C0; }
+.d-PROJ { background: #B8DDD6; }
 .d-BH   { background: #BBBBBB; }
 .mdot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 .tw { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; overflow-x: auto; background: var(--surface); margin-bottom: 12px; }
@@ -80,24 +80,27 @@ tbody tr:hover td { background: var(--bg); }
 .rp-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 64px; }
 .rp-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; margin-bottom: 4px; }
 .rp-name { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); text-align: center; }
-.rp-val  { font-size: 10px; color: var(--text-2); text-align: center; margin-top: 1px; }
+.rp-val  { font-size: 10px; color: var(--text-2); text-align: center; margin-top: 4px; }
 .rp-line { flex: 1; height: 2px; background: var(--border); align-self: center; margin-bottom: 20px; min-width: 10px; }
 .leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .leg-i { display: flex; align-items: center; gap: 5px; }
-.floor-block { margin-bottom: 10px; }
-.floor-hdr { font-size: 10px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; padding: 5px 0; margin-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bldg-matrix { width: 100%; border-collapse: collapse; font-size: 10px; }
+.bldg-matrix th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 3px 4px; background: var(--bg); border: 1px solid var(--border); white-space: nowrap; }
+.bldg-matrix td { border: 1px solid var(--border); padding: 0; text-align: center; }
+.bldg-matrix .floor-lbl { font-size: 9px; font-weight: 700; color: var(--text-2); background: var(--bg); padding: 3px 8px; white-space: nowrap; }
+.bldg-matrix .ctn-lbl { font-size: 8px; color: var(--text-3); background: var(--bg); padding: 3px 6px; white-space: nowrap; }
+.mcell { display: flex; flex-direction: column; width: 100%; cursor: default; position: relative; }
+.mcell-id { font-size: 8px; font-weight: 600; color: var(--text-2); padding: 3px 2px 1px; text-align: center; background: var(--surface); }
+.mcell-bars { display: flex; height: 6px; }
+.mcell-bars span { flex: 1; }
+.mcell:hover .mcell-tip { display: block; }
+.mcell-tip { display: none; position: absolute; z-index: 99; top: 100%; left: 50%; transform: translateX(-50%); background: #222; color: #fff; font-size: 9px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; margin-top: 2px; }
+.sc-D    { background: #22735C; } .sc-INYRD{ background: #2A8A6E; } .sc-ENR  { background: #35A082; }
+.sc-CHS  { background: #44B594; } .sc-LDD  { background: #62C8A8; } .sc-LDG  { background: #B0B0A8; }
+.sc-PROJ { background: #E0DED6; } .sc-BH   { background: #C8C6BE; }
+/* legacy refs kept for legend dots */
 .floor-num { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 9px; }
 .floor-meta { font-size: 9px; color: var(--text-3); font-weight: 400; }
-.unit-grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 4px; }
-.ucard { border: 1px solid var(--border); border-radius: 6px; padding: 4px 5px; background: var(--surface); min-width: 0; }
-.ub-D   { border-color: rgba(13,122,96,.35);  }
-.ub-PLD { border-color: rgba(13,122,96,.35);  }
-.ub-CHS { border-color: rgba(90,74,170,.35);  }
-.ub-ENR { border-color: rgba(42,90,170,.35);  }
-.ub-LDD { border-color: rgba(42,122,58,.5); border-width: 1.5px; }
-.ub-LDG { border-color: rgba(136,136,128,.5); border-width: 1.5px; }
-.ub-PROJ{ border-color: var(--border); }
-.ub-BH  { background: var(--scope-bg); border-color: var(--border); opacity: .65; }
 .uid { font-size: 8px; color: var(--text-3); font-weight: 700; margin-bottom: 2px; }
 .ucomp { display: flex; align-items: center; gap: 3px; font-size: 7.5px; padding: 1px 0; }
 .ucomp-lbl { color: var(--text-3); font-weight: 700; min-width: 13px; }
@@ -139,59 +142,64 @@ tbody tr:hover td { background: var(--bg); }
 <div class="topbar">
   <div class="topbar-left">
     <h1>1010 Church · Container Dashboard</h1>
-    <div class="sub">Route: Italy (Factory) → Sea Freight → Charleston Port → Rail → Nashville → Delivery &nbsp;·&nbsp; 33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 24, 2026 at 2:52 PM</em></div>
+    <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 24, 2026 at 4:37 PM</em></div>
   </div>
-  <div class="topbar-right">
+  <div class="topbar-right" style="text-align:right;">
     <span class="date-pill" id="today-pill"></span>
+    <div style="font-size:10px;color:var(--text-3);margin-top:4px;" id="today-week"></div>
   </div>
-</div>
-
-<div class="metrics">
-  <div class="mc"><div class="lbl">Total containers</div><div class="val">33</div><div class="vsub">30 floors + BH + ECT + WCT</div></div>
-  <div class="mc"><div class="lbl">Delivered</div><div class="val" style="color:#0D7A60" id="m-del">1</div><div class="vsub" id="m-del-sub">CTN 1</div></div>
-  <div class="mc"><div class="lbl">Pulled / In transit</div><div class="val" style="color:#0D6A50" id="m-trans">0</div><div class="vsub" id="m-trans-sub">None</div></div>
-  <div class="mc"><div class="lbl">Loaded / Loading</div><div class="val" style="color:#2A7A3A" id="m-load">0</div><div class="vsub" id="m-load-sub">None</div></div>
-  <div class="mc"><div class="lbl">First delivery</div><div class="val" style="font-size:15px;padding-top:4px;color:#1A3A70">Sep 11</div><div class="vsub">CTN 1 · Floor 10</div></div>
-  <div class="mc"><div class="lbl">Damage items</div><div class="val" id="dmg-count-metric" style="color:#7A1A1A">0</div><div class="vsub" id="dmg-sub-metric">None logged yet</div></div>
 </div>
 
 <div class="tabs">
   <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
-  <button class="tab" onclick="sw('proj',this)">Projections</button>
-  <button class="tab" onclick="sw('bldg',this)">Building visual</button>
+  <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
   <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
 </div>
 
 <!-- ===== CONTAINER SCHEDULE ===== -->
 <div id="ctn" class="panel on">
-  <div class="route-pipeline">
-    <div class="rp-step"><div class="rp-icon" style="background:#E8F2EB">&#127981;</div><div class="rp-name">Factory IT</div><div class="rp-val">Load &amp; seal</div></div>
-    <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E6EEF8">&#128674;</div><div class="rp-name">Sea Freight</div><div class="rp-val">Italy &#8594; CHS</div></div>
-    <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#EDEBFC">&#9875;</div><div class="rp-name">Charleston</div><div class="rp-val">Port arrival</div></div>
-    <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#FAF0E8">&#128642;</div><div class="rp-name">Rail</div><div class="rp-val">CHS &#8594; Nashville</div></div>
-    <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#FAF0E8">&#127959;</div><div class="rp-name">Nashville RR</div><div class="rp-val">Yard arrival</div></div>
-    <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E8F2EB">&#128230;</div><div class="rp-name">Delivery</div><div class="rp-val">Jobsite</div></div>
+  <div style="display:flex;gap:10px;margin-bottom:16px;align-items:stretch;">
+    <!-- Left: 2-col grid — metrics top row, transit performance bottom row (double wide) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0;">
+      <div class="mc" style="margin:0"><div class="lbl">Total containers</div><div class="val">33</div><div class="vsub">30 floors + BH/ECT/WCT</div></div>
+      <div class="mc" style="margin:0"><div class="lbl">Units Delivered</div><div class="val" style="color:#22735C" id="m-del">—</div><div class="vsub" id="m-del-sub">of 360</div></div>
+      <div class="mc" style="margin:0;grid-column:1/-1;padding:12px 16px;">
+        <div class="lbl" style="margin-bottom:8px;">Transit performance</div>
+        <div id="transit-perf-table"></div>
+      </div>
+    </div>
+    <!-- Donut chart — 2 rows tall, larger -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;gap:10px;">
+      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Container status</div>
+      <canvas id="status-chart" width="160" height="160"></canvas>
+      <div id="donut-legend" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:0 4px;"></div>
+    </div>
+    <!-- Next up -->
+    <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
+      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Next up</div>
+      <div id="next-up-list" style="flex:1;"></div>
+    </div>
   </div>
-  <div class="leg">
-    <span class="leg-i"><span class="dot d-D"></span> Delivered (D)</span>
-    <span class="leg-i"><span class="dot d-PLD"></span> Pulled (PLD)</span>
-    <span class="leg-i"><span class="dot d-CHS"></span> Charleston (CHS)</span>
-    <span class="leg-i"><span class="dot d-ENR"></span> En route (ENR)</span>
-    <span class="leg-i"><span class="dot d-LDD"></span> Loaded (LDD)</span>
-    <span class="leg-i"><span class="dot d-LDG"></span> Loading (LDG)</span>
-    <span class="leg-i"><span class="dot d-PROJ"></span> Projected (PROJ)</span>
+  <div class="route-pipeline">
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#127981;</div><div class="rp-name">Factory IT</div><div id="rp-PROJ" class="rp-val"></div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128674;</div><div class="rp-name">Sea Freight</div><div id="rp-ENR" class="rp-val"></div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#9875;</div><div class="rp-name">Port (CHS)</div><div id="rp-CHS" class="rp-val"></div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128642;</div><div class="rp-name">Rail</div><div id="rp-LDD" class="rp-val"></div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="16" height="12" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg" style="display:block"><rect x="1" y="2" width="30" height="16" rx="1" fill="none" stroke="#22735C" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="18" stroke="#22735C" stroke-width="1.5"/><line x1="16" y1="2" x2="16" y2="18" stroke="#22735C" stroke-width="1.5"/><line x1="24" y1="2" x2="24" y2="18" stroke="#22735C" stroke-width="1.5"/><rect x="1" y="6" width="30" height="1" fill="#22735C" opacity="0.3"/><rect x="1" y="13" width="30" height="1" fill="#22735C" opacity="0.3"/></svg></div><div class="rp-name">In Yard</div><div id="rp-INYRD" class="rp-val"></div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128205;</div><div class="rp-name">Delivery</div><div id="rp-D" class="rp-val"></div></div>
   </div>
   <div class="tw">
     <table>
       <thead><tr>
-        <th>#</th><th>Status</th><th>Load Wk</th><th>Floor</th><th>Units</th>
-        <th>Load Date</th><th>Ship Date</th><th>Vessel</th>
-        <th>ETA Charleston</th><th>Rail Date</th><th>ETA Nashville</th><th>Delivery</th>
+        <th>#</th><th>Status</th><th>Load Wk</th>
+        <th>Load Date</th><th>Arrival (NSH)</th><th>Delivery</th>
+        <th>Floor</th><th>Unit Qty</th>
+        <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
       </tr></thead>
       <tbody id="ctn-tbody"></tbody>
     </table>
@@ -204,46 +212,22 @@ tbody tr:hover td { background: var(--bg); }
   </div>
 </div>
 
-<!-- ===== PROJECTIONS ===== -->
-<div id="proj" class="panel">
-  <div class="note-bar">
-    Container delivery dates vs. jobsite floor-ready windows (ROJ). &nbsp;
-    <strong style="color:var(--ldd-text)">Green rows</strong> = ordered/confirmed. &nbsp;
-    <strong style="color:var(--proj-text)">Amber rows</strong> = projected, not yet ordered. &nbsp;
-    ROJ dates sourced from 1010 Church ROJ sheet.
-  </div>
-  <div class="tw">
-    <table>
-      <thead><tr>
-        <th>CTN #</th><th>Status</th><th>Floor</th><th>Load Wk</th>
-        <th>Load Date</th><th>Ship Date</th><th>ETA CHS</th><th>Rail Date</th><th>ETA Nashville</th><th>CTN Delivery</th>
-        <th>ROJ Window</th><th>Install Start</th><th>Ordered?</th>
-      </tr></thead>
-      <tbody id="proj-tbody"></tbody>
-    </table>
-  </div>
-  <div style="font-size:10px;color:var(--text-3);margin-top:4px">
-    ROJ Window = jobsite floor-ready date. Install Start = scheduled install begin. Some install dates pending GC confirmation (marked &#8212;).
-  </div>
-</div>
 
 <!-- ===== BUILDING VISUAL ===== -->
 <div id="bldg" class="panel">
   <div class="leg" style="margin-bottom:10px">
     <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
-    <span class="leg-i"><span class="dot d-PLD"></span> Pulled</span>
+    <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
     <span class="leg-i"><span class="dot d-CHS"></span> Charleston</span>
     <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
     <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
-    <span class="leg-i"><span class="dot d-LDG"></span> Loading</span>
     <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
     <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
   </div>
-  <div class="note-bar">
-    Each card shows per-component status: <strong>K</strong> = kitchen, <strong>V1</strong> = vanity 1, <strong>V2</strong> = vanity 2 (units 04, 06, 10, 12 only).
-    Card border reflects the component furthest from delivery. Units 07 = Buck Hoist container.
+  <div style="display:flex;gap:12px;align-items:flex-start;">
+    <div id="bldg-grid" style="flex:1;overflow-x:auto;"></div>
+    <div id="bldg-sidebar" style="flex-shrink:0;min-width:200px;"></div>
   </div>
-  <div id="bldg-grid"></div>
 </div>
 
 <!-- ===== DAMAGE / OPEN ITEMS ===== -->
@@ -316,38 +300,41 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 24, 2026 at 2:52 PM) ─────────────────────
+// ── DATA (auto-generated Jun 24, 2026 at 4:37 PM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
-  { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
-  { num: 3, status:'PROJ', week:'Wk 35', floor:12, unitQty:11, loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'—', delivery:'Sep 25, 2026', ordered:false },
-  { num: 4, status:'PROJ', week:'Wk 36', floor:13, unitQty:11, loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'—', delivery:'Oct 2, 2026', ordered:false },
-  { num: 5, status:'PROJ', week:'Wk 37', floor:14, unitQty:11, loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'—', delivery:'Oct 9, 2026', ordered:false },
-  { num: 6, status:'PROJ', week:'Wk 38', floor:15, unitQty:11, loadDate:'Sep 16', shipDate:'Sep 21', vessel:'—', etaChs:'Oct 7', railDate:'Oct 10', etaNash:'—', delivery:'Oct 16, 2026', ordered:false },
-  { num: 7, status:'PROJ', week:'Wk 39', floor:16, unitQty:10, loadDate:'Sep 23', shipDate:'Sep 28', vessel:'—', etaChs:'Oct 14', railDate:'Oct 17', etaNash:'—', delivery:'Oct 23, 2026', ordered:false },
-  { num: 8, status:'PROJ', week:'Wk 40', floor:17, unitQty:11, loadDate:'Sep 30', shipDate:'Oct 5', vessel:'—', etaChs:'Oct 21', railDate:'Oct 24', etaNash:'—', delivery:'Oct 30, 2026', ordered:false },
-  { num: 9, status:'PROJ', week:'Wk 41', floor:18, unitQty:11, loadDate:'Oct 7', shipDate:'Oct 12', vessel:'—', etaChs:'Oct 28', railDate:'Oct 31', etaNash:'—', delivery:'Nov 6, 2026', ordered:false },
-  { num:10, status:'PROJ', week:'Wk 42', floor:19, unitQty:11, loadDate:'Oct 14', shipDate:'Oct 19', vessel:'—', etaChs:'Nov 4', railDate:'Nov 7', etaNash:'—', delivery:'Nov 13, 2026', ordered:false },
-  { num:11, status:'PROJ', week:'Wk 43', floor:20, unitQty:11, loadDate:'Oct 21', shipDate:'Oct 26', vessel:'—', etaChs:'Nov 11', railDate:'Nov 14', etaNash:'—', delivery:'Nov 20, 2026', ordered:false },
-  { num:12, status:'PROJ', week:'Wk 44', floor:21, unitQty:11, loadDate:'Oct 28', shipDate:'Nov 2', vessel:'—', etaChs:'Nov 18', railDate:'Nov 21', etaNash:'—', delivery:'Nov 27, 2026', ordered:false },
-  { num:13, status:'PROJ', week:'Wk 45', floor:22, unitQty:11, loadDate:'Nov 4', shipDate:'Nov 9', vessel:'—', etaChs:'Nov 25', railDate:'Nov 28', etaNash:'—', delivery:'Dec 4, 2026', ordered:false },
-  { num:14, status:'PROJ', week:'Wk 46', floor:23, unitQty:12, loadDate:'Nov 11', shipDate:'Nov 16', vessel:'—', etaChs:'Dec 2', railDate:'Dec 5', etaNash:'—', delivery:'Dec 11, 2026', ordered:false },
-  { num:15, status:'PROJ', week:'Wk 47', floor:24, unitQty:11, loadDate:'Nov 18', shipDate:'Nov 23', vessel:'—', etaChs:'Dec 9', railDate:'Dec 12', etaNash:'—', delivery:'Dec 18, 2026', ordered:false },
-  { num:16, status:'PROJ', week:'Wk 49', floor:25, unitQty:10, loadDate:'Dec 2', shipDate:'Dec 7', vessel:'—', etaChs:'Dec 23', railDate:'Dec 26', etaNash:'—', delivery:'Jan 1, 2027', ordered:false },
-  { num:17, status:'PROJ', week:'Wk 50', floor:26, unitQty:11, loadDate:'Dec 9', shipDate:'Dec 14', vessel:'—', etaChs:'Dec 30', railDate:'Jan 2', etaNash:'—', delivery:'Jan 8, 2027', ordered:false },
-  { num:18, status:'PROJ', week:'Wk 51', floor:27, unitQty:11, loadDate:'Dec 16', shipDate:'Dec 21', vessel:'—', etaChs:'Jan 6', railDate:'Jan 9', etaNash:'—', delivery:'Jan 15, 2027', ordered:false },
-  { num:19, status:'PROJ', week:'Wk 52', floor:28, unitQty:11, loadDate:'Dec 23', shipDate:'Dec 28', vessel:'—', etaChs:'Jan 13', railDate:'Jan 16', etaNash:'—', delivery:'Jan 22, 2027', ordered:false },
-  { num:20, status:'PROJ', week:'Wk 53', floor:29, unitQty:11, loadDate:'Dec 30', shipDate:'Jan 4', vessel:'—', etaChs:'Jan 20', railDate:'Jan 23', etaNash:'—', delivery:'Jan 29, 2027', ordered:false },
-  { num:21, status:'PROJ', week:'Wk 1', floor:30, unitQty:11, loadDate:'Jan 6', shipDate:'Jan 11', vessel:'—', etaChs:'Jan 27', railDate:'Jan 30', etaNash:'—', delivery:'Feb 5, 2027', ordered:false },
-  { num:22, status:'PROJ', week:'Wk 2', floor:31, unitQty:11, loadDate:'Jan 13', shipDate:'Jan 18', vessel:'—', etaChs:'Feb 3', railDate:'Feb 6', etaNash:'—', delivery:'Feb 12, 2027', ordered:false },
-  { num:23, status:'PROJ', week:'Wk 3', floor:32, unitQty:11, loadDate:'Jan 20', shipDate:'Jan 25', vessel:'—', etaChs:'Feb 10', railDate:'Feb 13', etaNash:'—', delivery:'Feb 19, 2027', ordered:false },
-  { num:24, status:'PROJ', week:'Wk 4', floor:33, unitQty:10, loadDate:'Jan 27', shipDate:'Feb 1', vessel:'—', etaChs:'Feb 17', railDate:'Feb 20', etaNash:'—', delivery:'Feb 26, 2027', ordered:false },
-  { num:25, status:'PROJ', week:'Wk 5', floor:34, unitQty:11, loadDate:'Feb 3', shipDate:'Feb 8', vessel:'—', etaChs:'Feb 24', railDate:'Feb 27', etaNash:'—', delivery:'Mar 5, 2027', ordered:false },
-  { num:26, status:'PROJ', week:'Wk 6', floor:35, unitQty:10, loadDate:'Feb 10', shipDate:'Feb 15', vessel:'—', etaChs:'Mar 3', railDate:'Mar 6', etaNash:'—', delivery:'Mar 12, 2027', ordered:false },
-  { num:27, status:'PROJ', week:'Wk 9', floor:36, unitQty:11, loadDate:'Mar 3', shipDate:'Mar 8', vessel:'—', etaChs:'Mar 24', railDate:'Mar 27', etaNash:'—', delivery:'Apr 2, 2027', ordered:false },
-  { num:28, status:'PROJ', week:'Wk 10', floor:37, unitQty:11, loadDate:'Mar 10', shipDate:'Mar 15', vessel:'—', etaChs:'Mar 31', railDate:'Apr 3', etaNash:'—', delivery:'Apr 9, 2027', ordered:false },
-  { num:29, status:'PROJ', week:'Wk 11', floor:38, unitQty:11, loadDate:'Mar 17', shipDate:'Mar 22', vessel:'—', etaChs:'Apr 7', railDate:'Apr 10', etaNash:'—', delivery:'Apr 16, 2027', ordered:false },
-  { num:30, status:'PROJ', week:'Wk 12', floor:39, unitQty:11, loadDate:'Mar 24', shipDate:'Mar 29', vessel:'—', etaChs:'Apr 14', railDate:'Apr 17', etaNash:'—', delivery:'Apr 23, 2027', ordered:false }
+  { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
+  { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
+  { num: 3, status:'PROJ', week:'Wk 35', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'—', delivery:'Sep 25, 2026', ordered:false },
+  { num: 4, status:'PROJ', week:'Wk 36', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'—', delivery:'Oct 2, 2026', ordered:false },
+  { num: 5, status:'PROJ', week:'Wk 37', floor:14, unitQty:11, kitchens:'1401:1406,1408:1412', v1:'1401:1412', v2:'1404,1406,1410,1412', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'—', delivery:'Oct 9, 2026', ordered:false },
+  { num: 6, status:'PROJ', week:'Wk 38', floor:15, unitQty:11, kitchens:'1501:1506,1508:1512', v1:'1501:1512', v2:'1504,1506,1510,1512', loadDate:'Sep 16', shipDate:'Sep 21', vessel:'—', etaChs:'Oct 7', railDate:'Oct 10', etaNash:'—', delivery:'Oct 16, 2026', ordered:false },
+  { num: 7, status:'PROJ', week:'Wk 39', floor:16, unitQty:10, kitchens:'1601:1606,1608:1610,1612', v1:'1601:1611', v2:'1604,1606,1610,1612', loadDate:'Sep 23', shipDate:'Sep 28', vessel:'—', etaChs:'Oct 14', railDate:'Oct 17', etaNash:'—', delivery:'Oct 23, 2026', ordered:false },
+  { num: 8, status:'PROJ', week:'Wk 40', floor:17, unitQty:11, kitchens:'1701:1706,1708:1712', v1:'1701:1712', v2:'1704,1706,1710,1712', loadDate:'Sep 30', shipDate:'Oct 5', vessel:'—', etaChs:'Oct 21', railDate:'Oct 24', etaNash:'—', delivery:'Oct 30, 2026', ordered:false },
+  { num: 9, status:'PROJ', week:'Wk 41', floor:18, unitQty:11, kitchens:'1801:1806,1808:1812', v1:'1801:1812', v2:'1804,1806,1810,1812', loadDate:'Oct 7', shipDate:'Oct 12', vessel:'—', etaChs:'Oct 28', railDate:'Oct 31', etaNash:'—', delivery:'Nov 6, 2026', ordered:false },
+  { num:10, status:'PROJ', week:'Wk 42', floor:19, unitQty:11, kitchens:'1901:1906,1908:1912', v1:'1901:1912', v2:'1904,1906,1910,1912', loadDate:'Oct 14', shipDate:'Oct 19', vessel:'—', etaChs:'Nov 4', railDate:'Nov 7', etaNash:'—', delivery:'Nov 13, 2026', ordered:false },
+  { num:11, status:'PROJ', week:'Wk 43', floor:20, unitQty:11, kitchens:'2001:2006,2008:2012', v1:'2001:2003,2005:2012', v2:'2004,2006,2010,2012', loadDate:'Oct 21', shipDate:'Oct 26', vessel:'—', etaChs:'Nov 11', railDate:'Nov 14', etaNash:'—', delivery:'Nov 20, 2026', ordered:false },
+  { num:12, status:'PROJ', week:'Wk 44', floor:21, unitQty:11, kitchens:'2101:2106,2108:2112', v1:'2101:2112', v2:'2104,2106,2110,2112', loadDate:'Oct 28', shipDate:'Nov 2', vessel:'—', etaChs:'Nov 18', railDate:'Nov 21', etaNash:'—', delivery:'Nov 27, 2026', ordered:false },
+  { num:13, status:'PROJ', week:'Wk 45', floor:22, unitQty:11, kitchens:'2201:2206,2208:2212', v1:'2201:2212', v2:'2204,2206,2210,2212', loadDate:'Nov 4', shipDate:'Nov 9', vessel:'—', etaChs:'Nov 25', railDate:'Nov 28', etaNash:'—', delivery:'Dec 4, 2026', ordered:false },
+  { num:14, status:'PROJ', week:'Wk 46', floor:23, unitQty:12, kitchens:'2301:2306,2308:2312,3508', v1:'2301:2312', v2:'2304,2306,2310,2312', loadDate:'Nov 11', shipDate:'Nov 16', vessel:'—', etaChs:'Dec 2', railDate:'Dec 5', etaNash:'—', delivery:'Dec 11, 2026', ordered:false },
+  { num:15, status:'PROJ', week:'Wk 47', floor:24, unitQty:11, kitchens:'2401:2406,2408:2412', v1:'2401:2412', v2:'2404,2406,2410,2412', loadDate:'Nov 18', shipDate:'Nov 23', vessel:'—', etaChs:'Dec 9', railDate:'Dec 12', etaNash:'—', delivery:'Dec 18, 2026', ordered:false },
+  { num:16, status:'PROJ', week:'Wk 49', floor:25, unitQty:10, kitchens:'2501:2506,2508:2510,2512', v1:'2501:2511', v2:'2504,2506,2510,2512', loadDate:'Dec 2', shipDate:'Dec 7', vessel:'—', etaChs:'Dec 23', railDate:'Dec 26', etaNash:'—', delivery:'Jan 1, 2027', ordered:false },
+  { num:17, status:'PROJ', week:'Wk 50', floor:26, unitQty:11, kitchens:'2601:2606,2608:2612', v1:'2601:2612', v2:'2604,2606,2610,2612', loadDate:'Dec 9', shipDate:'Dec 14', vessel:'—', etaChs:'Dec 30', railDate:'Jan 2', etaNash:'—', delivery:'Jan 8, 2027', ordered:false },
+  { num:18, status:'PROJ', week:'Wk 51', floor:27, unitQty:11, kitchens:'2701:2706,2708:2712', v1:'2701:2712', v2:'2704,2706,2710,2712', loadDate:'Dec 16', shipDate:'Dec 21', vessel:'—', etaChs:'Jan 6', railDate:'Jan 9', etaNash:'—', delivery:'Jan 15, 2027', ordered:false },
+  { num:19, status:'PROJ', week:'Wk 52', floor:28, unitQty:11, kitchens:'2801:2806,2808:2812', v1:'2801:2812', v2:'2804,2806,2810,2812', loadDate:'Dec 23', shipDate:'Dec 28', vessel:'—', etaChs:'Jan 13', railDate:'Jan 16', etaNash:'—', delivery:'Jan 22, 2027', ordered:false },
+  { num:20, status:'PROJ', week:'Wk 53', floor:29, unitQty:11, kitchens:'2901:2906,2908:2912', v1:'2901:2903,2905:2912', v2:'2906,2910,2912', loadDate:'Dec 30', shipDate:'Jan 4', vessel:'—', etaChs:'Jan 20', railDate:'Jan 23', etaNash:'—', delivery:'Jan 29, 2027', ordered:false },
+  { num:21, status:'PROJ', week:'Wk 1', floor:30, unitQty:11, kitchens:'3001:3006,3008:3012', v1:'3001:3012', v2:'3004,3006,3010,3012', loadDate:'Jan 6', shipDate:'Jan 11', vessel:'—', etaChs:'Jan 27', railDate:'Jan 30', etaNash:'—', delivery:'Feb 5, 2027', ordered:false },
+  { num:22, status:'PROJ', week:'Wk 2', floor:31, unitQty:11, kitchens:'3101:3106,3108:3112', v1:'3101:3112', v2:'3104,3106,3110,3112', loadDate:'Jan 13', shipDate:'Jan 18', vessel:'—', etaChs:'Feb 3', railDate:'Feb 6', etaNash:'—', delivery:'Feb 12, 2027', ordered:false },
+  { num:23, status:'PROJ', week:'Wk 3', floor:32, unitQty:11, kitchens:'3201:3206,3208:3212', v1:'3201:3212', v2:'3204,3206,3210,3212', loadDate:'Jan 20', shipDate:'Jan 25', vessel:'—', etaChs:'Feb 10', railDate:'Feb 13', etaNash:'—', delivery:'Feb 19, 2027', ordered:false },
+  { num:24, status:'PROJ', week:'Wk 4', floor:33, unitQty:10, kitchens:'3301:3306,3308:3310,3312', v1:'3301:3311', v2:'3304,3306,3310', loadDate:'Jan 27', shipDate:'Feb 1', vessel:'—', etaChs:'Feb 17', railDate:'Feb 20', etaNash:'—', delivery:'Feb 26, 2027', ordered:false },
+  { num:25, status:'PROJ', week:'Wk 5', floor:34, unitQty:11, kitchens:'3401:3406,3408:3412', v1:'3401:3412', v2:'3404,3406,3410,3412', loadDate:'Feb 3', shipDate:'Feb 8', vessel:'—', etaChs:'Feb 24', railDate:'Feb 27', etaNash:'—', delivery:'Mar 5, 2027', ordered:false },
+  { num:26, status:'PROJ', week:'Wk 6', floor:35, unitQty:10, kitchens:'3501:3506,3509:3512', v1:'3501:3512', v2:'3504,3506,3510,3512', loadDate:'Feb 10', shipDate:'Feb 15', vessel:'—', etaChs:'Mar 3', railDate:'Mar 6', etaNash:'—', delivery:'Mar 12, 2027', ordered:false },
+  { num:27, status:'PROJ', week:'Wk 9', floor:36, unitQty:11, kitchens:'3601:3606,3608:3612', v1:'3601:3603,3605:3612', v2:'3606,3610,3612', loadDate:'Mar 3', shipDate:'Mar 8', vessel:'—', etaChs:'Mar 24', railDate:'Mar 27', etaNash:'—', delivery:'Apr 2, 2027', ordered:false },
+  { num:28, status:'PROJ', week:'Wk 10', floor:37, unitQty:11, kitchens:'3701:3706,3708:3712', v1:'3701:3712', v2:'3704,3706,3710,3712', loadDate:'Mar 10', shipDate:'Mar 15', vessel:'—', etaChs:'Mar 31', railDate:'Apr 3', etaNash:'—', delivery:'Apr 9, 2027', ordered:false },
+  { num:29, status:'PROJ', week:'Wk 11', floor:38, unitQty:11, kitchens:'3801:3806,3808:3812', v1:'3801:3812', v2:'3804,3806,3810,3812', loadDate:'Mar 17', shipDate:'Mar 22', vessel:'—', etaChs:'Apr 7', railDate:'Apr 10', etaNash:'—', delivery:'Apr 16, 2027', ordered:false },
+  { num:30, status:'PROJ', week:'Wk 12', floor:39, unitQty:11, kitchens:'3901:3906,3908:3912', v1:'3901:3912', v2:'3904,3906,3910,3912', loadDate:'Mar 24', shipDate:'Mar 29', vessel:'—', etaChs:'Apr 14', railDate:'Apr 17', etaNash:'—', delivery:'Apr 23, 2027', ordered:false },
+  { num:'BH', status:'PROJ', week:'Wk 26', floor:'10–39', unitQty:30, kitchens:'All unit-07 (30 floors)', v1:'—', v2:'—', loadDate:'Jun 30, 2027', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Jul 30, 2027', ordered:false },
+  { num:'ECT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:4, kitchens:'—', v1:'1004, 2004, 2904, 3604', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Aug 6, 2027', ordered:false },
+  { num:'WCT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:6, kitchens:'1611, 2511, 3311', v1:'1612, 2512, 3312', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Aug 6, 2027', ordered:false }
 ];
 
 const ROJ = {
@@ -356,23 +343,34 @@ const ROJ = {
 
 const EXCEPTIONS = {};
 
+const TRANSIT_PERF = [
+  {label:'Transit Performance', value:'—'},
+  {label:'Average Load Days', value:'5'},
+  {label:'Average International Transit Days', value:'23'},
+  {label:'Average Domestic Transit Days', value:'3.5'},
+  {label:'Average In Port Days', value:'2'},
+  {label:'Total Transit Time', value:'33.5'}
+];
+
 const V2_UNITS = new Set([4, 6, 10, 12]);
 
 // ── STATUS HELPERS ──
-const STATUS_RANK = { D:7, PLD:6, CHS:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
+const STATUS_RANK = { D:7, INYRD:6, CHS:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
 function worstStatus(arr) {
   return arr.filter(Boolean).reduce((w, s) => (STATUS_RANK[s]||0) < (STATUS_RANK[w]||0) ? s : w);
 }
 function statusDot(s)   { return `d-${s}`; }
 function statusBadge(s) { return `b-${s}`; }
 function statusColor(s) {
-  return { D:'#0D7A60', PLD:'#0D7A60', CHS:'#5A4AAA', ENR:'#2A5AAA', LDD:'#2A7A3A', LDG:'#888880', PROJ:'#D4890A' }[s] || '#9A9A94';
+  return { D:'#22735C', INYRD:'#2A8A6E', ENR:'#35A082', CHS:'#44B594', LDD:'#62C8A8', LDG:'#90D8C0', PROJ:'#B8DDD6' }[s] || '#9A9A94';
 }
 
 // ── TODAY ──
 function today() { return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 document.getElementById('today-pill').textContent = today();
+const _wk = Math.ceil((((new Date()) - new Date(new Date().getFullYear(),0,1))/86400000 + new Date(new Date().getFullYear(),0,1).getDay()+1)/7);
+document.getElementById('today-week').textContent = 'Wk ' + _wk;
 document.getElementById('today-display').textContent = today();
 
 function sw(id, el) {
@@ -381,6 +379,19 @@ function sw(id, el) {
   document.getElementById(id).classList.add('on');
   el.classList.add('on');
 }
+
+// ── METRICS ──
+(function() {
+  const delivered = CONTAINERS.filter(c => c.status === 'D');
+  const deliveredUnits = delivered.reduce((sum, c) => {
+    if (c.kitchens && c.kitchens !== '—') {
+      return sum + c.kitchens.split(',').filter(u => u.trim()).length;
+    }
+    return sum + (c.unitQty || 0);
+  }, 0);
+  document.getElementById('m-del').textContent = deliveredUnits;
+  document.getElementById('m-del-sub').textContent = `of 360 units`;
+})();
 
 // ── CONTAINER SCHEDULE ──
 (function() {
@@ -391,57 +402,144 @@ function sw(id, el) {
     html += `<tr>
       <td><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
       <td><span class="bdg ${bdg}">${c.status}</span></td>
-      <td>${c.week}</td><td>Fl. ${c.floor}</td>
-      <td style="color:var(--text-3)">${c.unitQty}</td>
-      <td>${c.loadDate}</td><td>${c.shipDate}</td>
-      <td style="color:var(--text-3)">${c.vessel}</td>
-      <td>${c.etaChs}</td><td>${c.railDate}</td><td>${c.etaNash}</td>
+      <td>${c.week}</td>
+      <td>${c.loadDate}</td>
+      <td>${c.etaChs}</td>
       <td style="font-weight:500">${c.delivery}</td>
+      <td>Fl. ${c.floor}</td>
+      <td style="text-align:center">${c.unitQty||'—'}</td>
+      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
+      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
+      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v2||'—'}</td>
     </tr>`;
   });
   document.getElementById('ctn-tbody').innerHTML = html;
 })();
 
-// ── PROJECTIONS ──
+
+// ── STATUS DONUT CHART + PIPELINE BADGES ──
 (function() {
-  let html = '';
-  CONTAINERS.forEach(c => {
-    const roj = ROJ[c.floor] || {};
-    const rowCls = c.ordered ? 'proj-ok' : 'proj-warn';
-    const ordBdg = c.ordered
-      ? `<span class="bdg b-LDD">Ordered</span>`
-      : `<span class="bdg b-PROJ">Pending</span>`;
-    html += `<tr class="${rowCls}">
-      <td>CTN ${c.num}</td>
-      <td><span class="bdg ${statusBadge(c.status)}">${c.status}</span></td>
-      <td>Floor ${c.floor}</td>
-      <td>${c.week}</td>
-      <td>${c.loadDate}</td><td>${c.shipDate}</td>
-      <td>${c.etaChs}</td><td>${c.railDate}</td><td>${c.etaNash}</td>
-      <td style="font-weight:500">${c.delivery}</td>
-      <td style="font-weight:500;color:var(--accent)">${roj.window || '&#8212;'}</td>
-      <td style="color:var(--text-2)">${roj.install || '&#8212;'}</td>
-      <td>${ordBdg}</td>
-    </tr>`;
+  const canvas = document.getElementById('status-chart');
+  const ctx = canvas.getContext('2d');
+  const counts = {};
+  CONTAINERS.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
+  const COLORS = { D:'#22735C', INYRD:'#2A8A6E', ENR:'#35A082', CHS:'#44B594', LDD:'#62C8A8', LDG:'#90D8C0', PROJ:'#D8EDEA' };
+  const ORDER  = ['D','INYRD','LDD','CHS','ENR','PROJ'];
+  const total = CONTAINERS.length;
+  const cx = 80, cy = 80, r = 68, ir = 40;
+  let angle = -Math.PI / 2;
+  ORDER.forEach(s => {
+    const n = counts[s] || 0;
+    if (!n) return;
+    const slice = (n / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, angle, angle + slice);
+    ctx.arc(cx, cy, ir, angle + slice, angle, true);
+    ctx.closePath();
+    ctx.fillStyle = COLORS[s];
+    ctx.fill();
+    angle += slice;
   });
-  document.getElementById('proj-tbody').innerHTML = html;
+  ctx.fillStyle = '#1A1A18';
+  ctx.font = 'bold 20px -apple-system,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy - 9);
+  ctx.font = '11px -apple-system,sans-serif';
+  ctx.fillStyle = '#9A9A94';
+  ctx.fillText('ctns', cx, cy + 11);
+
+  // Legend
+  const legend = document.getElementById('donut-legend');
+  const LEGEND_LABELS = { D:'Delivered', INYRD:'In Yard', LDD:'Rail', CHS:'Port (CHS)', ENR:'Sea Freight', PROJ:'Projected' };
+  if (legend) {
+    legend.innerHTML = ORDER.map(s => {
+      const n = counts[s] || 0;
+      if (!n) return '';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${COLORS[s]};display:inline-block;flex-shrink:0;"></span>
+          <span style="color:var(--text-2)">${LEGEND_LABELS[s] || s}</span>
+        </div>
+        <span style="font-weight:600;color:var(--text)">${n}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Pipeline badges
+  const LABELS = { D:'Delivered', INYRD:'In Yard', CHS:'CHS', ENR:'En route', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
+  ORDER.forEach(s => {
+    const el = document.getElementById('rp-' + s);
+    if (!el) return;
+    const n = counts[s] || 0;
+    if (n > 0) {
+      el.innerHTML = `<span style="margin-top:5px;display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#E5F2EE;color:#22735C">${LABELS[s]} · ${n}</span>`;
+    } else {
+      el.innerHTML = `<span style="margin-top:5px;display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;background:#F0EFE8;color:#9A9A94">— · 0</span>`;
+    }
+  });
 })();
 
-// ── BUILDING GRID ──
+// ── NEXT UP ──
 (function() {
-  let html = '';
+  const el = document.getElementById('next-up-list');
+  const STATUS_ORDER = { D:0, INYRD:1, LDD:2, CHS:3, ENR:4, LDG:5, PROJ:6 };
+  const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', LDD:'Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDG:'Loading', PROJ:'Projected' };
+  const STATUS_COLOR = { D:'#22735C', INYRD:'#2A8A6E', LDD:'#62C8A8', CHS:'#44B594', ENR:'#35A082', LDG:'#90D8C0', PROJ:'#B8DDD6' };
+
+  // Get containers not yet delivered, prioritise active statuses first
+  const upcoming = CONTAINERS
+    .filter(c => c.status !== 'D' && c.delivery !== '—')
+    .sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9))
+    .slice(0, 4);
+
+  if (!upcoming.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-3)">All containers delivered.</div>';
+    return;
+  }
+
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  upcoming.forEach(c => {
+    const floorLabel = c.floor && c.floor !== '—' ? `Fl. ${c.floor}` : '';
+    const color = STATUS_COLOR[c.status] || '#B8DDD6';
+    html += `<div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${color};border-radius:6px;padding:8px 12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">CTN ${c.num}${floorLabel ? ' <span style="font-weight:400;color:var(--text-3);font-size:10px;">· '+floorLabel+'</span>' : ''}</div>
+        <span style="font-size:9px;font-weight:600;color:${color};background:${color}22;padding:2px 6px;border-radius:4px;">${STATUS_LABEL[c.status] || c.status}</span>
+      </div>
+      <div style="font-size:10px;color:var(--text-2);margin-top:3px;">Delivery: ${c.delivery}</div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+})();
+
+// ── TRANSIT PERFORMANCE ──
+(function() {
+  const el = document.getElementById('transit-perf-table');
+  if (!TRANSIT_PERF.length) { el.innerHTML = '<span style="font-size:11px;color:var(--text-3)">No data</span>'; return; }
+  let html = '<table style="width:100%;font-size:11px;border-collapse:collapse">';
+  TRANSIT_PERF.filter(r => r.label.toLowerCase() !== 'transit performance').forEach(r => {
+    html += `<tr>
+      <td style="padding:4px 0;color:var(--text-2);border-bottom:1px solid var(--border)">${r.label}</td>
+      <td style="padding:4px 0;font-weight:600;text-align:right;border-bottom:1px solid var(--border)">${r.value}</td>
+    </tr>`;
+  });
+  html += '</table>';
+  el.innerHTML = html;
+})();
+
+// ── BUILDING MATRIX ──
+(function() {
+  const SCOLOR = { D:'#22735C',INYRD:'#2A8A6E',ENR:'#35A082',CHS:'#44B594',LDD:'#62C8A8',LDG:'#90D8C0',PROJ:'#E0DED6',BH:'#C8C6BE' };
+  const units = [1,2,3,4,5,6,7,8,9,10,11,12];
+  let html = '<table class="bldg-matrix"><thead><tr>';
+  html += '<th>Fl.</th>';
+  units.forEach(u => { html += `<th>${String(u).padStart(2,'0')}</th>`; });
+  html += '</tr></thead><tbody>';
   for (let floor = 39; floor >= 10; floor--) {
     const ctn = CONTAINERS[floor - 10];
-    const roj = ROJ[floor] || {};
-    html += `<div class="floor-block">
-      <div class="floor-hdr">
-        <span class="floor-num">${floor}</span>
-        Floor ${floor}
-        <span class="floor-meta">CTN ${ctn.num} &middot; ${ctn.week} &middot; ${ctn.delivery}</span>
-        ${roj.window ? `<span class="floor-meta">ROJ ${roj.window}</span>` : ''}
-        <span class="bdg ${statusBadge(ctn.status)}" style="margin-left:auto">${ctn.status}</span>
-      </div>
-      <div class="unit-grid">`;
+    html += `<tr><td class="floor-lbl">${floor}</td>`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc    = EXCEPTIONS[unitId] || {};
@@ -450,33 +548,76 @@ function sw(id, el) {
       const kStatus  = isBH  ? 'PROJ' : (exc.kStatus  || ctn.status);
       const v1Status = exc.v1Status || ctn.status;
       const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
-      const kCtnr  = isBH  ? 'BH'  : (exc.kCtnr  || `CTN ${ctn.num}`);
-      const v1Ctnr = exc.v1Ctnr || `CTN ${ctn.num}`;
-      const v2Ctnr = hasV2 ? (exc.v2Ctnr || `CTN ${ctn.num}`) : null;
       const allStatuses = [kStatus, v1Status, v2Status].filter(Boolean);
       const worst = worstStatus(allStatuses);
-      const cardCls = isBH ? 'ub-BH' : `ub-${worst}`;
-      if (isBH) {
-        html += `<div class="ucard ${cardCls}">
-          <div class="uid">${unitId}</div>
-          <div class="ucomp"><span class="mdot d-${kStatus}"></span><span class="ucomp-lbl">K</span><span class="ucomp-val" style="color:${statusColor(kStatus)}">BH</span></div>
-          <div class="ucomp"><span class="mdot d-${v1Status}"></span><span class="ucomp-lbl">V1</span><span class="ucomp-val" style="color:${statusColor(v1Status)}">${v1Status}</span></div>
-        </div>`;
-      } else {
-        const kNote  = exc.kCtnr  ? `<span class="ucomp-note">${exc.kCtnr}</span>`  : '';
-        const v1Note = exc.v1Ctnr ? `<span class="ucomp-note">${exc.v1Ctnr}</span>` : '';
-        const v2Row  = hasV2 ? `<div class="ucomp"><span class="mdot d-${v2Status}"></span><span class="ucomp-lbl">V2</span><span class="ucomp-val" style="color:${statusColor(v2Status)}">${v2Status}</span></div>` : '';
-        html += `<div class="ucard ${cardCls}">
-          <div class="uid">${unitId}</div>
-          <div class="ucomp"><span class="mdot d-${kStatus}"></span><span class="ucomp-lbl">K</span><span class="ucomp-val" style="color:${statusColor(kStatus)}">${kStatus}</span>${kNote}</div>
-          <div class="ucomp"><span class="mdot d-${v1Status}"></span><span class="ucomp-lbl">V1</span><span class="ucomp-val" style="color:${statusColor(v1Status)}">${v1Status}</span>${v1Note}</div>
-          ${v2Row}
-        </div>`;
-      }
+      const kBar  = `<span class="sc-${kStatus}" title="K:${kStatus}${isBH?' (BH)':''}"></span>`;
+      const v1Bar = `<span class="sc-${v1Status}"></span>`;
+      const v2Bar = hasV2 ? `<span class="sc-${v2Status}"></span>` : `<span style="background:var(--border)"></span>`;
+      const tip   = `${unitId} · K:${kStatus}${isBH?' (BH)':''} V1:${v1Status}${hasV2?' V2:'+v2Status:''}`;
+      html += `<td style="background:${SCOLOR[worst]}22">
+        <div class="mcell">
+          <div class="mcell-id" style="background:${SCOLOR[worst]}18">${unitId}</div>
+          <div class="mcell-bars">${kBar}${v1Bar}${v2Bar}</div>
+          <div class="mcell-tip">${tip}</div>
+        </div>
+      </td>`;
     }
-    html += `</div></div>`;
+    html += '</tr>';
   }
+  html += '</tbody></table>';
   document.getElementById('bldg-grid').innerHTML = html;
+})();
+
+// ── FLOOR DELIVERY SIDEBAR ──
+(function() {
+  const UNITS_PER_FLOOR = 12;
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:10px;">
+    <thead><tr>
+      <th style="text-align:left;padding:3px 6px;background:var(--bg);border:1px solid var(--border);font-size:9px;color:var(--text-3)">Fl.</th>
+      <th style="padding:3px 6px;background:var(--bg);border:1px solid var(--border);font-size:9px;color:var(--text-3)">K</th>
+      <th style="padding:3px 6px;background:var(--bg);border:1px solid var(--border);font-size:9px;color:var(--text-3)">V1</th>
+      <th style="padding:3px 6px;background:var(--bg);border:1px solid var(--border);font-size:9px;color:var(--text-3)">V2</th>
+      <th style="padding:3px 6px;background:var(--bg);border:1px solid var(--border);font-size:9px;color:var(--text-3)">%</th>
+    </tr></thead><tbody>`;
+
+  for (let floor = 39; floor >= 10; floor--) {
+    const ctn = CONTAINERS[floor - 10];
+    let kDel=0, v1Del=0, v2Del=0, v2Total=0;
+    for (let u = 1; u <= UNITS_PER_FLOOR; u++) {
+      const unitId = floor * 100 + u;
+      const exc = EXCEPTIONS[unitId] || {};
+      const hasV2 = V2_UNITS.has(u);
+      const isBH  = (u === 7);
+      const kStatus  = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
+      const v1Status = exc.v1Status || ctn.status;
+      const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
+      if (kStatus  === 'D') kDel++;
+      if (v1Status === 'D') v1Del++;
+      if (hasV2) { v2Total++; if (v2Status === 'D') v2Del++; }
+    }
+    const kTotal  = UNITS_PER_FLOOR;
+    const v1Total = UNITS_PER_FLOOR;
+    const totalComponents = kTotal + v1Total + v2Total;
+    const totalDel = kDel + v1Del + v2Del;
+    const pct = totalComponents > 0 ? Math.round(totalDel / totalComponents * 100) : 0;
+    const barColor = pct === 100 ? '#22735C' : pct > 0 ? '#44B594' : '#E0DED6';
+    html += `<tr>
+      <td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:var(--text-2)">${floor}</td>
+      <td style="padding:3px 6px;border:1px solid var(--border);text-align:center;color:${kDel===kTotal?'#22735C':'var(--text-2)'}">${kDel}/${kTotal}</td>
+      <td style="padding:3px 6px;border:1px solid var(--border);text-align:center;color:${v1Del===v1Total?'#22735C':'var(--text-2)'}">${v1Del}/${v1Total}</td>
+      <td style="padding:3px 6px;border:1px solid var(--border);text-align:center;color:${v2Del===v2Total&&v2Total>0?'#22735C':'var(--text-2)'}">${v2Total>0?v2Del+'/'+v2Total:'—'}</td>
+      <td style="padding:3px 6px;border:1px solid var(--border);min-width:80px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:3px;"></div>
+          </div>
+          <span style="font-size:9px;color:var(--text-2);min-width:26px;text-align:right">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('bldg-sidebar').innerHTML = html;
 })();
 
 // ── UNIT DROPDOWN ──
