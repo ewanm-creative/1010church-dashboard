@@ -134,6 +134,58 @@ tbody tr:hover td { background: var(--bg); }
 .empty-state { text-align: center; padding: 32px; color: var(--text-3); font-size: 12px; }
 .empty-state .big { font-size: 28px; margin-bottom: 8px; }
 .note-bar { font-size: 10px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; }
+
+@media (max-width: 700px) {
+  .shell { padding: 14px 12px 40px; }
+
+  /* Topbar */
+  .topbar { flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .topbar-right { text-align: left !important; }
+  .topbar-left h1 { font-size: 15px; }
+
+  /* Tabs — full width, scrollable */
+  .tabs { width: 100%; overflow-x: auto; }
+  .tab { padding: 7px 12px; font-size: 12px; white-space: nowrap; }
+
+  /* Metrics area — stack all cards vertically */
+  #ctn > div[style*="display:flex"] {
+    flex-direction: column !important;
+  }
+  #ctn > div[style*="display:flex"] > div[style*="display:grid"] {
+    width: 100% !important;
+  }
+  #ctn > div[style*="display:flex"] > div[style*="display:grid"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Donut card — horizontal on mobile */
+  #ctn > div[style*="display:flex"] > div:has(canvas) {
+    flex-direction: row !important;
+    gap: 16px !important;
+    padding: 12px 16px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  #donut-legend { flex-direction: column; }
+
+  /* Next up — already vertical, just ensure full width */
+  #next-up-list { width: 100%; }
+
+  /* Route pipeline — horizontal scroll */
+  .route-pipeline { padding: 10px 12px; gap: 0; }
+  .rp-step { min-width: 54px; }
+  .rp-name { font-size: 8px; }
+
+  /* Tables — horizontal scroll already on .tw, just tighten padding */
+  th { padding: 6px 8px; font-size: 9px; }
+  td { padding: 6px 8px; }
+
+  /* Building matrix wrapper — allow horizontal scroll */
+  #bldg .tw { overflow-x: auto; }
+
+  /* Damage form — single column */
+  .form-grid { grid-template-columns: 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -142,7 +194,7 @@ tbody tr:hover td { background: var(--bg); }
 <div class="topbar">
   <div class="topbar-left">
     <h1>1010 Church · Container Dashboard</h1>
-    <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 24, 2026 at 5:16 PM</em></div>
+    <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 24, 2026 at 5:22 PM</em></div>
   </div>
   <div class="topbar-right" style="text-align:right;">
     <span class="date-pill" id="today-pill"></span>
@@ -300,7 +352,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 24, 2026 at 5:16 PM) ─────────────────────
+// ── DATA (auto-generated Jun 24, 2026 at 5:22 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
