@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1010 Church · Container Dashboard</title>
+<style>
+:root {
+  --bg: #F7F6F3;
+  --surface: #FFFFFF;
+  --border: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.18);
+  --text: #1A1A18;
+  --text-2: #5C5C58;
+  --text-3: #9A9A94;
+  --accent: #1A3A2A;
+  --proj-bg: #FEF5E7;  --proj-text: #7A4A00;
+  --ldd-bg: #E8F2EB;   --ldd-text: #1A5C2A;
+  --del-bg: #E3F0EE;   --del-text: #0D5040;
+  --route-bg: #E6EEF8; --route-text: #1A3A70;
+  --port-bg: #EDEBFC;  --port-text: #3A2A8A;
+  --rail-bg: #FAF0E8;  --rail-text: #703010;
+  --load-bg: #F0EFE8;  --load-text: #5A5A56;
+  --open-bg: #FEF5E7;  --open-text: #7A4A00;
+  --crit-bg: #FEECEC;  --crit-text: #7A1A1A;
+  --closed-bg: #E8F2EB;--closed-text: #1A5C2A;
+  --scope-bg: #F4F3EF;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
+
+.shell { max-width: 1240px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ── TOPBAR ── */
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.topbar-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+.topbar-left .sub { font-size: 11px; color: var(--text-2); margin-top: 3px; }
+.date-pill { font-size: 11px; background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 99px; }
+
+/* ── METRICS ── */
+.metrics { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 20px; }
+.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.mc .lbl { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.mc .val { font-size: 22px; font-weight: 600; line-height: 1; }
+.mc .vsub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--border); padding: 3px; border-radius: var(--radius); width: fit-content; }
+.tab { padding: 6px 14px; font-size: 12px; font-weight: 500; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--text-2); font-family: inherit; transition: background .12s, color .12s; }
+.tab:hover { background: var(--bg); color: var(--text); }
+.tab.on { background: var(--accent); color: #fff; }
+.panel { display: none; }
+.panel.on { display: block; }
+
+/* ── BADGES / DOTS ── */
+.bdg { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.b-D    { background: var(--del-bg);   color: var(--del-text);   }
+.b-PLD  { background: var(--del-bg);   color: var(--del-text);   }
+.b-CHS  { background: var(--port-bg);  color: var(--port-text);  }
+.b-ENR  { background: var(--route-bg); color: var(--route-text); }
+.b-LDD  { background: var(--ldd-bg);   color: var(--ldd-text);   }
+.b-LDG  { background: var(--load-bg);  color: var(--load-text);  }
+.b-PROJ { background: var(--proj-bg);  color: var(--proj-text);  }
+.b-open  { background: var(--open-bg); color: var(--open-text);  }
+.b-closed{ background: var(--closed-bg);color: var(--closed-text);}
+.b-crit  { background: var(--crit-bg); color: var(--crit-text);  }
+
+/* status dot (larger, for legend) */
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.d-D    { background: #0D7A60; }
+.d-PLD  { background: #0D7A60; }
+.d-CHS  { background: #5A4AAA; }
+.d-ENR  { background: #2A5AAA; }
+.d-LDD  { background: #2A7A3A; }
+.d-LDG  { background: #888880; }
+.d-PROJ { background: #D4890A; }
+.d-BH   { background: #BBBBBB; }
+/* mini dot for unit cards */
+.mdot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+/* ── TABLES ── */
+.tw { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; overflow-x: auto; background: var(--surface); margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { text-align: left; padding: 8px 10px; color: var(--text-3); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); background: var(--bg); white-space: nowrap; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg); }
+.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 10px; }
+.proj-ok td { background: rgba(42,122,58,.03); }
+.proj-warn td { background: rgba(212,137,10,.04); }
+
+/* ── ROUTE PIPELINE ── */
+.route-pipeline { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; overflow-x: auto; }
+.rp-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 64px; }
+.rp-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; margin-bottom: 4px; }
+.rp-name { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); text-align: center; }
+.rp-val  { font-size: 10px; color: var(--text-2); text-align: center; margin-top: 1px; }
+.rp-line { flex: 1; height: 2px; background: var(--border); align-self: center; margin-bottom: 20px; min-width: 10px; }
+
+/* ── LEGEND ── */
+.leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
+.leg-i { display: flex; align-items: center; gap: 5px; }
+
+/* ── BUILDING GRID ── */
+.floor-block { margin-bottom: 10px; }
+.floor-hdr { font-size: 10px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; padding: 5px 0; margin-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.floor-num { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 9px; }
+.floor-meta { font-size: 9px; color: var(--text-3); font-weight: 400; }
+.unit-grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 4px; }
+
+/* unit cards */
+.ucard { border: 1px solid var(--border); border-radius: 6px; padding: 4px 5px; background: var(--surface); min-width: 0; }
+/* border highlight by worst status */
+.ub-D   { border-color: rgba(13,122,96,.35);  }
+.ub-PLD { border-color: rgba(13,122,96,.35);  }
+.ub-CHS { border-color: rgba(90,74,170,.35);  }
+.ub-ENR { border-color: rgba(42,90,170,.35);  }
+.ub-LDD { border-color: rgba(42,122,58,.5); border-width: 1.5px; }
+.ub-LDG { border-color: rgba(136,136,128,.5); border-width: 1.5px; }
+.ub-PROJ{ border-color: var(--border); }
+.ub-BH  { background: var(--scope-bg); border-color: var(--border); opacity: .65; }
+
+.uid { font-size: 8px; color: var(--text-3); font-weight: 700; margin-bottom: 2px; }
+.ucomp { display: flex; align-items: center; gap: 3px; font-size: 7.5px; padding: 1px 0; }
+.ucomp-lbl { color: var(--text-3); font-weight: 700; min-width: 13px; }
+.ucomp-val { font-weight: 600; }
+.ucomp-note { font-size: 7px; color: var(--text-3); margin-left: 1px; }
+
+/* ── DAMAGE FORM ── */
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-top: 8px; }
+.form-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.form-card .form-sub { font-size: 11px; color: var(--text-2); margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
+.field input,.field select,.field textarea { border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 8px 10px; font-size: 12px; font-family: inherit; color: var(--text); background: var(--bg); outline: none; transition: border-color .12s; }
+.field input:focus,.field select:focus,.field textarea:focus { border-color: var(--accent); background: #fff; }
+.field textarea { resize: vertical; min-height: 70px; }
+.field .date-fixed { font-size: 12px; color: var(--text-2); padding: 8px 10px; background: var(--scope-bg); border: 1px solid var(--border); border-radius: var(--radius); font-family: 'SF Mono', monospace; }
+.form-actions { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.btn-submit { background: var(--accent); color: #fff; border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-submit:hover { opacity: .88; }
+.form-msg { font-size: 11px; color: var(--ldd-text); font-weight: 500; display: none; }
+.form-msg.err { color: var(--crit-text); }
+.export-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.export-bar .count { font-size: 11px; color: var(--text-2); }
+.btn-export { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 6px 14px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.btn-export:hover { background: var(--bg); }
+.btn-export svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dmg-group { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+.dmg-group.open  { border-left: 3px solid #CC3030; }
+.dmg-group.closed{ border-left: 3px solid #2A7A3A; }
+.dmg-group-hdr { padding: 6px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-2); display: flex; align-items: center; gap: 8px; }
+.empty-state { text-align: center; padding: 32px; color: var(--text-3); font-size: 12px; }
+.empty-state .big { font-size: 28px; margin-bottom: 8px; }
+
+.note-bar { font-size: 10px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>1010 Church · Container Dashboard</h1>
+    <div class="sub">Route: Italy (Factory) → Sea Freight → Charleston Port → Rail → Nashville → Delivery &nbsp;·&nbsp; 33 Containers · Floors 10 – 39</div>
+  </div>
+  <div class="topbar-right">
+    <span class="date-pill" id="today-pill"></span>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="mc"><div class="lbl">Total containers</div><div class="val">33</div><div class="vsub">30 floors + BH + ECT + WCT</div></div>
+  <div class="mc"><div class="lbl">Delivered</div><div class="val" style="color:#0D7A60" id="m-del">1</div><div class="vsub" id="m-del-sub">CTN 1 · Floor 10</div></div>
+  <div class="mc"><div class="lbl">Pulled / In transit</div><div class="val" style="color:#0D6A50" id="m-trans">3</div><div class="vsub" id="m-trans-sub">PLD · CHS · ENR</div></div>
+  <div class="mc"><div class="lbl">Loaded / Loading</div><div class="val" style="color:#2A7A3A" id="m-load">2</div><div class="vsub" id="m-load-sub">CTN 5 (LDD) · CTN 6 (LDG)</div></div>
+  <div class="mc"><div class="lbl">First delivery</div><div class="val" style="font-size:15px;padding-top:4px;color:#1A3A70">Sep 11</div><div class="vsub">CTN 1 · Floor 10</div></div>
+  <div class="mc"><div class="lbl">Damage items</div><div class="val" id="dmg-count-metric" style="color:#7A1A1A">0</div><div class="vsub" id="dmg-sub-metric">None logged yet</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
+  <button class="tab" onclick="sw('proj',this)">Projections</button>
+  <button class="tab" onclick="sw('bldg',this)">Building visual</button>
+  <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
+</div>
+
+<!-- ===== CONTAINER SCHEDULE ===== -->
+<div id="ctn" class="panel on">
+  <div class="route-pipeline">
+    <div class="rp-step"><div class="rp-icon" style="background:#E8F2EB">🏭</div><div class="rp-name">Factory IT</div><div class="rp-val">Load &amp; seal</div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E6EEF8">🚢</div><div class="rp-name">Sea Freight</div><div class="rp-val">Italy → CHS</div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#EDEBFC">⚓</div><div class="rp-name">Charleston</div><div class="rp-val">Port arrival</div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#FAF0E8">🚂</div><div class="rp-name">Rail</div><div class="rp-val">CHS → Nashville</div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#FAF0E8">🏗</div><div class="rp-name">Nashville RR</div><div class="rp-val">Yard arrival</div></div>
+    <div class="rp-line"></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E8F2EB">📦</div><div class="rp-name">Delivery</div><div class="rp-val">Jobsite</div></div>
+  </div>
+
+  <div class="leg">
+    <span class="leg-i"><span class="dot d-D"></span> Delivered (D)</span>
+    <span class="leg-i"><span class="dot d-PLD"></span> Pulled (PLD)</span>
+    <span class="leg-i"><span class="dot d-CHS"></span> Charleston (CHS)</span>
+    <span class="leg-i"><span class="dot d-ENR"></span> En route (ENR)</span>
+    <span class="leg-i"><span class="dot d-LDD"></span> Loaded (LDD)</span>
+    <span class="leg-i"><span class="dot d-LDG"></span> Loading (LDG)</span>
+    <span class="leg-i"><span class="dot d-PROJ"></span> Projected (PROJ)</span>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Status</th><th>Load Wk</th><th>Floor</th><th>Units</th>
+        <th>Load Date</th><th>Ship Date</th><th>Vessel</th>
+        <th>ETA Charleston</th><th>Rail Date</th><th>ETA Nashville</th><th>Delivery</th>
+      </tr></thead>
+      <tbody id="ctn-tbody"></tbody>
+    </table>
+  </div>
+  <div class="note-bar">
+    <strong>Special containers:</strong> &nbsp;
+    CTN <strong>BH</strong> (Buck Hoist) — all unit-07 kitchens, 30 floors, Wk 26, load Jun 30 2027, delivery ~Jul 30 2027 &nbsp;|&nbsp;
+    CTN <strong>ECT</strong> (East Crane Tie-in) — V1 units 1004/2004/2904/3604, Wk 27, delivery ~Aug 6 2027 &nbsp;|&nbsp;
+    CTN <strong>WCT</strong> (West Crane Tie-in) — K units 1611/2511/3311 + V1 1612/2512/3312, Wk 27, delivery ~Aug 6 2027
+  </div>
+</div>
+
+<!-- ===== PROJECTIONS ===== -->
+<div id="proj" class="panel">
+  <div class="note-bar">
+    Container delivery dates vs. jobsite floor-ready windows (ROJ). &nbsp;
+    <strong style="color:var(--ldd-text)">Green rows</strong> = ordered/confirmed. &nbsp;
+    <strong style="color:var(--proj-text)">Amber rows</strong> = projected, not yet ordered. &nbsp;
+    ROJ dates sourced from 1010 Church ROJ sheet (updated Jun 4 2026).
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>CTN #</th><th>Status</th><th>Floor</th><th>Load Wk</th>
+        <th>Load Date</th><th>Ship Date</th><th>ETA CHS</th><th>Rail Date</th><th>ETA Nashville</th><th>CTN Delivery</th>
+        <th>ROJ Window</th><th>Install Start</th><th>Ordered?</th>
+      </tr></thead>
+      <tbody id="proj-tbody"></tbody>
+    </table>
+  </div>
+  <div style="font-size:10px;color:var(--text-3);margin-top:4px">
+    ROJ Window = jobsite floor-ready date. Install Start = scheduled install begin. Some install dates pending GC schedule confirmation (marked —).
+  </div>
+</div>
+
+<!-- ===== BUILDING VISUAL ===== -->
+<div id="bldg" class="panel">
+  <div class="leg" style="margin-bottom:10px">
+    <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
+    <span class="leg-i"><span class="dot d-PLD"></span> Pulled</span>
+    <span class="leg-i"><span class="dot d-CHS"></span> Charleston</span>
+    <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
+    <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
+    <span class="leg-i"><span class="dot d-LDG"></span> Loading</span>
+    <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
+    <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
+  </div>
+  <div class="note-bar">
+    Each card shows per-component status: <strong>K</strong> = kitchen, <strong>V1</strong> = vanity 1, <strong>V2</strong> = vanity 2 (units 04, 06, 10, 12 only).
+    Card border reflects the component furthest from delivery. Units 07 = Buck Hoist container. ECT/WCT exceptions flagged inline.
+  </div>
+  <div id="bldg-grid"></div>
+</div>
+
+<!-- ===== DAMAGE / OPEN ITEMS ===== -->
+<div id="dmg" class="panel">
+  <div class="form-card">
+    <h3>Log a damage or open item</h3>
+    <p class="form-sub">Fill in what you found. Date is auto-stamped. Items persist in your browser and export to CSV.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label>Unit #</label>
+        <select id="f-unit"><option value="">— Select unit —</option></select>
+      </div>
+      <div class="field">
+        <label>Date reported</label>
+        <div class="date-fixed" id="today-display"></div>
+      </div>
+      <div class="field">
+        <label>Item code (if known)</label>
+        <input type="text" id="f-code" placeholder="e.g. 10C-CAB-0042">
+      </div>
+      <div class="field">
+        <label>Component / cabinet</label>
+        <input type="text" id="f-component" placeholder="e.g. Island back panel">
+      </div>
+    </div>
+    <div class="form-grid single">
+      <div class="field">
+        <label>Issue description</label>
+        <textarea id="f-issue" placeholder="Describe what was found — damage type, location, severity…"></textarea>
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>Photo reference / filename</label>
+        <input type="text" id="f-photo" placeholder="e.g. unit_1006_damage.jpg">
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>Comment / action taken</label>
+        <input type="text" id="f-comment" placeholder="e.g. Ordered replacement, touch-up applied…">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-submit" onclick="submitItem()">Log item</button>
+      <span class="form-msg" id="form-msg"></span>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="export-bar">
+      <span class="count" id="dmg-count-label">0 items logged</span>
+      <button class="btn-export" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export to CSV
+      </button>
+    </div>
+    <div id="dmg-open-group" class="dmg-group open" style="display:none">
+      <div class="dmg-group-hdr"><span style="color:#CC3030">●</span> Open items <span id="open-count" class="bdg b-open" style="margin-left:4px"></span></div>
+      <table><thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Component</th><th>Issue</th><th>Photo</th><th>Comment</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="open-tbody"></tbody></table>
+    </div>
+    <div id="dmg-closed-group" class="dmg-group closed" style="display:none;margin-top:8px">
+      <div class="dmg-group-hdr"><span style="color:#2A7A3A">●</span> Closed items <span id="closed-count" class="bdg b-closed" style="margin-left:4px"></span></div>
+      <table><thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Component</th><th>Issue</th><th>Photo</th><th>Comment</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="closed-tbody"></tbody></table>
+    </div>
+    <div id="empty-state" class="empty-state">
+      <div class="big">📋</div>
+      No items logged yet. Use the form above to log the first damage or open item.
+    </div>
+  </div>
+</div>
+
+</div><!-- /shell -->
+
+<script>
+// ============================================================
+// HOW TO UPDATE THIS DASHBOARD
+// ============================================================
+// 1. Open this file in any text editor.
+// 2. Find the CONTAINERS array below.
+// 3. Change "status" for any container that has progressed:
+//      'PROJ' → projected   'LDG' → loading   'LDD' → loaded
+//      'ENR'  → at sea      'CHS' → Charleston  'PLD' → pulled
+//      'D'    → delivered
+// 4. Update date strings as confirmed (loadDate, shipDate, etc.)
+// 5. Save the file — refresh browser to see changes immediately.
+//
+// To update ROJ floor-ready dates, edit the ROJ object below.
+// ============================================================
+
+const CONTAINERS = [
+  // { num, status, week, floor, unitQty, loadDate, shipDate, vessel, etaChs, railDate, etaNash, delivery, ordered }
+  { num: 1,  status:'D',    week:'Wk 33', floor:10, unitQty:11, loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—',   etaChs:'Sep 2',  railDate:'Sep 5',  etaNash:'Sep 9',  delivery:'Sep 11, 2026', ordered:true  },
+  { num: 2,  status:'PLD',  week:'Wk 34', floor:11, unitQty:11, loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—',   etaChs:'Sep 9',  railDate:'Sep 12', etaNash:'Sep 16', delivery:'Sep 18, 2026', ordered:true  },
+  { num: 3,  status:'CHS',  week:'Wk 35', floor:12, unitQty:11, loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—',   etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:true  },
+  { num: 4,  status:'ENR',  week:'Wk 36', floor:13, unitQty:11, loadDate:'Sep 2',  shipDate:'Sep 7',  vessel:'—',   etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026',  ordered:true  },
+  { num: 5,  status:'LDD',  week:'Wk 37', floor:14, unitQty:11, loadDate:'Sep 9',  shipDate:'Sep 14', vessel:'TBD', etaChs:'Sep 30', railDate:'Oct 3',  etaNash:'Oct 7',  delivery:'Oct 9, 2026',  ordered:true  },
+  { num: 6,  status:'LDG',  week:'Wk 38', floor:15, unitQty:11, loadDate:'Sep 16', shipDate:'Sep 21', vessel:'TBD', etaChs:'Oct 7',  railDate:'Oct 10', etaNash:'Oct 14', delivery:'Oct 16, 2026', ordered:true  },
+  { num: 7,  status:'PROJ', week:'Wk 39', floor:16, unitQty:10, loadDate:'Sep 23', shipDate:'Sep 28', vessel:'TBD', etaChs:'Oct 14', railDate:'Oct 17', etaNash:'Oct 21', delivery:'Oct 23, 2026', ordered:false },
+  { num: 8,  status:'PROJ', week:'Wk 40', floor:17, unitQty:11, loadDate:'Sep 30', shipDate:'Oct 5',  vessel:'TBD', etaChs:'Oct 21', railDate:'Oct 24', etaNash:'Oct 28', delivery:'Oct 30, 2026', ordered:false },
+  { num: 9,  status:'PROJ', week:'Wk 41', floor:18, unitQty:11, loadDate:'Oct 7',  shipDate:'Oct 12', vessel:'TBD', etaChs:'Oct 28', railDate:'Oct 31', etaNash:'Nov 4',  delivery:'Nov 6, 2026',  ordered:false },
+  { num: 10, status:'PROJ', week:'Wk 42', floor:19, unitQty:11, loadDate:'Oct 14', shipDate:'Oct 19', vessel:'TBD', etaChs:'Nov 4',  railDate:'Nov 7',  etaNash:'Nov 11', delivery:'Nov 13, 2026', ordered:false },
+  { num: 11, status:'PROJ', week:'Wk 43', floor:20, unitQty:11, loadDate:'Oct 21', shipDate:'Oct 26', vessel:'TBD', etaChs:'Nov 11', railDate:'Nov 14', etaNash:'Nov 18', delivery:'Nov 20, 2026', ordered:false },
+  { num: 12, status:'PROJ', week:'Wk 44', floor:21, unitQty:11, loadDate:'Oct 28', shipDate:'Nov 2',  vessel:'TBD', etaChs:'Nov 18', railDate:'Nov 21', etaNash:'Nov 25', delivery:'Nov 27, 2026', ordered:false },
+  { num: 13, status:'PROJ', week:'Wk 45', floor:22, unitQty:11, loadDate:'Nov 4',  shipDate:'Nov 9',  vessel:'TBD', etaChs:'Nov 25', railDate:'Nov 28', etaNash:'Dec 2',  delivery:'Dec 4, 2026',  ordered:false },
+  { num: 14, status:'PROJ', week:'Wk 46', floor:23, unitQty:12, loadDate:'Nov 11', shipDate:'Nov 16', vessel:'TBD', etaChs:'Dec 2',  railDate:'Dec 5',  etaNash:'Dec 9',  delivery:'Dec 11, 2026', ordered:false },
+  { num: 15, status:'PROJ', week:'Wk 47', floor:24, unitQty:11, loadDate:'Nov 18', shipDate:'Nov 23', vessel:'TBD', etaChs:'Dec 9',  railDate:'Dec 12', etaNash:'Dec 16', delivery:'Dec 18, 2026', ordered:false },
+  { num: 16, status:'PROJ', week:'Wk 49', floor:25, unitQty:10, loadDate:'Dec 2',  shipDate:'Dec 7',  vessel:'TBD', etaChs:'Dec 23', railDate:'Dec 26', etaNash:'Dec 30', delivery:'Jan 1, 2027',  ordered:false },
+  { num: 17, status:'PROJ', week:'Wk 50', floor:26, unitQty:11, loadDate:'Dec 9',  shipDate:'Dec 14', vessel:'TBD', etaChs:'Dec 30', railDate:'Jan 2',  etaNash:'Jan 6',  delivery:'Jan 8, 2027',  ordered:false },
+  { num: 18, status:'PROJ', week:'Wk 51', floor:27, unitQty:11, loadDate:'Dec 16', shipDate:'Dec 21', vessel:'TBD', etaChs:'Jan 6',  railDate:'Jan 9',  etaNash:'Jan 13', delivery:'Jan 15, 2027', ordered:false },
+  { num: 19, status:'PROJ', week:'Wk 52', floor:28, unitQty:11, loadDate:'Dec 23', shipDate:'Dec 28', vessel:'TBD', etaChs:'Jan 13', railDate:'Jan 16', etaNash:'Jan 20', delivery:'Jan 22, 2027', ordered:false },
+  { num: 20, status:'PROJ', week:'Wk 53', floor:29, unitQty:11, loadDate:'Dec 30', shipDate:'Jan 4',  vessel:'TBD', etaChs:'Jan 20', railDate:'Jan 23', etaNash:'Jan 27', delivery:'Jan 29, 2027', ordered:false },
+  { num: 21, status:'PROJ', week:'Wk 1',  floor:30, unitQty:11, loadDate:'Jan 6',  shipDate:'Jan 11', vessel:'TBD', etaChs:'Jan 27', railDate:'Jan 30', etaNash:'Feb 3',  delivery:'Feb 5, 2027',  ordered:false },
+  { num: 22, status:'PROJ', week:'Wk 2',  floor:31, unitQty:11, loadDate:'Jan 13', shipDate:'Jan 18', vessel:'TBD', etaChs:'Feb 3',  railDate:'Feb 6',  etaNash:'Feb 10', delivery:'Feb 12, 2027', ordered:false },
+  { num: 23, status:'PROJ', week:'Wk 3',  floor:32, unitQty:11, loadDate:'Jan 20', shipDate:'Jan 25', vessel:'TBD', etaChs:'Feb 10', railDate:'Feb 13', etaNash:'Feb 17', delivery:'Feb 19, 2027', ordered:false },
+  { num: 24, status:'PROJ', week:'Wk 4',  floor:33, unitQty:10, loadDate:'Jan 27', shipDate:'Feb 1',  vessel:'TBD', etaChs:'Feb 17', railDate:'Feb 20', etaNash:'Feb 24', delivery:'Feb 26, 2027', ordered:false },
+  { num: 25, status:'PROJ', week:'Wk 5',  floor:34, unitQty:11, loadDate:'Feb 3',  shipDate:'Feb 8',  vessel:'TBD', etaChs:'Feb 24', railDate:'Feb 27', etaNash:'Mar 3',  delivery:'Mar 5, 2027',  ordered:false },
+  { num: 26, status:'PROJ', week:'Wk 6',  floor:35, unitQty:10, loadDate:'Feb 10', shipDate:'Feb 15', vessel:'TBD', etaChs:'Mar 3',  railDate:'Mar 6',  etaNash:'Mar 10', delivery:'Mar 12, 2027', ordered:false },
+  { num: 27, status:'PROJ', week:'Wk 9',  floor:36, unitQty:11, loadDate:'Mar 3',  shipDate:'Mar 8',  vessel:'TBD', etaChs:'Mar 24', railDate:'Mar 27', etaNash:'Mar 31', delivery:'Apr 2, 2027',  ordered:false },
+  { num: 28, status:'PROJ', week:'Wk 10', floor:37, unitQty:11, loadDate:'Mar 10', shipDate:'Mar 15', vessel:'TBD', etaChs:'Mar 31', railDate:'Apr 3',  etaNash:'Apr 7',  delivery:'Apr 9, 2027',  ordered:false },
+  { num: 29, status:'PROJ', week:'Wk 11', floor:38, unitQty:11, loadDate:'Mar 17', shipDate:'Mar 22', vessel:'TBD', etaChs:'Apr 7',  railDate:'Apr 10', etaNash:'Apr 14', delivery:'Apr 16, 2027', ordered:false },
+  { num: 30, status:'PROJ', week:'Wk 12', floor:39, unitQty:11, loadDate:'Mar 24', shipDate:'Mar 29', vessel:'TBD', etaChs:'Apr 14', railDate:'Apr 17', etaNash:'Apr 21', delivery:'Apr 23, 2027', ordered:false },
+];
+
+// Floor-ready dates (ROJ) — sourced from 1010 Church ROJ Dates sheet, updated Jun 4 2026
+// window = floor-ready delivery date | install = install start date ('—' = not yet confirmed)
+const ROJ = {
+  10: { window:'Sep 11',  install:'Sep 18'  },
+  11: { window:'Sep 18',  install:'Sep 25'  },
+  12: { window:'Sep 24',  install:'—'       },
+  13: { window:'Oct 1',   install:'Oct 8'   },
+  14: { window:'Oct 9',   install:'—'       },
+  15: { window:'Oct 16',  install:'Oct 23'  },
+  16: { window:'Oct 23',  install:'—'       },
+  17: { window:'Oct 30',  install:'Nov 6'   },
+  18: { window:'Nov 6',   install:'—'       },
+  19: { window:'Nov 13',  install:'Nov 20'  },
+  20: { window:'Nov 20',  install:'—'       },
+  21: { window:'Nov 27',  install:'Dec 4'   },
+  22: { window:'Dec 4',   install:'—'       },
+  23: { window:'Dec 11',  install:'Dec 18'  },
+  24: { window:'Dec 18',  install:'—'       },
+  25: { window:'Dec 29',  install:'Jan 5'   },
+  26: { window:'Jan 5',   install:'—'       },
+  27: { window:'Jan 12',  install:'Jan 19'  },
+  28: { window:'Jan 19',  install:'—'       },
+  29: { window:'Jan 28',  install:'Feb 4'   },
+  30: { window:'Feb 5',   install:'—'       },
+  31: { window:'Feb 12',  install:'Feb 19'  },
+  32: { window:'Feb 19',  install:'—'       },
+  33: { window:'Feb 26',  install:'Mar 5'   },
+  34: { window:'Mar 5',   install:'—'       },
+  35: { window:'Mar 12',  install:'Mar 19'  },
+  36: { window:'Apr 1',   install:'—'       },
+  37: { window:'Apr 8',   install:'Apr 15'  },
+  38: { window:'Apr 15',  install:'—'       },
+  39: { window:'Apr 22',  install:'Apr 29'  },
+};
+
+// ── EXCEPTION UNITS ──
+// Overrides for components that don't follow their floor's container status.
+// Key = unit ID (number). Value = { kCtnr, kStatus, v1Ctnr, v1Status } — only set the overriding components.
+const EXCEPTIONS = {
+  // Buck Hoist: all unit-07 kitchens — handled in loop below (k = BH/PROJ on every floor)
+  // ECT: vanity-1 on these 4 units
+  1004: { v1Ctnr:'ECT', v1Status:'PROJ' },
+  2004: { v1Ctnr:'ECT', v1Status:'PROJ' },
+  2904: { v1Ctnr:'ECT', v1Status:'PROJ' },
+  3604: { v1Ctnr:'ECT', v1Status:'PROJ' },
+  // WCT: kitchen and vanity-1 on these units
+  1611: { kCtnr:'WCT', kStatus:'PROJ'  },
+  2511: { kCtnr:'WCT', kStatus:'PROJ'  },
+  3311: { kCtnr:'WCT', kStatus:'PROJ'  },
+  1612: { v1Ctnr:'WCT', v1Status:'PROJ' },
+  2512: { v1Ctnr:'WCT', v1Status:'PROJ' },
+  3312: { v1Ctnr:'WCT', v1Status:'PROJ' },
+};
+
+// V2 is only present on units 04, 06, 10, 12 of each floor
+const V2_UNITS = new Set([4, 6, 10, 12]);
+
+// ── STATUS HELPERS ──
+const STATUS_RANK = { D:7, PLD:6, CHS:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
+function worstStatus(arr) {
+  return arr.filter(Boolean).reduce((w, s) => (STATUS_RANK[s]||0) < (STATUS_RANK[w]||0) ? s : w);
+}
+function statusDot(s)   { return `d-${s}`; }
+function statusBadge(s) { return `b-${s}`; }
+function statusColor(s) {
+  return { D:'#0D7A60', PLD:'#0D7A60', CHS:'#5A4AAA', ENR:'#2A5AAA', LDD:'#2A7A3A', LDG:'#888880', PROJ:'#D4890A' }[s] || '#9A9A94';
+}
+
+// ── TODAY ──
+function today() { return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function todayISO() { return new Date().toISOString().slice(0,10); }
+document.getElementById('today-pill').textContent = today();
+document.getElementById('today-display').textContent = today();
+
+function sw(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  el.classList.add('on');
+}
+
+// ── BUILD CONTAINER SCHEDULE ──
+(function() {
+  let html = '';
+  CONTAINERS.forEach(c => {
+    const dot = statusDot(c.status);
+    const bdg = statusBadge(c.status);
+    html += `<tr>
+      <td><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
+      <td><span class="bdg ${bdg}">${c.status}</span></td>
+      <td>${c.week}</td><td>Fl. ${c.floor}</td>
+      <td style="color:var(--text-3)">${c.unitQty}</td>
+      <td>${c.loadDate}</td><td>${c.shipDate}</td>
+      <td style="color:var(--text-3)">${c.vessel}</td>
+      <td>${c.etaChs}</td><td>${c.railDate}</td><td>${c.etaNash}</td>
+      <td style="font-weight:500">${c.delivery}</td>
+    </tr>`;
+  });
+  document.getElementById('ctn-tbody').innerHTML = html;
+})();
+
+// ── BUILD PROJECTIONS TABLE ──
+(function() {
+  let html = '';
+  CONTAINERS.forEach(c => {
+    const roj = ROJ[c.floor] || {};
+    const rowCls = c.ordered ? 'proj-ok' : 'proj-warn';
+    const ordBdg = c.ordered
+      ? `<span class="bdg b-LDD">Ordered</span>`
+      : `<span class="bdg b-PROJ">Pending</span>`;
+    html += `<tr class="${rowCls}">
+      <td>CTN ${c.num}</td>
+      <td><span class="bdg ${statusBadge(c.status)}">${c.status}</span></td>
+      <td>Floor ${c.floor}</td>
+      <td>${c.week}</td>
+      <td>${c.loadDate}</td><td>${c.shipDate}</td>
+      <td>${c.etaChs}</td><td>${c.railDate}</td><td>${c.etaNash}</td>
+      <td style="font-weight:500">${c.delivery}</td>
+      <td style="font-weight:500;color:var(--accent)">${roj.window || '—'}</td>
+      <td style="color:var(--text-2)">${roj.install || '—'}</td>
+      <td>${ordBdg}</td>
+    </tr>`;
+  });
+  document.getElementById('proj-tbody').innerHTML = html;
+})();
+
+// ── BUILD BUILDING GRID ──
+(function() {
+  let html = '';
+
+  for (let floor = 39; floor >= 10; floor--) {
+    const ctn = CONTAINERS[floor - 10];
+    const roj = ROJ[floor] || {};
+
+    html += `<div class="floor-block">
+      <div class="floor-hdr">
+        <span class="floor-num">${floor}</span>
+        Floor ${floor}
+        <span class="floor-meta">CTN ${ctn.num} · ${ctn.week} · ${ctn.delivery}</span>
+        ${roj.window ? `<span class="floor-meta">ROJ ${roj.window}</span>` : ''}
+        <span class="bdg ${statusBadge(ctn.status)}" style="margin-left:auto">${ctn.status}</span>
+      </div>
+      <div class="unit-grid">`;
+
+    for (let u = 1; u <= 12; u++) {
+      const unitId = floor * 100 + u;
+      const exc    = EXCEPTIONS[unitId] || {};
+      const hasV2  = V2_UNITS.has(u);
+      const isBH   = (u === 7); // kitchen goes in BH container
+
+      // Determine per-component status
+      const kStatus  = isBH  ? 'PROJ' : (exc.kStatus  || ctn.status);
+      const v1Status = exc.v1Status || ctn.status;
+      const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
+
+      const kCtnr  = isBH  ? 'BH'  : (exc.kCtnr  || `CTN ${ctn.num}`);
+      const v1Ctnr = exc.v1Ctnr || `CTN ${ctn.num}`;
+      const v2Ctnr = hasV2 ? (exc.v2Ctnr || `CTN ${ctn.num}`) : null;
+
+      // Card border = worst status across all components
+      const allStatuses = [kStatus, v1Status, v2Status].filter(Boolean);
+      const worst = worstStatus(allStatuses);
+      const cardCls = isBH ? 'ub-BH' : `ub-${worst}`;
+
+      if (isBH) {
+        html += `<div class="ucard ${cardCls}">
+          <div class="uid">${unitId}</div>
+          <div class="ucomp"><span class="mdot d-${kStatus}"></span><span class="ucomp-lbl">K</span><span class="ucomp-val" style="color:${statusColor(kStatus)}">BH</span></div>
+          <div class="ucomp"><span class="mdot d-${v1Status}"></span><span class="ucomp-lbl">V1</span><span class="ucomp-val" style="color:${statusColor(v1Status)}">${v1Status}</span></div>
+        </div>`;
+      } else {
+        const kNote  = exc.kCtnr  ? `<span class="ucomp-note">${exc.kCtnr}</span>`  : '';
+        const v1Note = exc.v1Ctnr ? `<span class="ucomp-note">${exc.v1Ctnr}</span>` : '';
+        const v2Row  = hasV2 ? `<div class="ucomp"><span class="mdot d-${v2Status}"></span><span class="ucomp-lbl">V2</span><span class="ucomp-val" style="color:${statusColor(v2Status)}">${v2Status}</span></div>` : '';
+        html += `<div class="ucard ${cardCls}">
+          <div class="uid">${unitId}</div>
+          <div class="ucomp"><span class="mdot d-${kStatus}"></span><span class="ucomp-lbl">K</span><span class="ucomp-val" style="color:${statusColor(kStatus)}">${kStatus}</span>${kNote}</div>
+          <div class="ucomp"><span class="mdot d-${v1Status}"></span><span class="ucomp-lbl">V1</span><span class="ucomp-val" style="color:${statusColor(v1Status)}">${v1Status}</span>${v1Note}</div>
+          ${v2Row}
+        </div>`;
+      }
+    }
+
+    html += `</div></div>`;
+  }
+
+  document.getElementById('bldg-grid').innerHTML = html;
+})();
+
+// ── BUILD UNIT DROPDOWN ──
+(function() {
+  const sel = document.getElementById('f-unit');
+  let html = '<option value="">— Select unit —</option>';
+  for (let floor = 10; floor <= 39; floor++) {
+    const ctn = CONTAINERS[floor - 10];
+    html += `<optgroup label="Floor ${floor} (CTN ${ctn.num} · ${ctn.status})">`;
+    for (let u = 1; u <= 12; u++) {
+      const unitId = floor * 100 + u;
+      const exc = EXCEPTIONS[unitId] || {};
+      const note = u === 7 ? ' [BH kitchen]' : (exc.v1Ctnr ? ` [V1: ${exc.v1Ctnr}]` : (exc.kCtnr ? ` [K: ${exc.kCtnr}]` : ''));
+      html += `<option value="${unitId}">${unitId}${note}</option>`;
+    }
+    html += '</optgroup>';
+  }
+  sel.innerHTML = html;
+})();
+
+// ── DAMAGE / OPEN ITEMS ──
+const DMG_KEY = '10c_damage_v2';
+function loadItems() { try { return JSON.parse(localStorage.getItem(DMG_KEY)||'[]'); } catch(e){ return []; } }
+function saveItems(items) { localStorage.setItem(DMG_KEY, JSON.stringify(items)); }
+
+function renderItems() {
+  const items = loadItems();
+  const open   = items.filter(i => i.status === 'Open');
+  const closed = items.filter(i => i.status === 'Closed');
+  document.getElementById('dmg-count-label').textContent = items.length + ' item' + (items.length!==1?'s':'') + ' logged';
+  document.getElementById('dmg-count-metric').textContent = items.length;
+  document.getElementById('dmg-sub-metric').textContent = items.length>0 ? open.length+' open · '+closed.length+' closed' : 'None logged yet';
+  document.getElementById('open-count').textContent  = open.length;
+  document.getElementById('closed-count').textContent = closed.length;
+  document.getElementById('empty-state').style.display = items.length===0 ? 'block' : 'none';
+  document.getElementById('dmg-open-group').style.display   = open.length>0   ? 'block' : 'none';
+  document.getElementById('dmg-closed-group').style.display = closed.length>0 ? 'block' : 'none';
+
+  function row(item) {
+    const cl = item.status==='Closed';
+    return `<tr>
+      <td style="font-weight:600">${item.unit}</td><td>${item.date}</td>
+      <td class="mono">${item.code||'—'}</td><td>${item.component||'—'}</td>
+      <td>${item.issue}</td><td>${item.photo||'—'}</td><td>${item.comment||'—'}</td>
+      <td><span class="bdg ${cl?'b-closed':'b-open'}">${item.status}</span></td>
+      <td>
+        ${!cl?`<button onclick="closeItem(${item.id})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--ldd-text)">Close</button>`:''}
+        <button onclick="deleteItem(${item.id})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--text-3);margin-left:4px">Remove</button>
+      </td>
+    </tr>`;
+  }
+  document.getElementById('open-tbody').innerHTML   = open.map(row).join('');
+  document.getElementById('closed-tbody').innerHTML = closed.map(row).join('');
+}
+
+function submitItem() {
+  const unit  = document.getElementById('f-unit').value;
+  const issue = document.getElementById('f-issue').value.trim();
+  if (!unit)  { showMsg('Please select a unit.',      true); return; }
+  if (!issue) { showMsg('Please describe the issue.', true); return; }
+  const items = loadItems();
+  items.unshift({ id:Date.now(), unit, date:today(), dateISO:todayISO(),
+    code:document.getElementById('f-code').value.trim(),
+    component:document.getElementById('f-component').value.trim(),
+    issue, photo:document.getElementById('f-photo').value.trim(),
+    comment:document.getElementById('f-comment').value.trim(), status:'Open' });
+  saveItems(items); renderItems();
+  ['f-unit','f-code','f-component','f-issue','f-photo','f-comment'].forEach(id => document.getElementById(id).value = '');
+  showMsg('Item logged.', false);
+}
+function showMsg(t,e) {
+  const m = document.getElementById('form-msg');
+  m.textContent=t; m.className='form-msg'+(e?' err':''); m.style.display='inline';
+  setTimeout(()=>{ m.style.display='none'; }, 3200);
+}
+function closeItem(id) {
+  const items = loadItems(); const i = items.find(x=>x.id===id);
+  if(i){ i.status='Closed'; saveItems(items); renderItems(); }
+}
+function deleteItem(id) {
+  if(!confirm('Remove permanently?')) return;
+  saveItems(loadItems().filter(x=>x.id!==id)); renderItems();
+}
+function exportCSV() {
+  const items = loadItems();
+  if(!items.length){ alert('No items to export.'); return; }
+  const hdr = ['Unit','Date','Code','Component','Issue','Photo','Comment','Status'];
+  const rows = items.map(i=>[i.unit,i.date,i.code||'',i.component||'',i.issue,i.photo||'',i.comment||'',i.status]
+    .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const blob = new Blob([[hdr.join(','),...rows].join('\r\n')],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href=url;
+  a.download = '10C_Damage_'+todayISO()+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+renderItems();
+</script>
+</body>
+</html>
