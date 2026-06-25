@@ -93,19 +93,17 @@ tbody tr:hover td { background: var(--bg); }
 .leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .leg-i { display: flex; align-items: center; gap: 5px; }
 .bldg-matrix { width: 100%; border-collapse: collapse; font-size: 10px; }
-.bldg-matrix th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 3px 4px; background: var(--bg); border: 1px solid var(--border); white-space: nowrap; }
-.bldg-matrix td { border: 1px solid var(--border); padding: 0; text-align: center; }
-.bldg-matrix .floor-lbl { font-size: 9px; font-weight: 700; color: var(--text-2); background: var(--bg); padding: 3px 8px; white-space: nowrap; }
-.bldg-matrix .ctn-lbl { font-size: 8px; color: var(--text-3); background: var(--bg); padding: 3px 6px; white-space: nowrap; }
-.mcell { display: flex; flex-direction: column; width: 100%; cursor: default; position: relative; }
-.mcell-id { font-size: 8px; font-weight: 600; color: var(--text-2); padding: 3px 2px 1px; text-align: center; background: var(--surface); }
-.mcell-bars { display: flex; height: 6px; }
-.mcell-bars span { flex: 1; }
-.mcell:hover .mcell-tip { display: block; }
-.mcell-tip { display: none; position: absolute; z-index: 99; top: 100%; left: 50%; transform: translateX(-50%); background: #222; color: #fff; font-size: 9px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; margin-top: 2px; }
-.sc-D    { background: #1A5C47; } .sc-INYRD{ background: #22735C; } .sc-ENR  { background: #3EA882; }
-.sc-CHS  { background: #2E8C70; } .sc-LDD  { background: #6DC4A8; } .sc-LDG  { background: #A0D8C8; }
-.sc-PROJ { background: #E8F4F0; } .sc-BH   { background: #C8C6BE; }
+.bldg-matrix thead th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 4px 2px; background: var(--bg); border: 1px solid var(--border); white-space: nowrap; }
+.bldg-matrix td { border: 1px solid var(--border); padding: 0; text-align: center; vertical-align: middle; }
+.bm-floor-lbl { font-size: 13px; font-weight: 700; color: var(--text-2); background: var(--surface); width: 30px; min-width: 30px; }
+.bm-type-lbl { font-size: 9px; font-weight: 700; color: var(--text-3); background: var(--bg); padding: 0 5px; width: 22px; white-space: nowrap; }
+.bm-cell { height: 44px; padding: 2px; cursor: default; }
+.bm-card { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; border-radius: 3px; gap: 1px; }
+.bm-card-id { font-size: 8px; font-weight: 600; opacity: 0.75; }
+.bm-card-st { font-size: 8px; font-weight: 700; letter-spacing: .03em; }
+.bm-proj-card { border: 1px solid rgba(26,92,71,0.2); background: transparent; }
+.bm-dash-card { background: #e8e6e1; }
+.bm-first td { border-top: 2px solid var(--border) !important; }
 /* legacy refs kept for legend dots */
 .floor-num { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 9px; }
 .floor-meta { font-size: 9px; color: var(--text-3); font-weight: 400; }
@@ -204,23 +202,25 @@ tbody tr:hover td { background: var(--bg); }
     <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
       <h1>1010 Church · Container Dashboard</h1>
-      <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 25, 2026 at 1:22 PM</em></div>
+      <div class="sub"><em>Updated Jun 25, 2026 at 2:03 PM</em></div>
     </div>
   </div>
-  <div class="topbar-right" style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <img src="logo-210.png" alt="210 Design House" style="height:22px;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
+    <img src="logo-210.png" alt="210 Design House" style="height:36px;object-fit:contain;" onerror="this.style.display='none'">
+    <div style="text-align:right;">
       <span class="date-pill" id="today-pill"></span>
+      <div style="font-size:10px;color:var(--text);margin-top:4px;letter-spacing:.05em;" id="today-week"></div>
     </div>
-    <img src="logo-dandamudi.png" alt="Dandamudi's Inc" style="height:14px;object-fit:contain;opacity:0.7;" onerror="this.style.display='none'">
-    <div style="font-size:10px;color:var(--text-3);" id="today-week"></div>
   </div>
 </div>
 
-<div class="tabs">
-  <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
-  <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
-  <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+  <div class="tabs" style="margin-bottom:0;">
+    <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
+    <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
+    <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
+  </div>
+  <img src="logo-dandamudi.png" alt="Dandamudi's Inc" style="height:36px;object-fit:contain;" onerror="this.style.display='none'">
 </div>
 
 <!-- ===== CONTAINER SCHEDULE ===== -->
@@ -302,7 +302,7 @@ tbody tr:hover td { background: var(--bg); }
     <table>
       <thead><tr>
         <th>Ctnr No.</th><th>Status</th><th>Load Wk</th>
-        <th>Load Date</th><th>Arrival (NSH)</th><th>Delivery</th>
+        <th>Load Date</th><th>ETA NSH</th><th>Delivery</th>
         <th>Floor</th><th>Unit Qty</th>
         <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
       </tr></thead>
@@ -405,7 +405,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 25, 2026 at 1:22 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 2:03 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -475,7 +475,7 @@ function today() { return new Date().toLocaleDateString('en-US',{month:'short',d
 function todayISO() { return new Date().toISOString().slice(0,10); }
 document.getElementById('today-pill').textContent = today();
 const _wk = Math.ceil((((new Date()) - new Date(new Date().getFullYear(),0,1))/86400000 + new Date(new Date().getFullYear(),0,1).getDay()+1)/7);
-document.getElementById('today-week').textContent = 'Wk ' + _wk;
+document.getElementById('today-week').textContent = 'WEEK ' + _wk;
 document.getElementById('today-display').textContent = today();
 
 function sw(id, el) {
@@ -653,38 +653,45 @@ function sw(id, el) {
 
 // ── BUILDING MATRIX ──
 (function() {
-  const SCOLOR = { D:'#22735C',INYRD:'#2A8A6E',ENR:'#35A082',CHS:'#44B594',LDD:'#62C8A8',LDG:'#90D8C0',PROJ:'#E0DED6',BH:'#C8C6BE' };
-  const units = [1,2,3,4,5,6,7,8,9,10,11,12];
+  const SCOLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', BH:'#C8C6BE' };
+  const STXT   = { D:'#fff', INYRD:'#fff', CHS:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
   let html = '<table class="bldg-matrix"><thead><tr>';
-  html += '<th>Fl.</th>';
-  units.forEach(u => { html += `<th>${String(u).padStart(2,'0')}</th>`; });
+  html += '<th style="width:30px">Fl.</th><th style="width:22px"></th>';
+  for (let u = 1; u <= 12; u++) html += `<th>${String(u).padStart(2,'0')}</th>`;
   html += '</tr></thead><tbody>';
+
   for (let floor = 39; floor >= 10; floor--) {
     const ctn = CONTAINERS[floor - 10];
-    html += `<tr><td class="floor-lbl">${floor}</td>`;
-    for (let u = 1; u <= 12; u++) {
-      const unitId = floor * 100 + u;
-      const exc    = EXCEPTIONS[unitId] || {};
-      const hasV2  = V2_UNITS.has(u);
-      const isBH   = (u === 7);
-      const kStatus  = isBH  ? 'PROJ' : (exc.kStatus  || ctn.status);
-      const v1Status = exc.v1Status || ctn.status;
-      const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
-      const allStatuses = [kStatus, v1Status, v2Status].filter(Boolean);
-      const worst = worstStatus(allStatuses);
-      const kBar  = `<span class="sc-${kStatus}" title="K:${kStatus}${isBH?' (BH)':''}"></span>`;
-      const v1Bar = `<span class="sc-${v1Status}"></span>`;
-      const v2Bar = hasV2 ? `<span class="sc-${v2Status}"></span>` : `<span style="background:var(--border)"></span>`;
-      const tip   = `${unitId} · K:${kStatus}${isBH?' (BH)':''} V1:${v1Status}${hasV2?' V2:'+v2Status:''}`;
-      html += `<td style="background:${SCOLOR[worst]}22">
-        <div class="mcell">
-          <div class="mcell-id" style="background:${SCOLOR[worst]}18">${unitId}</div>
-          <div class="mcell-bars">${kBar}${v1Bar}${v2Bar}</div>
-          <div class="mcell-tip">${tip}</div>
-        </div>
-      </td>`;
-    }
-    html += '</tr>';
+    ['K','V1','V2'].forEach((rowType, ri) => {
+      const isFirst = ri === 0;
+      html += `<tr${isFirst ? ' class="bm-first"' : ''}>`;
+      if (isFirst) html += `<td class="bm-floor-lbl" rowspan="3">${floor}</td>`;
+      html += `<td class="bm-type-lbl">${rowType}</td>`;
+      for (let u = 1; u <= 12; u++) {
+        const unitId = floor * 100 + u;
+        const exc    = EXCEPTIONS[unitId] || {};
+        const isBH   = (u === 7);
+        let status, noV2 = false;
+        if (rowType === 'K') {
+          status = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
+        } else if (rowType === 'V1') {
+          status = exc.v1Status || ctn.status;
+        } else {
+          if (!V2_UNITS.has(u)) { noV2 = true; }
+          else { status = exc.v2Status || ctn.status; }
+        }
+        if (noV2) {
+          html += `<td class="bm-cell"><div class="bm-card bm-dash-card" title="${unitId}: no V2"><span class="bm-card-id" style="color:var(--text-3)">${unitId}</span><span class="bm-card-st" style="color:var(--text-3)">—</span></div></td>`;
+        } else if (status === 'PROJ') {
+          html += `<td class="bm-cell"><div class="bm-card bm-proj-card" title="${unitId} ${rowType}: PROJ"><span class="bm-card-id" style="color:#1A5C47">${unitId}</span><span class="bm-card-st" style="color:#1A5C47;font-weight:400">PROJ</span></div></td>`;
+        } else {
+          const bg  = SCOLOR[status] || '#ccc';
+          const txt = STXT[status]   || '#fff';
+          html += `<td class="bm-cell"><div class="bm-card" style="background:${bg}" title="${unitId} ${rowType}: ${status}"><span class="bm-card-id" style="color:${txt}">${unitId}</span><span class="bm-card-st" style="color:${txt}">${status}</span></div></td>`;
+        }
+      }
+      html += '</tr>';
+    });
   }
   html += '</tbody></table>';
   document.getElementById('bldg-grid').innerHTML = html;
