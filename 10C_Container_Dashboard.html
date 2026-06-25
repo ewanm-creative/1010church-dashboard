@@ -92,6 +92,8 @@ tbody tr:hover td { background: var(--bg); }
 .rp-line { flex: 1; height: 2px; background: var(--border); align-self: center; margin-bottom: 20px; min-width: 10px; }
 .leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .leg-i { display: flex; align-items: center; gap: 5px; }
+.mm-btn { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text-2); cursor: pointer; font-family: inherit; }
+.mm-on  { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
 .bldg-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 10px; }
 .bldg-matrix thead th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 4px 2px; background: transparent; border: none; white-space: nowrap; }
 .bldg-matrix td { border: none; padding: 0; text-align: center; vertical-align: top; }
@@ -207,7 +209,7 @@ tbody tr:hover td { background: var(--bg); }
     <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
       <h1>1010 Church · Container Dashboard</h1>
-      <div class="sub"><em>Updated Jun 25, 2026 at 4:36 PM</em></div>
+      <div class="sub"><em>Updated Jun 25, 2026 at 4:49 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -246,6 +248,16 @@ tbody tr:hover td { background: var(--bg); }
       <canvas id="status-chart" width="160" height="160"></canvas>
       <div id="donut-legend" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:0 4px;"></div>
     </div>
+    <!-- Mini building matrix -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Unit status</div>
+      <div style="display:flex;gap:4px;margin-bottom:8px;">
+        <button id="mm-K"  onclick="setMiniMode('K')"  class="mm-btn mm-on">K</button>
+        <button id="mm-V1" onclick="setMiniMode('V1')" class="mm-btn">V1</button>
+        <button id="mm-V2" onclick="setMiniMode('V2')" class="mm-btn">V2</button>
+      </div>
+      <div id="mini-matrix-grid"></div>
+    </div>
     <!-- Next up -->
     <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Next up</div>
@@ -273,32 +285,24 @@ tbody tr:hover td { background: var(--bg); }
   <!-- rail shine highlight -->
   <path d="M3 30 L13.5 4 L14 4 L3.5 30 Z" fill="#C8D8E8" opacity="0.6"/>
   <path d="M33 30 L22 4 L22.5 4 L33.5 30 Z" fill="#C8D8E8" opacity="0.6"/>
-</svg></div><div class="rp-name">Rail</div><div id="rp-LDD" class="rp-val"></div></div>
+</svg></div><div class="rp-name">Rail Freight</div><div id="rp-LDD" class="rp-val"></div></div>
     <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="22" height="20" viewBox="0 0 48 44" xmlns="http://www.w3.org/2000/svg" style="display:block">
-  <!-- crane cable -->
-  <line x1="18" y1="1" x2="18" y2="7" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- hook -->
-  <path d="M15 7 Q12 9 13 12 Q14.5 15 18 13.5" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="22" height="20" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg" style="display:block">
+  <!-- cable from top -->
+  <line x1="18" y1="0" x2="18" y2="17" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
   <!-- container body -->
-  <rect x="5" y="14" width="26" height="13" rx="1.5" fill="#F28080" stroke="#333" stroke-width="1.2"/>
-  <!-- container ribs -->
-  <line x1="11" y1="14" x2="11" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
-  <line x1="17" y1="14" x2="17" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
-  <line x1="23" y1="14" x2="23" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
-  <!-- truck flatbed -->
-  <rect x="1" y="29" width="36" height="4" rx="1" fill="#A0A8B0" stroke="#333" stroke-width="1"/>
-  <!-- truck cab -->
-  <rect x="33" y="23" width="13" height="10" rx="2" fill="#6DD6E8" stroke="#333" stroke-width="1.2"/>
-  <!-- cab window -->
-  <rect x="35" y="24.5" width="7" height="4" rx="1" fill="#fff" opacity="0.7"/>
-  <!-- wheels -->
-  <circle cx="9"  cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
-  <circle cx="9"  cy="35" r="1.2" fill="#888"/>
-  <circle cx="21" cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
-  <circle cx="21" cy="35" r="1.2" fill="#888"/>
-  <circle cx="40" cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
-  <circle cx="40" cy="35" r="1.2" fill="#888"/>
+  <rect x="3" y="17" width="30" height="18" rx="1.5" fill="#E8824A" stroke="#2A2A2A" stroke-width="1.2"/>
+  <!-- container top lift bar -->
+  <rect x="3" y="17" width="30" height="2.5" rx="1" fill="#C06030" stroke="#2A2A2A" stroke-width="0.8"/>
+  <!-- corner castings -->
+  <rect x="3"  y="17" width="4" height="3.5" rx="0.5" fill="#2A2A2A" opacity="0.4"/>
+  <rect x="29" y="17" width="4" height="3.5" rx="0.5" fill="#2A2A2A" opacity="0.4"/>
+  <rect x="3"  y="31.5" width="4" height="3.5" rx="0.5" fill="#2A2A2A" opacity="0.4"/>
+  <rect x="29" y="31.5" width="4" height="3.5" rx="0.5" fill="#2A2A2A" opacity="0.4"/>
+  <!-- ribs -->
+  <line x1="11" y1="17" x2="11" y2="35" stroke="#2A2A2A" stroke-width="0.9" opacity="0.4"/>
+  <line x1="18" y1="17" x2="18" y2="35" stroke="#2A2A2A" stroke-width="0.9" opacity="0.4"/>
+  <line x1="25" y1="17" x2="25" y2="35" stroke="#2A2A2A" stroke-width="0.9" opacity="0.4"/>
 </svg></div><div class="rp-name">In Yard</div><div id="rp-INYRD" class="rp-val"></div></div>
     <div class="rp-line"></div>
     <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128205;</div><div class="rp-name">Delivery</div><div id="rp-D" class="rp-val"></div></div>
@@ -413,7 +417,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 25, 2026 at 4:36 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 4:49 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -496,15 +500,54 @@ function sw(id, el) {
 // ── METRICS ──
 (function() {
   const delivered = CONTAINERS.filter(c => c.status === 'D');
-  const deliveredUnits = delivered.reduce((sum, c) => {
-    if (c.kitchens && c.kitchens !== '—') {
-      return sum + c.kitchens.split(',').filter(u => u.trim()).length;
-    }
-    return sum + (c.unitQty || 0);
-  }, 0);
+  const deliveredUnits = delivered.reduce((sum, c) => sum + (c.unitQty || 0), 0);
   document.getElementById('m-del').textContent = deliveredUnits;
   document.getElementById('m-del-sub').textContent = `of 360 units`;
 })();
+
+// ── MINI BUILDING MATRIX ──
+let _miniMode = 'K';
+const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
+
+function renderMiniMatrix() {
+  const grid = document.getElementById('mini-matrix-grid');
+  if (!grid) return;
+  let html = '<div style="display:flex;flex-direction:column;gap:1px;">';
+  for (let floor = 39; floor >= 10; floor--) {
+    const ctn = CONTAINERS[floor - 10];
+    html += '<div style="display:flex;gap:1px;">';
+    for (let u = 1; u <= 12; u++) {
+      const unitId = floor * 100 + u;
+      const exc = EXCEPTIONS[unitId] || {};
+      const isBH = (u === 7);
+      let st;
+      if (_miniMode === 'K') {
+        st = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
+      } else if (_miniMode === 'V1') {
+        st = exc.v1Status || ctn.status;
+      } else {
+        st = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
+      }
+      const bg = st === null ? '#e0ddd8' : (MINI_COLORS[st] || '#C8E8DF');
+      html += `<div style="width:7px;height:7px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+function setMiniMode(mode) {
+  _miniMode = mode;
+  ['K','V1','V2'].forEach(m => {
+    const b = document.getElementById('mm-'+m);
+    if (!b) return;
+    b.classList.toggle('mm-on', m === mode);
+  });
+  renderMiniMatrix();
+}
+
+renderMiniMatrix();
 
 // ── CONTAINER SCHEDULE ──
 (function() {
