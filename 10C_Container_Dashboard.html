@@ -92,18 +92,18 @@ tbody tr:hover td { background: var(--bg); }
 .rp-line { flex: 1; height: 2px; background: var(--border); align-self: center; margin-bottom: 20px; min-width: 10px; }
 .leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .leg-i { display: flex; align-items: center; gap: 5px; }
-.bldg-matrix { width: 100%; border-collapse: collapse; font-size: 10px; }
-.bldg-matrix thead th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 4px 2px; background: var(--bg); border: 1px solid var(--border); white-space: nowrap; }
-.bldg-matrix td { border: 1px solid var(--border); padding: 0; text-align: center; vertical-align: middle; }
-.bm-floor-lbl { font-size: 13px; font-weight: 700; color: var(--text-2); background: var(--surface); width: 30px; min-width: 30px; }
-.bm-type-lbl { font-size: 9px; font-weight: 700; color: var(--text-3); background: var(--bg); padding: 0 5px; width: 22px; white-space: nowrap; }
-.bm-cell { height: 44px; padding: 2px; cursor: default; }
-.bm-card { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; border-radius: 3px; gap: 1px; }
-.bm-card-id { font-size: 8px; font-weight: 600; opacity: 0.75; }
-.bm-card-st { font-size: 8px; font-weight: 700; letter-spacing: .03em; }
-.bm-proj-card { border: 1px solid rgba(26,92,71,0.2); background: transparent; }
-.bm-dash-card { background: #e8e6e1; }
-.bm-first td { border-top: 2px solid var(--border) !important; }
+.bldg-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 10px; }
+.bldg-matrix thead th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 4px 2px; background: transparent; border: none; white-space: nowrap; }
+.bldg-matrix td { border: none; padding: 0; text-align: center; vertical-align: top; }
+.bm-floor-lbl { font-size: 13px; font-weight: 700; color: var(--text-2); background: transparent; width: 30px; min-width: 30px; }
+.bm-cell { padding: 0; cursor: default; }
+.bm-card { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 6px 5px 5px; border-radius: 5px; background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.08); width: 100%; height: 74px; box-sizing: border-box; }
+.bm-card-id { font-size: 11px; font-weight: 700; color: var(--text); text-align: center; padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.bm-row { display: flex; align-items: center; gap: 3px; margin-bottom: 1px; }
+.bm-lbl { font-size: 7px; font-weight: 700; color: var(--text-3); width: 13px; flex-shrink: 0; }
+.bm-badge { font-size: 7px; font-weight: 700; border-radius: 2px; padding: 1px 0; flex: 1; text-align: center; letter-spacing: .02em; }
+.bm-badge-proj { background: transparent; color: #1A5C47; border: 1px solid rgba(26,92,71,0.2); font-weight: 400; }
+.bm-badge-dash { background: #e8e6e1; color: var(--text-3); }
 /* legacy refs kept for legend dots */
 .floor-num { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 9px; }
 .floor-meta { font-size: 9px; color: var(--text-3); font-weight: 400; }
@@ -202,7 +202,7 @@ tbody tr:hover td { background: var(--bg); }
     <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
       <h1>1010 Church · Container Dashboard</h1>
-      <div class="sub"><em>Updated Jun 25, 2026 at 2:03 PM</em></div>
+      <div class="sub"><em>Updated Jun 25, 2026 at 2:21 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -320,14 +320,20 @@ tbody tr:hover td { background: var(--bg); }
 
 <!-- ===== BUILDING VISUAL ===== -->
 <div id="bldg" class="panel">
-  <div class="leg" style="margin-bottom:10px">
-    <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
-    <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
-    <span class="leg-i"><span class="dot d-CHS"></span> Charleston</span>
-    <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
-    <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
-    <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
-    <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap;">
+    <div style="display:flex;gap:6px;">
+      <button id="btn-top-down" onclick="setBldgDir(false)" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-weight:600;">Top Down</button>
+      <button id="btn-bottom-up" onclick="setBldgDir(true)"  style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;">Bottom Up</button>
+    </div>
+    <div class="leg" style="margin-bottom:0">
+      <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
+      <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
+      <span class="leg-i"><span class="dot d-CHS"></span> Charleston</span>
+      <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
+      <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
+      <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
+      <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
+    </div>
   </div>
   <div style="display:flex;gap:12px;align-items:flex-start;">
     <div id="bldg-grid" style="flex:1;overflow-x:auto;"></div>
@@ -405,7 +411,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 25, 2026 at 2:03 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 2:21 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -652,50 +658,60 @@ function sw(id, el) {
 })();
 
 // ── BUILDING MATRIX ──
-(function() {
+let _bldgAsc = false; // false = top-down (39→10), true = bottom-up (10→39)
+
+function renderBldgMatrix() {
   const SCOLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', BH:'#C8C6BE' };
   const STXT   = { D:'#fff', INYRD:'#fff', CHS:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
+  const ABBR   = { D:'D', INYRD:'IYD', CHS:'CHS', ENR:'ENR', LDD:'LDD', LDG:'LDG', PROJ:'PRJ', BH:'BH' };
+
+  const badge = (lbl, st) => {
+    if (st === null) return '';
+    if (st === 'PROJ') return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge bm-badge-proj">PRJ</span></div>`;
+    const bg = SCOLOR[st]||'#ccc', txt = STXT[st]||'#fff';
+    return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge" style="background:${bg};color:${txt}">${ABBR[st]||st}</span></div>`;
+  };
+
   let html = '<table class="bldg-matrix"><thead><tr>';
-  html += '<th style="width:30px">Fl.</th><th style="width:22px"></th>';
+  html += '<th style="width:30px">Fl.</th>';
   for (let u = 1; u <= 12; u++) html += `<th>${String(u).padStart(2,'0')}</th>`;
   html += '</tr></thead><tbody>';
 
-  for (let floor = 39; floor >= 10; floor--) {
+  const floors = [];
+  for (let f = 39; f >= 10; f--) floors.push(f);
+  if (_bldgAsc) floors.reverse();
+
+  for (const floor of floors) {
     const ctn = CONTAINERS[floor - 10];
-    ['K','V1','V2'].forEach((rowType, ri) => {
-      const isFirst = ri === 0;
-      html += `<tr${isFirst ? ' class="bm-first"' : ''}>`;
-      if (isFirst) html += `<td class="bm-floor-lbl" rowspan="3">${floor}</td>`;
-      html += `<td class="bm-type-lbl">${rowType}</td>`;
-      for (let u = 1; u <= 12; u++) {
-        const unitId = floor * 100 + u;
-        const exc    = EXCEPTIONS[unitId] || {};
-        const isBH   = (u === 7);
-        let status, noV2 = false;
-        if (rowType === 'K') {
-          status = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
-        } else if (rowType === 'V1') {
-          status = exc.v1Status || ctn.status;
-        } else {
-          if (!V2_UNITS.has(u)) { noV2 = true; }
-          else { status = exc.v2Status || ctn.status; }
-        }
-        if (noV2) {
-          html += `<td class="bm-cell"><div class="bm-card bm-dash-card" title="${unitId}: no V2"><span class="bm-card-id" style="color:var(--text-3)">${unitId}</span><span class="bm-card-st" style="color:var(--text-3)">—</span></div></td>`;
-        } else if (status === 'PROJ') {
-          html += `<td class="bm-cell"><div class="bm-card bm-proj-card" title="${unitId} ${rowType}: PROJ"><span class="bm-card-id" style="color:#1A5C47">${unitId}</span><span class="bm-card-st" style="color:#1A5C47;font-weight:400">PROJ</span></div></td>`;
-        } else {
-          const bg  = SCOLOR[status] || '#ccc';
-          const txt = STXT[status]   || '#fff';
-          html += `<td class="bm-cell"><div class="bm-card" style="background:${bg}" title="${unitId} ${rowType}: ${status}"><span class="bm-card-id" style="color:${txt}">${unitId}</span><span class="bm-card-st" style="color:${txt}">${status}</span></div></td>`;
-        }
-      }
-      html += '</tr>';
-    });
+    html += `<tr><td class="bm-floor-lbl">${floor}</td>`;
+    for (let u = 1; u <= 12; u++) {
+      const unitId = floor * 100 + u;
+      const exc    = EXCEPTIONS[unitId] || {};
+      const isBH   = (u === 7);
+      const kSt    = isBH ? 'PROJ' : (exc.kStatus  || ctn.status);
+      const v1St   = exc.v1Status || ctn.status;
+      const v2St   = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
+      html += `<td class="bm-cell"><div class="bm-card">
+        <div class="bm-card-id">${unitId}</div>
+        ${badge('K',kSt)}${badge('V1',v1St)}${badge('V2',v2St)}
+      </div></td>`;
+    }
+    html += '</tr>';
   }
   html += '</tbody></table>';
   document.getElementById('bldg-grid').innerHTML = html;
-})();
+}
+
+function setBldgDir(asc) {
+  _bldgAsc = asc;
+  const on  = 'background:var(--accent);color:#fff;font-weight:600;border-color:var(--accent)';
+  const off = 'background:var(--surface);color:var(--text-2);font-weight:400;border-color:var(--border)';
+  document.getElementById('btn-top-down').setAttribute('style', `font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;${asc ? off : on}`);
+  document.getElementById('btn-bottom-up').setAttribute('style', `font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;${asc ? on : off}`);
+  renderBldgMatrix();
+}
+
+renderBldgMatrix();
 
 // ── FLOOR DELIVERY SIDEBAR ──
 (function() {
