@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>1010 Church · Container Dashboard</title>
+<title>1010 Church · Concerto Millwork · Logistics Dashboard</title>
 <style>
 :root {
   --bg: #F7F6F3;
@@ -208,8 +208,8 @@ tbody tr:hover td { background: var(--bg); }
   <div class="topbar-left" style="display:flex;align-items:center;gap:14px;">
     <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
-      <h1>1010 Church · Container Dashboard</h1>
-      <div class="sub"><em>Updated Jun 25, 2026 at 4:49 PM</em></div>
+      <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
+      <div class="sub"><em>Updated Jun 25, 2026 at 5:05 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -251,12 +251,12 @@ tbody tr:hover td { background: var(--bg); }
     <!-- Mini building matrix -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Unit status</div>
-      <div style="display:flex;gap:4px;margin-bottom:8px;">
+      <div id="mini-matrix-grid"></div>
+      <div style="display:flex;gap:4px;margin-top:8px;">
         <button id="mm-K"  onclick="setMiniMode('K')"  class="mm-btn mm-on">K</button>
         <button id="mm-V1" onclick="setMiniMode('V1')" class="mm-btn">V1</button>
         <button id="mm-V2" onclick="setMiniMode('V2')" class="mm-btn">V2</button>
       </div>
-      <div id="mini-matrix-grid"></div>
     </div>
     <!-- Next up -->
     <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
@@ -341,7 +341,7 @@ tbody tr:hover td { background: var(--bg); }
       <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
       <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
       <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
-      <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
+      <span class="leg-i"><span class="dot d-PROJ" style="outline:2.5px solid #93C5FD;outline-offset:1px;"></span> Hoist/Comeback Units</span>
     </div>
   </div>
   <div id="bldg-grid" style="overflow-x:auto;"></div>
@@ -417,7 +417,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 25, 2026 at 4:49 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 5:05 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -708,16 +708,27 @@ renderMiniMatrix();
 // ── BUILDING MATRIX ──
 let _bldgAsc = false; // false = top-down (39→10), true = bottom-up (10→39)
 
+// Special component rules from note-bar
+const SPECIAL_COMPS = {};
+// BH: K on unit 07 for all floors 10–39
+for (let f = 10; f <= 39; f++) SPECIAL_COMPS[f*100+7] = { K: true };
+// ECT: V1 on specific units
+[1004,2004,2904,3604].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {V1:true}); });
+// WCT: K on 1611/2511/3311 · V1 on 1612/2512/3312
+[1611,2511,3311].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {K:true}); });
+[1612,2512,3312].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {V1:true}); });
+
 function renderBldgMatrix() {
   const SCOLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', BH:'#C8C6BE' };
   const STXT   = { D:'#fff', INYRD:'#fff', CHS:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
   const ABBR   = { D:'D', INYRD:'IYD', CHS:'CHS', ENR:'ENR', LDD:'LDD', LDG:'LDG', PROJ:'PRJ', BH:'BH' };
 
-  const badge = (lbl, st) => {
+  const badge = (lbl, st, isSpec) => {
     if (st === null) return '';
-    if (st === 'PROJ') return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge bm-badge-proj">PRJ</span></div>`;
+    const specBorder = isSpec ? 'outline:2.5px solid #93C5FD;outline-offset:-2.5px;' : '';
+    if (st === 'PROJ') return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge bm-badge-proj" style="${specBorder}">PRJ</span></div>`;
     const bg = SCOLOR[st]||'#ccc', txt = STXT[st]||'#fff';
-    return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge" style="background:${bg};color:${txt}">${ABBR[st]||st}</span></div>`;
+    return `<div class="bm-row"><span class="bm-lbl">${lbl}</span><span class="bm-badge" style="background:${bg};color:${txt};${specBorder}">${ABBR[st]||st}</span></div>`;
   };
 
   let html = '<table class="bldg-matrix"><thead><tr>';
@@ -760,9 +771,10 @@ function renderBldgMatrix() {
       const kSt    = isBH ? 'PROJ' : (exc.kStatus  || ctn.status);
       const v1St   = exc.v1Status || ctn.status;
       const v2St   = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
+      const sp     = SPECIAL_COMPS[unitId] || {};
       html += `<td class="bm-cell"><div class="bm-card">
         <div class="bm-card-id">${unitId}</div>
-        ${badge('K',kSt)}${badge('V1',v1St)}${badge('V2',v2St)}
+        ${badge('K',kSt,!!sp.K)}${badge('V1',v1St,!!sp.V1)}${badge('V2',v2St,!!sp.V2)}
       </div></td>`;
     }
     html += '</tr>';
