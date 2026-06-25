@@ -14,13 +14,21 @@
   --text-2: #5C5C58;
   --text-3: #9A9A94;
   --accent: #22735C;
-  --proj-bg: #EDF7F4;  --proj-text: #3A8070;
-  --ldd-bg: #D0EDE6;   --ldd-text: #0D5040;
-  --del-bg: #C4E6DC;   --del-text: #0D4535;
-  --route-bg: #D8F0E8; --route-text: #0D5040;
-  --port-bg: #C8EBE2;  --port-text: #0D4535;
-  --rail-bg: #DAEEE7;  --rail-text: #1A5C4A;
-  --load-bg: #E4F3EF;  --load-text: #2A7060;
+  --c-D:     #1A5C47;  --ct-D:    #ffffff;
+  --c-INYRD: #22735C;  --ct-INYRD:#ffffff;
+  --c-CHS:   #2E8C70;  --ct-CHS:  #ffffff;
+  --c-ENR:   #3EA882;  --ct-ENR:  #ffffff;
+  --c-LDD:   #6DC4A8;  --ct-LDD:  #0D3D2C;
+  --c-LDG:   #A0D8C8;  --ct-LDG:  #0D3D2C;
+  --c-PROJ:  transparent; --ct-PROJ: #1A5C47;
+  /* legacy aliases kept for non-status badges */
+  --proj-bg: transparent; --proj-text: #1A5C47;
+  --ldd-bg: #6DC4A8;   --ldd-text: #0D3D2C;
+  --del-bg: #1A5C47;   --del-text: #ffffff;
+  --route-bg: #3EA882; --route-text: #ffffff;
+  --port-bg: #2E8C70;  --port-text: #ffffff;
+  --rail-bg: #6DC4A8;  --rail-text: #0D3D2C;
+  --load-bg: #A0D8C8;  --load-text: #0D3D2C;
   --open-bg: #FEF5E7;  --open-text: #7A4A00;
   --crit-bg: #FEECEC;  --crit-text: #7A1A1A;
   --closed-bg: #E8F2EB;--closed-text: #1A5C2A;
@@ -47,24 +55,24 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'S
 .panel { display: none; }
 .panel.on { display: block; }
 .bdg { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
-.b-D    { background: var(--del-bg);   color: var(--del-text);   }
-.b-INYRD{ background: var(--del-bg);   color: var(--del-text);   }
-.b-CHS  { background: var(--port-bg);  color: var(--port-text);  }
-.b-ENR  { background: var(--route-bg); color: var(--route-text); }
-.b-LDD  { background: var(--ldd-bg);   color: var(--ldd-text);   }
-.b-LDG  { background: var(--load-bg);  color: var(--load-text);  }
-.b-PROJ { background: var(--proj-bg);  color: var(--proj-text);  }
+.b-D    { background: var(--c-D);     color: var(--ct-D);     }
+.b-INYRD{ background: var(--c-INYRD); color: var(--ct-INYRD); }
+.b-CHS  { background: var(--c-CHS);   color: var(--ct-CHS);   }
+.b-ENR  { background: var(--c-ENR);   color: var(--ct-ENR);   }
+.b-LDD  { background: var(--c-LDD);   color: var(--ct-LDD);   }
+.b-LDG  { background: var(--c-LDG);   color: var(--ct-LDG);   }
+.b-PROJ { background: transparent; color: var(--ct-PROJ); border: 1px solid rgba(26,92,71,0.25); }
 .b-open  { background: var(--open-bg); color: var(--open-text);  }
 .b-closed{ background: var(--closed-bg);color: var(--closed-text);}
 .b-crit  { background: var(--crit-bg); color: var(--crit-text);  }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.d-D    { background: #22735C; }
-.d-INYRD{ background: #2A8A6E; }
-.d-ENR  { background: #35A082; }
-.d-CHS  { background: #44B594; }
-.d-LDD  { background: #62C8A8; }
-.d-LDG  { background: #90D8C0; }
-.d-PROJ { background: #B8DDD6; }
+.d-D    { background: #1A5C47; }
+.d-INYRD{ background: #22735C; }
+.d-ENR  { background: #3EA882; }
+.d-CHS  { background: #2E8C70; }
+.d-LDD  { background: #6DC4A8; }
+.d-LDG  { background: #A0D8C8; }
+.d-PROJ { background: #C8E8DF; }
 .d-BH   { background: #BBBBBB; }
 .mdot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 .tw { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; overflow-x: auto; background: var(--surface); margin-bottom: 12px; }
@@ -95,9 +103,9 @@ tbody tr:hover td { background: var(--bg); }
 .mcell-bars span { flex: 1; }
 .mcell:hover .mcell-tip { display: block; }
 .mcell-tip { display: none; position: absolute; z-index: 99; top: 100%; left: 50%; transform: translateX(-50%); background: #222; color: #fff; font-size: 9px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; margin-top: 2px; }
-.sc-D    { background: #22735C; } .sc-INYRD{ background: #2A8A6E; } .sc-ENR  { background: #35A082; }
-.sc-CHS  { background: #44B594; } .sc-LDD  { background: #62C8A8; } .sc-LDG  { background: #B0B0A8; }
-.sc-PROJ { background: #E0DED6; } .sc-BH   { background: #C8C6BE; }
+.sc-D    { background: #1A5C47; } .sc-INYRD{ background: #22735C; } .sc-ENR  { background: #3EA882; }
+.sc-CHS  { background: #2E8C70; } .sc-LDD  { background: #6DC4A8; } .sc-LDG  { background: #A0D8C8; }
+.sc-PROJ { background: #E8F4F0; } .sc-BH   { background: #C8C6BE; }
 /* legacy refs kept for legend dots */
 .floor-num { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 9px; }
 .floor-meta { font-size: 9px; color: var(--text-3); font-weight: 400; }
@@ -192,13 +200,20 @@ tbody tr:hover td { background: var(--bg); }
 <div class="shell">
 
 <div class="topbar">
-  <div class="topbar-left">
-    <h1>1010 Church · Container Dashboard</h1>
-    <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 24, 2026 at 5:22 PM</em></div>
+  <div class="topbar-left" style="display:flex;align-items:center;gap:14px;">
+    <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
+    <div>
+      <h1>1010 Church · Container Dashboard</h1>
+      <div class="sub">33 Containers · Floors 10 – 39 &nbsp;·&nbsp; <em>Updated Jun 25, 2026 at 1:22 PM</em></div>
+    </div>
   </div>
-  <div class="topbar-right" style="text-align:right;">
-    <span class="date-pill" id="today-pill"></span>
-    <div style="font-size:10px;color:var(--text-3);margin-top:4px;" id="today-week"></div>
+  <div class="topbar-right" style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="logo-210.png" alt="210 Design House" style="height:22px;object-fit:contain;" onerror="this.style.display='none'">
+      <span class="date-pill" id="today-pill"></span>
+    </div>
+    <img src="logo-dandamudi.png" alt="Dandamudi's Inc" style="height:14px;object-fit:contain;opacity:0.7;" onerror="this.style.display='none'">
+    <div style="font-size:10px;color:var(--text-3);" id="today-week"></div>
   </div>
 </div>
 
@@ -239,16 +254,54 @@ tbody tr:hover td { background: var(--bg); }
     <div class="rp-line"></div>
     <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#9875;</div><div class="rp-name">Port (CHS)</div><div id="rp-CHS" class="rp-val"></div></div>
     <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128642;</div><div class="rp-name">Rail</div><div id="rp-LDD" class="rp-val"></div></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="18" height="16" viewBox="0 0 36 32" xmlns="http://www.w3.org/2000/svg" style="display:block">
+  <!-- sleepers — wood brown, perspective -->
+  <rect x="12" y="5"  width="12" height="2.2" rx="0.5" fill="#8B5E3C"/>
+  <rect x="10" y="10" width="16" height="2.5" rx="0.5" fill="#8B5E3C"/>
+  <rect x="7"  y="16" width="22" height="2.8" rx="0.5" fill="#7A5230"/>
+  <rect x="4"  y="23" width="28" height="3"   rx="0.5" fill="#7A5230"/>
+  <rect x="1"  y="29" width="34" height="3"   rx="0.5" fill="#6B4526"/>
+  <!-- left rail — steel silver -->
+  <path d="M2 30 L13 4 L15 4 L4 30 Z" fill="#9BAAB8"/>
+  <!-- right rail — steel silver -->
+  <path d="M32 30 L21 4 L23 4 L34 30 Z" fill="#9BAAB8"/>
+  <!-- rail shine highlight -->
+  <path d="M3 30 L13.5 4 L14 4 L3.5 30 Z" fill="#C8D8E8" opacity="0.6"/>
+  <path d="M33 30 L22 4 L22.5 4 L33.5 30 Z" fill="#C8D8E8" opacity="0.6"/>
+</svg></div><div class="rp-name">Rail</div><div id="rp-LDD" class="rp-val"></div></div>
     <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="16" height="12" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg" style="display:block"><rect x="1" y="2" width="30" height="16" rx="1" fill="none" stroke="#22735C" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="18" stroke="#22735C" stroke-width="1.5"/><line x1="16" y1="2" x2="16" y2="18" stroke="#22735C" stroke-width="1.5"/><line x1="24" y1="2" x2="24" y2="18" stroke="#22735C" stroke-width="1.5"/><rect x="1" y="6" width="30" height="1" fill="#22735C" opacity="0.3"/><rect x="1" y="13" width="30" height="1" fill="#22735C" opacity="0.3"/></svg></div><div class="rp-name">In Yard</div><div id="rp-INYRD" class="rp-val"></div></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="22" height="20" viewBox="0 0 48 44" xmlns="http://www.w3.org/2000/svg" style="display:block">
+  <!-- crane cable -->
+  <line x1="18" y1="1" x2="18" y2="7" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- hook -->
+  <path d="M15 7 Q12 9 13 12 Q14.5 15 18 13.5" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- container body -->
+  <rect x="5" y="14" width="26" height="13" rx="1.5" fill="#F28080" stroke="#333" stroke-width="1.2"/>
+  <!-- container ribs -->
+  <line x1="11" y1="14" x2="11" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
+  <line x1="17" y1="14" x2="17" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
+  <line x1="23" y1="14" x2="23" y2="27" stroke="#333" stroke-width="1" opacity="0.5"/>
+  <!-- truck flatbed -->
+  <rect x="1" y="29" width="36" height="4" rx="1" fill="#A0A8B0" stroke="#333" stroke-width="1"/>
+  <!-- truck cab -->
+  <rect x="33" y="23" width="13" height="10" rx="2" fill="#6DD6E8" stroke="#333" stroke-width="1.2"/>
+  <!-- cab window -->
+  <rect x="35" y="24.5" width="7" height="4" rx="1" fill="#fff" opacity="0.7"/>
+  <!-- wheels -->
+  <circle cx="9"  cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
+  <circle cx="9"  cy="35" r="1.2" fill="#888"/>
+  <circle cx="21" cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
+  <circle cx="21" cy="35" r="1.2" fill="#888"/>
+  <circle cx="40" cy="35" r="3.5" fill="#555" stroke="#333" stroke-width="1"/>
+  <circle cx="40" cy="35" r="1.2" fill="#888"/>
+</svg></div><div class="rp-name">In Yard</div><div id="rp-INYRD" class="rp-val"></div></div>
     <div class="rp-line"></div>
     <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128205;</div><div class="rp-name">Delivery</div><div id="rp-D" class="rp-val"></div></div>
   </div>
   <div class="tw">
     <table>
       <thead><tr>
-        <th>#</th><th>Status</th><th>Load Wk</th>
+        <th>Ctnr No.</th><th>Status</th><th>Load Wk</th>
         <th>Load Date</th><th>Arrival (NSH)</th><th>Delivery</th>
         <th>Floor</th><th>Unit Qty</th>
         <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
@@ -352,7 +405,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 24, 2026 at 5:22 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 1:22 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -414,7 +467,7 @@ function worstStatus(arr) {
 function statusDot(s)   { return `d-${s}`; }
 function statusBadge(s) { return `b-${s}`; }
 function statusColor(s) {
-  return { D:'#22735C', INYRD:'#2A8A6E', ENR:'#35A082', CHS:'#44B594', LDD:'#62C8A8', LDG:'#90D8C0', PROJ:'#B8DDD6' }[s] || '#9A9A94';
+  return { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' }[s] || '#9A9A94';
 }
 
 // ── TODAY ──
@@ -475,7 +528,7 @@ function sw(id, el) {
   const ctx = canvas.getContext('2d');
   const counts = {};
   CONTAINERS.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
-  const COLORS = { D:'#22735C', INYRD:'#2A8A6E', ENR:'#35A082', CHS:'#44B594', LDD:'#62C8A8', LDG:'#90D8C0', PROJ:'#D8EDEA' };
+  const COLORS = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
   const ORDER  = ['D','INYRD','LDD','CHS','ENR','PROJ'];
   const total = CONTAINERS.length;
   const cx = 80, cy = 80, r = 68, ir = 40;
@@ -537,7 +590,7 @@ function sw(id, el) {
   const el = document.getElementById('next-up-list');
   const STATUS_ORDER = { D:0, INYRD:1, LDD:2, CHS:3, ENR:4, LDG:5, PROJ:6 };
   const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', LDD:'Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDG:'Loading', PROJ:'Projected' };
-  const STATUS_COLOR = { D:'#22735C', INYRD:'#2A8A6E', LDD:'#62C8A8', CHS:'#44B594', ENR:'#35A082', LDG:'#90D8C0', PROJ:'#B8DDD6' };
+  const STATUS_COLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
 
   // Get containers not yet delivered, prioritise active statuses first
   const upcoming = CONTAINERS
@@ -550,16 +603,33 @@ function sw(id, el) {
     return;
   }
 
-  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
-  upcoming.forEach(c => {
-    const floorLabel = c.floor && c.floor !== '—' ? `Fl. ${c.floor}` : '';
+  let html = '<div style="display:flex;flex-direction:column;">';
+  upcoming.forEach((c, i) => {
+    const floorLabel = c.floor && c.floor !== '—' ? `Fl. ${c.floor}` : '—';
     const color = STATUS_COLOR[c.status] || '#B8DDD6';
-    html += `<div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${color};border-radius:6px;padding:8px 12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:12px;font-weight:700;color:var(--text)">CTN ${c.num}${floorLabel ? ' <span style="font-weight:400;color:var(--text-3);font-size:10px;">· '+floorLabel+'</span>' : ''}</div>
-        <span style="font-size:9px;font-weight:600;color:${color};background:${color}22;padding:2px 6px;border-radius:4px;">${STATUS_LABEL[c.status] || c.status}</span>
+    const borderTop = i > 0 ? 'border-top:1px solid var(--border);' : '';
+    // Split delivery date: month+day vs year, compute day of week
+    const dateParts = c.delivery.split(',');
+    const dateMain = dateParts[0] || c.delivery;
+    const dateYear = dateParts[1] ? dateParts[1].trim() : '';
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const parsed = new Date(c.delivery);
+    const dayOfWeek = (!isNaN(parsed)) ? DAYS[parsed.getDay()] : '';
+    html += `<div style="${borderTop}display:flex;align-items:center;gap:12px;padding:10px 4px;width:100%;">
+      <!-- Day + Date -->
+      <div style="flex-shrink:0;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.3;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain}</div>
+        <div style="font-size:9px;color:var(--text-3);">${dateYear}</div>
       </div>
-      <div style="font-size:10px;color:var(--text-2);margin-top:3px;">Delivery: ${c.delivery}</div>
+      <!-- Spacer -->
+      <div style="flex:1;"></div>
+      <!-- CTN + floor -->
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:12px;font-weight:700;color:var(--text);">CTN ${c.num}</div>
+        <div style="font-size:10px;color:var(--text-3);">${floorLabel}</div>
+      </div>
+      <!-- Status badge -->
+      <div style="flex-shrink:0;"><span style="font-size:9px;font-weight:600;color:${c.status==='PROJ'?'#1A5C47':color};background:${c.status==='PROJ'?'transparent':color+'22'};border:${c.status==='PROJ'?'1px solid rgba(26,92,71,0.25)':'none'};padding:3px 8px;border-radius:4px;">${STATUS_LABEL[c.status] || c.status}</span></div>
     </div>`;
   });
   html += '</div>';
