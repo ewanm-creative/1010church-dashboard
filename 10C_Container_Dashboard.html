@@ -37,7 +37,7 @@
   --radius-lg: 12px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
+body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
 .shell { max-width: 1240px; margin: 0 auto; padding: 24px 20px 60px; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 .topbar-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
@@ -95,10 +95,15 @@ tbody tr:hover td { background: var(--bg); }
 .bldg-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 10px; }
 .bldg-matrix thead th { font-size: 9px; font-weight: 600; color: var(--text-3); text-align: center; padding: 4px 2px; background: transparent; border: none; white-space: nowrap; }
 .bldg-matrix td { border: none; padding: 0; text-align: center; vertical-align: top; }
-.bm-floor-lbl { font-size: 13px; font-weight: 700; color: var(--text-2); background: transparent; width: 30px; min-width: 30px; }
+.bm-floor-lbl { width: 58px; min-width: 58px; padding: 5px 4px 4px; background: transparent; vertical-align: top !important; display: flex; flex-direction: column; justify-content: space-between; }
+.bm-fl-num { font-size: 16px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 3px; }
+.bm-fl-row { display: flex; justify-content: flex-end; gap: 3px; font-size: 8px; color: var(--text-2); margin-bottom: 1px; }
+.bm-fl-lbl { font-weight: 700; color: var(--text-3); }
+.bm-fl-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.bm-fl-bar div { height: 100%; border-radius: 2px; }
 .bm-cell { padding: 0; cursor: default; }
-.bm-card { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 6px 5px 5px; border-radius: 5px; background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.08); width: 100%; height: 74px; box-sizing: border-box; }
-.bm-card-id { font-size: 11px; font-weight: 700; color: var(--text); text-align: center; padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.bm-card { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 4px 4px 3px; border-radius: 5px; background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.08); width: 100%; height: 74px; box-sizing: border-box; }
+.bm-card-id { font-size: 9px; font-weight: 700; color: var(--text); text-align: center; padding-bottom: 2px; margin-bottom: 2px; border-bottom: 1px solid var(--border); }
 .bm-row { display: flex; align-items: center; gap: 3px; margin-bottom: 1px; }
 .bm-lbl { font-size: 7px; font-weight: 700; color: var(--text-3); width: 13px; flex-shrink: 0; }
 .bm-badge { font-size: 7px; font-weight: 700; border-radius: 2px; padding: 1px 0; flex: 1; text-align: center; letter-spacing: .02em; }
@@ -202,7 +207,7 @@ tbody tr:hover td { background: var(--bg); }
     <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
       <h1>1010 Church · Container Dashboard</h1>
-      <div class="sub"><em>Updated Jun 25, 2026 at 2:21 PM</em></div>
+      <div class="sub"><em>Updated Jun 25, 2026 at 3:46 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -335,10 +340,7 @@ tbody tr:hover td { background: var(--bg); }
       <span class="leg-i"><span class="dot d-BH"></span> BH/ECT/WCT (special)</span>
     </div>
   </div>
-  <div style="display:flex;gap:12px;align-items:flex-start;">
-    <div id="bldg-grid" style="flex:1;overflow-x:auto;"></div>
-    <div id="bldg-sidebar" style="flex-shrink:0;min-width:200px;"></div>
-  </div>
+  <div id="bldg-grid" style="overflow-x:auto;"></div>
 </div>
 
 <!-- ===== DAMAGE / OPEN ITEMS ===== -->
@@ -411,7 +413,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 25, 2026 at 2:21 PM) ─────────────────────
+// ── DATA (auto-generated Jun 25, 2026 at 3:46 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -598,10 +600,13 @@ function sw(id, el) {
   const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', LDD:'Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDG:'Loading', PROJ:'Projected' };
   const STATUS_COLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
 
-  // Get containers not yet delivered, prioritise active statuses first
+  // Get containers not yet delivered, sorted by earliest delivery date
   const upcoming = CONTAINERS
-    .filter(c => c.status !== 'D' && c.delivery !== '—')
-    .sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9))
+    .filter(c => c.status !== 'D' && c.delivery && c.delivery !== '—')
+    .sort((a, b) => {
+      const da = new Date(a.delivery), db = new Date(b.delivery);
+      return (isNaN(da) ? Infinity : da) - (isNaN(db) ? Infinity : db);
+    })
     .slice(0, 4);
 
   if (!upcoming.length) {
@@ -673,7 +678,7 @@ function renderBldgMatrix() {
   };
 
   let html = '<table class="bldg-matrix"><thead><tr>';
-  html += '<th style="width:30px">Fl.</th>';
+  html += '<th style="width:58px"></th>';
   for (let u = 1; u <= 12; u++) html += `<th>${String(u).padStart(2,'0')}</th>`;
   html += '</tr></thead><tbody>';
 
@@ -683,7 +688,28 @@ function renderBldgMatrix() {
 
   for (const floor of floors) {
     const ctn = CONTAINERS[floor - 10];
-    html += `<tr><td class="bm-floor-lbl">${floor}</td>`;
+    // compute floor stats
+    let kDel=0, v1Del=0, v2Del=0, v2Total=0;
+    for (let u = 1; u <= 12; u++) {
+      const uid = floor*100+u, exc = EXCEPTIONS[uid]||{}, hasV2 = V2_UNITS.has(u), isBH = (u===7);
+      const kS  = isBH ? 'PROJ' : (exc.kStatus  || ctn.status);
+      const v1S = exc.v1Status || ctn.status;
+      const v2S = hasV2 ? (exc.v2Status || ctn.status) : null;
+      if (kS==='D') kDel++; if (v1S==='D') v1Del++;
+      if (hasV2) { v2Total++; if (v2S==='D') v2Del++; }
+    }
+    const total = 12 + 12 + v2Total, del = kDel + v1Del + v2Del;
+    const pct = total > 0 ? Math.round(del/total*100) : 0;
+    const barCol = pct===100 ? '#1A5C47' : pct>0 ? '#3EA882' : 'var(--border)';
+    const floorLbl = `<td class="bm-floor-lbl">
+      <div class="bm-fl-num">${floor}</div>
+      <div class="bm-fl-row"><span class="bm-fl-lbl">K</span><span>${kDel}/12</span></div>
+      <div class="bm-fl-row"><span class="bm-fl-lbl">V1</span><span>${v1Del}/12</span></div>
+      ${v2Total>0?`<div class="bm-fl-row"><span class="bm-fl-lbl">V2</span><span>${v2Del}/${v2Total}</span></div>`:''}
+      <div style="font-size:8px;color:${pct===100?'#1A5C47':'var(--text-3)'};text-align:right;">${pct}% Delivered</div>
+    </td>`;
+
+    html += `<tr>${floorLbl}`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc    = EXCEPTIONS[unitId] || {};
@@ -762,7 +788,7 @@ renderBldgMatrix();
     </tr>`;
   }
   html += '</tbody></table>';
-  document.getElementById('bldg-sidebar').innerHTML = html;
+  const sb = document.getElementById('bldg-sidebar'); if (sb) sb.innerHTML = html;
 })();
 
 // ── UNIT DROPDOWN ──
