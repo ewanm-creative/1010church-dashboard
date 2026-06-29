@@ -149,29 +149,33 @@ tbody tr:hover td { background: var(--bg); }
 .note-bar { font-size: 10px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; }
 
 @media (max-width: 700px) {
-  .shell { padding: 14px 12px 40px; }
+  .shell { padding: 12px 10px 40px; }
 
-  /* Topbar */
-  .topbar { flex-direction: column; gap: 10px; margin-bottom: 14px; }
-  .topbar-right { text-align: left !important; }
-  .topbar-left h1 { font-size: 15px; }
+  /* Topbar — stack vertically, hide right logos */
+  .topbar { flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .topbar-right { display: none !important; }
+  .topbar-left h1 { font-size: 14px; line-height: 1.3; }
+  .topbar-left img { height: 36px !important; width: 36px !important; }
 
-  /* Tabs — full width, scrollable */
-  .tabs { width: 100%; overflow-x: auto; }
-  .tab { padding: 7px 12px; font-size: 12px; white-space: nowrap; }
+  /* Tabs row — wrap to 2 lines, no scroll */
+  .tabs { width: 100%; overflow-x: unset; flex-wrap: wrap; }
+  .tab { padding: 7px 8px; font-size: 10px; white-space: nowrap; flex: 1; text-align: center; }
+  .tabs a[href] { width: 100%; margin-left: 0 !important; justify-content: center; margin-top: 2px; }
 
-  /* Metrics area — stack all cards vertically */
+  /* Top metrics row — stack all cards vertically, full width */
   #ctn > div[style*="display:flex"] {
     flex-direction: column !important;
+    gap: 8px !important;
   }
-  #ctn > div[style*="display:flex"] > div[style*="display:grid"] {
+  #ctn > div[style*="display:flex"] > * {
     width: 100% !important;
+    flex-shrink: unset !important;
   }
   #ctn > div[style*="display:flex"] > div[style*="display:grid"] {
     grid-template-columns: 1fr 1fr !important;
   }
 
-  /* Donut card — horizontal on mobile */
+  /* Donut — horizontal layout */
   #ctn > div[style*="display:flex"] > div:has(canvas) {
     flex-direction: row !important;
     gap: 16px !important;
@@ -181,23 +185,47 @@ tbody tr:hover td { background: var(--bg); }
   }
   #donut-legend { flex-direction: column; }
 
-  /* Next up — already vertical, just ensure full width */
+  /* Mini matrix — hide card on mobile */
+  #mini-matrix-card { display: none !important; }
+
+  /* Next up — first on mobile */
+  #next-up-card { order: -1; }
   #next-up-list { width: 100%; }
 
-  /* Route pipeline — horizontal scroll */
-  .route-pipeline { padding: 10px 12px; gap: 0; }
-  .rp-step { min-width: 54px; }
-  .rp-name { font-size: 8px; }
+  /* Route pipeline — all 8 steps in one row, compressed */
+  .route-pipeline { flex-wrap: nowrap; gap: 0; padding: 8px 6px; overflow-x: unset; }
+  .rp-step { flex: 1; min-width: 0; }
+  .rp-line { display: none; }
+  .rp-icon { width: 20px; height: 20px; font-size: 10px; margin-bottom: 2px; }
+  .rp-icon svg { width: 11px; height: 10px; }
+  .rp-name { font-size: 7px; }
+  .rp-val  { font-size: 10px; }
 
-  /* Tables — horizontal scroll already on .tw, just tighten padding */
+  /* Container schedule table — hide non-essential columns, no scroll */
+  .tw { overflow-x: unset; }
   th { padding: 6px 8px; font-size: 9px; }
-  td { padding: 6px 8px; }
+  td { padding: 5px 8px; font-size: 10px; }
+  /* Keep: CTN#(1), Status(2), Delivery(6), Confirmed?(7), Floor(8) */
+  #ctn table th:nth-child(3),  #ctn table td:nth-child(3),
+  #ctn table th:nth-child(4),  #ctn table td:nth-child(4),
+  #ctn table th:nth-child(5),  #ctn table td:nth-child(5),
+  #ctn table th:nth-child(9),  #ctn table td:nth-child(9),
+  #ctn table th:nth-child(10), #ctn table td:nth-child(10),
+  #ctn table th:nth-child(11), #ctn table td:nth-child(11),
+  #ctn table th:nth-child(12), #ctn table td:nth-child(12) { display: none; }
 
-  /* Building matrix wrapper — allow horizontal scroll */
-  #bldg .tw { overflow-x: auto; }
+  /* Building matrix — allow horizontal scroll on mobile */
+  #bldg-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .bldg-matrix { font-size: 8px; }
+  .bm-card { height: 64px !important; }
+  .bm-fl-num { font-size: 13px !important; }
 
   /* Damage form — single column */
   .form-grid { grid-template-columns: 1fr !important; }
+  .form-card { padding: 14px !important; }
+
+  /* Date pill — smaller */
+  .date-pill { font-size: 10px; padding: 3px 8px; }
 }
 </style>
 </head>
@@ -210,7 +238,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jun 29, 2026 at 10:28 AM</em></div>
+      <div class="sub"><em>Updated Jun 29, 2026 at 3:44 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -227,7 +255,7 @@ tbody tr:hover td { background: var(--bg); }
     <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
     <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
     <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
-    <a href="https://1843288studiosnaiderochicag-my.sharepoint.com/:f:/g/personal/ewan_210designhouse_com/IgD8nv6pRfGZR7fWpkCt68KjATn_sy9WDRCm22IscBM8x3M?e=XViD3r" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-left:20px;padding:5px 12px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:5px;text-decoration:none;letter-spacing:.04em;">Install Drawings</a>
+    <a href="https://1843288studiosnaiderochicag-my.sharepoint.com/:f:/g/personal/ewan_210designhouse_com/IgD8nv6pRfGZR7fWpkCt68KjATn_sy9WDRCm22IscBM8x3M?e=XViD3r" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-left:20px;padding:5px 12px;background:none;color:var(--text-2);border:1px solid var(--border);font-size:11px;font-weight:500;border-radius:5px;text-decoration:none;letter-spacing:.04em;">Install Drawings</a>
   </div>
   <img src="logo-dandamudi.png" alt="Dandamudi's Inc" style="height:36px;object-fit:contain;" onerror="this.style.display='none'">
 </div>
@@ -251,7 +279,7 @@ tbody tr:hover td { background: var(--bg); }
       <div id="donut-legend" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:0 4px;"></div>
     </div>
     <!-- Mini building matrix -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+    <div id="mini-matrix-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Unit status</div>
       <div id="mini-matrix-grid"></div>
       <div style="display:flex;gap:4px;margin-top:8px;">
@@ -261,7 +289,7 @@ tbody tr:hover td { background: var(--bg); }
       </div>
     </div>
     <!-- Next up -->
-    <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
+    <div id="next-up-card" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Next up</div>
       <div id="next-up-list" style="flex:1;"></div>
     </div>
@@ -313,7 +341,7 @@ tbody tr:hover td { background: var(--bg); }
     <table>
       <thead><tr>
         <th>Ctnr No.</th><th>Status</th><th>Load Wk</th>
-        <th>Load Date</th><th>ETA NSH</th><th>Delivery</th>
+        <th>Load Date</th><th>ETA NSH</th><th>Delivery</th><th>Confirmed?</th>
         <th>Floor</th><th>Unit Qty</th>
         <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
       </tr></thead>
@@ -348,6 +376,7 @@ tbody tr:hover td { background: var(--bg); }
     </div>
   </div>
   <div id="bldg-grid" style="overflow-x:auto;"></div>
+  <div id="bldg-mobile-note" style="display:none;padding:24px 16px;text-align:center;color:var(--text-3);font-size:12px;">Building matrix is optimized for desktop.<br>View the mini matrix on the <strong>Overview</strong> tab.</div>
 </div>
 
 <!-- ===== DAMAGE / OPEN ITEMS ===== -->
@@ -420,10 +449,10 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 29, 2026 at 10:28 AM) ─────────────────────
+// ── DATA (auto-generated Jun 29, 2026 at 3:44 PM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
-  { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
+  { num: 1, status:'PROJ', week:'Wk 32', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 5', shipDate:'Aug 10', vessel:'—', etaChs:'Aug 26', railDate:'Aug 29', etaNash:'—', delivery:'Sep 4, 2026', ordered:false },
+  { num: 2, status:'PROJ', week:'Wk 35', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'—', delivery:'Sep 25, 2026', ordered:false },
   { num: 3, status:'PROJ', week:'Wk 35', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'—', delivery:'Sep 25, 2026', ordered:false },
   { num: 4, status:'PROJ', week:'Wk 36', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'—', delivery:'Oct 2, 2026', ordered:false },
   { num: 5, status:'PROJ', week:'Wk 37', floor:14, unitQty:11, kitchens:'1401:1406,1408:1412', v1:'1401:1412', v2:'1404,1406,1410,1412', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'—', delivery:'Oct 9, 2026', ordered:false },
@@ -463,14 +492,7 @@ const ROJ = {
 
 const EXCEPTIONS = {};
 
-const TRANSIT_PERF = [
-  {label:'Transit Performance', value:'—'},
-  {label:'Average Load Days', value:'5'},
-  {label:'Average International Transit Days', value:'23'},
-  {label:'Average Domestic Transit Days', value:'3.5'},
-  {label:'Average In Port Days', value:'2'},
-  {label:'Total Transit Time', value:'33.5'}
-];
+const TRANSIT_PERF = [];
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
 
@@ -515,10 +537,12 @@ const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882'
 function renderMiniMatrix() {
   const grid = document.getElementById('mini-matrix-grid');
   if (!grid) return;
-  let html = '<div style="display:flex;flex-direction:column;gap:1px;">';
+  let html = '<div style="display:flex;flex-direction:column;gap:2px;">';
   for (let floor = 39; floor >= 10; floor--) {
     const ctn = CONTAINERS[floor - 10];
-    html += '<div style="display:flex;gap:1px;">';
+    html += `<div style="display:flex;align-items:center;gap:3px;">`;
+    html += `<div style="font-size:7px;font-weight:600;color:var(--text-3);width:16px;text-align:right;flex-shrink:0;">${floor}</div>`;
+    html += `<div style="display:flex;gap:2px;">`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc = EXCEPTIONS[unitId] || {};
@@ -532,9 +556,9 @@ function renderMiniMatrix() {
         st = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
       }
       const bg = st === null ? '#e0ddd8' : (MINI_COLORS[st] || '#C8E8DF');
-      html += `<div style="width:7px;height:7px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
+      html += `<div style="width:13px;height:8px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
     }
-    html += '</div>';
+    html += '</div></div>';
   }
   html += '</div>';
   grid.innerHTML = html;
@@ -565,6 +589,7 @@ renderMiniMatrix();
       <td>${c.loadDate}</td>
       <td>${c.etaChs}</td>
       <td style="font-weight:500">${c.delivery}</td>
+      <td style="font-size:10px;color:var(--text-3)">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
       <td>Fl. ${c.floor}</td>
       <td style="text-align:center">${c.unitQty||'—'}</td>
       <td class="mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
@@ -652,7 +677,7 @@ renderMiniMatrix();
     .filter(c => c.delivery && c.delivery !== '—' && !isNaN(new Date(c.delivery)))
     .sort((a, b) => new Date(a.delivery) - new Date(b.delivery))
     .filter(c => new Date(c.delivery) >= today)
-    .slice(0, 4);
+    .slice(0, 5);
 
   if (!upcoming.length) {
     el.innerHTML = '<div style="font-size:11px;color:var(--text-3)">All containers delivered.</div>';
@@ -661,8 +686,7 @@ renderMiniMatrix();
 
   let html = '<div style="display:flex;flex-direction:column;">';
   upcoming.forEach((c, i) => {
-    const floorLabel = c.floor && c.floor !== '—' ? `Fl. ${c.floor}` : '—';
-    const color = STATUS_COLOR[c.status] || '#B8DDD6';
+    const floorLabel = c.floor && c.floor !== '—' ? `Floor ${c.floor}` : '';
     const borderTop = i > 0 ? 'border-top:1px solid var(--border);' : '';
     const dateParts = c.delivery.split(',');
     const dateMain = dateParts[0] || c.delivery;
@@ -672,13 +696,12 @@ renderMiniMatrix();
     const dayOfWeek = (!isNaN(parsed)) ? DAYS[parsed.getDay()] : '';
     html += `<div style="${borderTop}display:flex;align-items:center;gap:12px;padding:10px 4px;width:100%;">
       <div style="flex-shrink:0;">
-        <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.3;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.3;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span style="font-weight:400;color:var(--text-3);">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
         <div style="font-size:9px;color:var(--text-3);">${dateYear}</div>
       </div>
       <div style="flex:1;"></div>
       <div style="text-align:right;flex-shrink:0;">
-        <div style="font-size:12px;font-weight:700;color:var(--text);">CTN ${c.num}</div>
-        <div style="font-size:10px;color:var(--text-3);">${floorLabel}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''}</div>
       </div>
     </div>`;
   });
