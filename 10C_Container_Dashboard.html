@@ -206,11 +206,11 @@ tbody tr:hover td { background: var(--bg); }
 
 <div class="topbar">
   <div class="topbar-left" style="display:flex;align-items:center;gap:14px;">
-    <img src="logo-lion.png" alt="" style="height:42px;width:42px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
+    <img src="logo-lion.png" alt="" style="height:56px;width:56px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jun 29, 2026 at 9:58 AM</em></div>
+      <div class="sub"><em>Updated Jun 29, 2026 at 10:28 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -227,7 +227,7 @@ tbody tr:hover td { background: var(--bg); }
     <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
     <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
     <button class="tab" onclick="sw('dmg',this)">Damage / open items</button>
-    <a href="#" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:5px 12px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:5px;text-decoration:none;letter-spacing:.04em;opacity:0.5;cursor:not-allowed;" title="Link coming soon" onclick="return false;">&#128196; INSTALL DRAWINGS</a>
+    <a href="https://1843288studiosnaiderochicag-my.sharepoint.com/:f:/g/personal/ewan_210designhouse_com/IgD8nv6pRfGZR7fWpkCt68KjATn_sy9WDRCm22IscBM8x3M?e=XViD3r" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-left:20px;padding:5px 12px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:5px;text-decoration:none;letter-spacing:.04em;">Install Drawings</a>
   </div>
   <img src="logo-dandamudi.png" alt="Dandamudi's Inc" style="height:36px;object-fit:contain;" onerror="this.style.display='none'">
 </div>
@@ -337,13 +337,14 @@ tbody tr:hover td { background: var(--bg); }
       <button id="btn-bottom-up" onclick="setBldgDir(true)"  style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;">Bottom Up</button>
     </div>
     <div class="leg" style="margin-bottom:0">
-      <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
-      <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
-      <span class="leg-i"><span class="dot d-CHS"></span> Charleston</span>
-      <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
-      <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
       <span class="leg-i"><span class="dot d-PROJ"></span> Projected</span>
-      <span class="leg-i"><span class="dot d-PROJ" style="outline:2.5px solid #93C5FD;outline-offset:1px;"></span> Hoist/Comeback Units</span>
+      <span class="leg-i"><span class="dot d-LDG"></span> Loading</span>
+      <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
+      <span class="leg-i"><span class="dot d-ENR"></span> En route</span>
+      <span class="leg-i"><span class="dot d-CHS"></span> On Rail</span>
+      <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
+      <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
+      <span class="leg-i"><span class="dot" style="background:transparent;outline:2.5px solid #93C5FD;outline-offset:1px;"></span> Hoist/Comeback Units</span>
     </div>
   </div>
   <div id="bldg-grid" style="overflow-x:auto;"></div>
@@ -419,7 +420,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 29, 2026 at 9:58 AM) ─────────────────────
+// ── DATA (auto-generated Jun 29, 2026 at 10:28 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 33', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 12', shipDate:'Aug 17', vessel:'—', etaChs:'Sep 2', railDate:'Sep 5', etaNash:'—', delivery:'Sep 11, 2026', ordered:true },
   { num: 2, status:'PROJ', week:'Wk 34', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 19', shipDate:'Aug 24', vessel:'—', etaChs:'Sep 9', railDate:'Sep 12', etaNash:'—', delivery:'Sep 18, 2026', ordered:false },
@@ -645,13 +646,12 @@ renderMiniMatrix();
   const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', LDD:'Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDG:'Loading', PROJ:'Projected' };
   const STATUS_COLOR = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
 
-  // Get containers not yet delivered, sorted by earliest delivery date
+  // Get containers sorted by delivery date, show next 4 upcoming by date
+  const today = new Date(); today.setHours(0,0,0,0);
   const upcoming = CONTAINERS
-    .filter(c => c.status !== 'D' && c.delivery && c.delivery !== '—')
-    .sort((a, b) => {
-      const da = new Date(a.delivery), db = new Date(b.delivery);
-      return (isNaN(da) ? Infinity : da) - (isNaN(db) ? Infinity : db);
-    })
+    .filter(c => c.delivery && c.delivery !== '—' && !isNaN(new Date(c.delivery)))
+    .sort((a, b) => new Date(a.delivery) - new Date(b.delivery))
+    .filter(c => new Date(c.delivery) >= today)
     .slice(0, 4);
 
   if (!upcoming.length) {
@@ -664,7 +664,6 @@ renderMiniMatrix();
     const floorLabel = c.floor && c.floor !== '—' ? `Fl. ${c.floor}` : '—';
     const color = STATUS_COLOR[c.status] || '#B8DDD6';
     const borderTop = i > 0 ? 'border-top:1px solid var(--border);' : '';
-    // Split delivery date: month+day vs year, compute day of week
     const dateParts = c.delivery.split(',');
     const dateMain = dateParts[0] || c.delivery;
     const dateYear = dateParts[1] ? dateParts[1].trim() : '';
@@ -672,20 +671,15 @@ renderMiniMatrix();
     const parsed = new Date(c.delivery);
     const dayOfWeek = (!isNaN(parsed)) ? DAYS[parsed.getDay()] : '';
     html += `<div style="${borderTop}display:flex;align-items:center;gap:12px;padding:10px 4px;width:100%;">
-      <!-- Day + Date -->
       <div style="flex-shrink:0;">
         <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.3;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain}</div>
         <div style="font-size:9px;color:var(--text-3);">${dateYear}</div>
       </div>
-      <!-- Spacer -->
       <div style="flex:1;"></div>
-      <!-- CTN + floor -->
       <div style="text-align:right;flex-shrink:0;">
         <div style="font-size:12px;font-weight:700;color:var(--text);">CTN ${c.num}</div>
         <div style="font-size:10px;color:var(--text-3);">${floorLabel}</div>
       </div>
-      <!-- Status badge -->
-      <div style="flex-shrink:0;"><span style="font-size:9px;font-weight:600;color:${c.status==='PROJ'?'#1A5C47':color};background:${c.status==='PROJ'?'transparent':color+'22'};border:${c.status==='PROJ'?'1px solid rgba(26,92,71,0.25)':'none'};padding:3px 8px;border-radius:4px;">${STATUS_LABEL[c.status] || c.status}</span></div>
     </div>`;
   });
   html += '</div>';
@@ -853,13 +847,10 @@ renderBldgMatrix();
   const sel = document.getElementById('f-unit');
   let html = '<option value="">&#8212; Select unit &#8212;</option>';
   for (let floor = 10; floor <= 39; floor++) {
-    const ctn = CONTAINERS[floor - 10];
-    html += `<optgroup label="Floor ${floor} (CTN ${ctn.num} &middot; ${ctn.status})">`;
+    html += `<optgroup label="Floor ${floor}">`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
-      const exc = EXCEPTIONS[unitId] || {};
-      const note = u === 7 ? ' [BH kitchen]' : (exc.v1Ctnr ? ` [V1: ${exc.v1Ctnr}]` : (exc.kCtnr ? ` [K: ${exc.kCtnr}]` : ''));
-      html += `<option value="${unitId}">${unitId}${note}</option>`;
+      html += `<option value="${unitId}">${unitId}</option>`;
     }
     html += '</optgroup>';
   }
