@@ -44,10 +44,10 @@ body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMa
 .topbar-left .sub { font-size: 11px; color: var(--text-2); margin-top: 3px; }
 .date-pill { font-size: 11px; background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 99px; }
 .metrics { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 20px; }
-.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
-.mc .lbl { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-.mc .val { font-size: 22px; font-weight: 600; line-height: 1; }
-.mc .vsub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; }
+.mc .lbl { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.mc .val { font-size: 32px; font-weight: 600; line-height: 1; }
+.mc .vsub { font-size: 11px; color: var(--text-3); margin-top: 5px; }
 .tabs { display: flex; gap: 2px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); padding: 3px; border-radius: var(--radius); width: fit-content; }
 .tab { padding: 6px 14px; font-size: 12px; font-weight: 500; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--text-2); font-family: inherit; transition: background .12s, color .12s; }
 .tab:hover { background: var(--bg); color: var(--text); }
@@ -238,7 +238,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jun 29, 2026 at 4:02 PM</em></div>
+      <div class="sub"><em>Updated Jun 30, 2026 at 9:00 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -279,10 +279,10 @@ tbody tr:hover td { background: var(--bg); }
       <div id="donut-legend" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:0 4px;"></div>
     </div>
     <!-- Mini building matrix -->
-    <div id="mini-matrix-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 12px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Unit status</div>
+    <div id="mini-matrix-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:8px 10px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Unit status</div>
       <div id="mini-matrix-grid"></div>
-      <div style="display:flex;gap:4px;margin-top:8px;">
+      <div style="display:flex;gap:4px;margin-top:4px;">
         <button id="mm-K"  onclick="setMiniMode('K')"  class="mm-btn mm-on">K</button>
         <button id="mm-V1" onclick="setMiniMode('V1')" class="mm-btn">V1</button>
         <button id="mm-V2" onclick="setMiniMode('V2')" class="mm-btn">V2</button>
@@ -449,7 +449,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jun 29, 2026 at 4:02 PM) ─────────────────────
+// ── DATA (auto-generated Jun 30, 2026 at 9:00 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 32', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 5', shipDate:'Aug 10', vessel:'—', etaChs:'Aug 26', railDate:'Aug 29', etaNash:'Sep 2', delivery:'Sep 4, 2026', ordered:false },
   { num: 2, status:'PROJ', week:'Wk 35', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false },
@@ -543,11 +543,10 @@ const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', CHS:'#2E8C70', ENR:'#3EA882'
 function renderMiniMatrix() {
   const grid = document.getElementById('mini-matrix-grid');
   if (!grid) return;
-  let html = '<div style="display:flex;flex-direction:column;gap:2px;">';
+  let html = '<div style="display:flex;flex-direction:column;gap:1px;">';
   for (let floor = 39; floor >= 10; floor--) {
     const ctn = CONTAINERS[floor - 10];
     html += `<div style="display:flex;align-items:center;gap:3px;">`;
-    html += `<div style="font-size:7px;font-weight:600;color:var(--text-3);width:16px;text-align:right;flex-shrink:0;">${floor}</div>`;
     html += `<div style="display:flex;gap:2px;">`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
@@ -562,7 +561,7 @@ function renderMiniMatrix() {
         st = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
       }
       const bg = st === null ? '#e0ddd8' : (MINI_COLORS[st] || '#C8E8DF');
-      html += `<div style="width:13px;height:8px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
+      html += `<div style="width:10px;height:7px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
     }
     html += '</div></div>';
   }
