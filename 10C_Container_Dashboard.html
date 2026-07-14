@@ -232,6 +232,7 @@ tbody tr:hover td { background: var(--bg); }
 }
 </style>
 </head>
+<script src="config.js"></script>
 <body>
 <div class="shell">
 
@@ -241,7 +242,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 14, 2026 at 10:49 AM</em></div>
+      <div class="sub"><em>Updated Jul 14, 2026 at 11:36 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -423,10 +424,16 @@ tbody tr:hover td { background: var(--bg); }
   <div style="margin-top:20px">
     <div class="export-bar">
       <span class="count" id="dmg-count-label">0 items logged</span>
-      <button class="btn-export" onclick="exportCSV()">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export to CSV
-      </button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-export" onclick="emailItems()">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+          Email log
+        </button>
+        <button class="btn-export" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
     </div>
     <div id="dmg-open-group" class="dmg-group open" style="display:none">
       <div class="dmg-group-hdr"><span style="color:#CC3030">&#9679;</span> Open items <span id="open-count" class="bdg b-open" style="margin-left:4px"></span></div>
@@ -448,7 +455,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 14, 2026 at 10:49 AM) ─────────────────────
+// ── DATA (auto-generated Jul 14, 2026 at 11:36 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false },
@@ -894,8 +901,6 @@ function renderItems() {
   const open   = items.filter(i => i.status === 'Open');
   const closed = items.filter(i => i.status === 'Closed');
   document.getElementById('dmg-count-label').textContent = items.length + ' item' + (items.length!==1?'s':'') + ' logged';
-  document.getElementById('dmg-count-metric').textContent = items.length;
-  document.getElementById('dmg-sub-metric').textContent = items.length>0 ? open.length+' open · '+closed.length+' closed' : 'None logged yet';
   document.getElementById('open-count').textContent  = open.length;
   document.getElementById('closed-count').textContent = closed.length;
   document.getElementById('empty-state').style.display = items.length===0 ? 'block' : 'none';
@@ -946,6 +951,48 @@ function deleteItem(id) {
   if(!confirm('Remove permanently?')) return;
   saveItems(loadItems().filter(x=>x.id!==id)); renderItems();
 }
+function emailItems() {
+  const items = loadItems();
+  if (!items.length) { alert('No items to send.'); return; }
+  const open   = items.filter(i => i.status === 'Open');
+  const closed = items.filter(i => i.status === 'Closed');
+
+  // --- Text list ---
+  let body = '1010 CHURCH · DAMAGE / OPEN ITEMS LOG\n';
+  body += 'Sent: ' + today() + '\n';
+  body += open.length + ' open  |  ' + closed.length + ' closed  |  ' + items.length + ' total\n';
+  body += '─'.repeat(48) + '\n\n';
+  items.forEach((item, i) => {
+    body += (i + 1) + '.  Unit ' + item.unit + '  [' + item.status.toUpperCase() + ']\n';
+    body += '    Date:      ' + item.date + '\n';
+    if (item.code)      body += '    Code:      ' + item.code + '\n';
+    if (item.component) body += '    Component: ' + item.component + '\n';
+    body += '    Issue:     ' + item.issue + '\n';
+    if (item.photo)   body += '    Photo:     ' + item.photo + '\n';
+    if (item.comment) body += '    Comment:   ' + item.comment + '\n';
+    body += '\n';
+  });
+
+  // --- CSV block ---
+  const hdr = ['Unit','Date','Code','Component','Issue','Photo','Comment','Status'];
+  const rows = items.map(i =>
+    [i.unit, i.date, i.code||'', i.component||'', i.issue, i.photo||'', i.comment||'', i.status]
+    .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')
+  );
+  body += '─'.repeat(48) + '\nCSV DATA\n' + '─'.repeat(48) + '\n';
+  body += [hdr.join(','), ...rows].join('\n');
+
+  const subject = '1010 Church Damage Log — ' + today() + ' (' + open.length + ' open)';
+  const mailto = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body='    + encodeURIComponent(body);
+
+  if (mailto.length > 8000) {
+    alert('Log is very long — email may be truncated. Consider exporting to CSV instead.');
+  }
+  window.location.href = mailto;
+}
+
 function exportCSV() {
   const items = loadItems();
   if(!items.length){ alert('No items to export.'); return; }
