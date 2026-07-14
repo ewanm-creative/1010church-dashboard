@@ -383,23 +383,32 @@ tbody tr:hover td { background: var(--bg); }
 <div id="dmg" class="panel">
   <div class="form-card">
     <h3>Log a damage or open item</h3>
-    <p class="form-sub">Fill in what you found. Date is auto-stamped. Items persist in your browser and export to CSV.</p>
+    <p class="form-sub">Items are held in this session only. Use Send Report to email a text list and download/copy the CSV.</p>
     <div class="form-grid">
       <div class="field">
         <label>Unit #</label>
         <select id="f-unit"><option value="">&#8212; Select unit &#8212;</option></select>
       </div>
       <div class="field">
-        <label>Date reported</label>
-        <div class="date-fixed" id="today-display"></div>
-      </div>
-      <div class="field">
-        <label>Item code (if known)</label>
-        <input type="text" id="f-code" placeholder="e.g. 10C-CAB-0042">
+        <label>Damage type</label>
+        <select id="f-dtype">
+          <option value="">&#8212; Select type &#8212;</option>
+          <option value="D1 – Scratch/Mark">D1 &#8211; Scratch / Mark</option>
+          <option value="D2 – Dent/Ding">D2 &#8211; Dent / Ding</option>
+          <option value="D3 – Crack/Break">D3 &#8211; Crack / Break</option>
+          <option value="D4 – Missing part">D4 &#8211; Missing part</option>
+          <option value="D5 – Water damage">D5 &#8211; Water damage</option>
+          <option value="D6 – Wrong item">D6 &#8211; Wrong item</option>
+          <option value="D7 – Other">D7 &#8211; Other</option>
+        </select>
       </div>
       <div class="field">
         <label>Component / cabinet</label>
         <input type="text" id="f-component" placeholder="e.g. Island back panel">
+      </div>
+      <div class="field">
+        <label>Photo reference</label>
+        <input type="text" id="f-photo" placeholder="e.g. unit_1006_damage.jpg">
       </div>
     </div>
     <div class="form-grid single">
@@ -407,47 +416,32 @@ tbody tr:hover td { background: var(--bg); }
         <label>Issue description</label>
         <textarea id="f-issue" placeholder="Describe what was found &#8212; damage type, location, severity&#8230;"></textarea>
       </div>
-      <div class="field" style="margin-top:10px">
-        <label>Photo reference / filename</label>
-        <input type="text" id="f-photo" placeholder="e.g. unit_1006_damage.jpg">
-      </div>
-      <div class="field" style="margin-top:10px">
-        <label>Comment / action taken</label>
-        <input type="text" id="f-comment" placeholder="e.g. Ordered replacement, touch-up applied&#8230;">
-      </div>
     </div>
     <div class="form-actions">
-      <button class="btn-submit" onclick="submitItem()">Log item</button>
+      <button class="btn-submit" onclick="addToReport()">+ Add to report</button>
       <span class="form-msg" id="form-msg"></span>
     </div>
   </div>
   <div style="margin-top:20px">
     <div class="export-bar">
-      <span class="count" id="dmg-count-label">0 items logged</span>
+      <span class="count" id="dmg-count-label">0 items in this report</span>
       <div style="display:flex;gap:8px;">
-        <button class="btn-export" onclick="emailItems()">
+        <button class="btn-export" onclick="clearAll()" id="btn-clear" style="display:none">Clear all</button>
+        <button class="btn-export" onclick="sendReport()" id="btn-send" style="display:none">
           <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
-          Email log
-        </button>
-        <button class="btn-export" onclick="exportCSV()">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
+          Send Report
         </button>
       </div>
     </div>
-    <div id="dmg-open-group" class="dmg-group open" style="display:none">
-      <div class="dmg-group-hdr"><span style="color:#CC3030">&#9679;</span> Open items <span id="open-count" class="bdg b-open" style="margin-left:4px"></span></div>
-      <table><thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Component</th><th>Issue</th><th>Photo</th><th>Comment</th><th>Status</th><th>Action</th></tr></thead>
-      <tbody id="open-tbody"></tbody></table>
-    </div>
-    <div id="dmg-closed-group" class="dmg-group closed" style="display:none;margin-top:8px">
-      <div class="dmg-group-hdr"><span style="color:#2A7A3A">&#9679;</span> Closed items <span id="closed-count" class="bdg b-closed" style="margin-left:4px"></span></div>
-      <table><thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Component</th><th>Issue</th><th>Photo</th><th>Comment</th><th>Status</th><th>Action</th></tr></thead>
-      <tbody id="closed-tbody"></tbody></table>
+    <div id="session-table-wrap" style="display:none;margin-top:12px">
+      <table>
+        <thead><tr><th>Unit</th><th>Date</th><th>Type</th><th>Component</th><th>Issue</th><th>Photo</th><th></th></tr></thead>
+        <tbody id="session-tbody"></tbody>
+      </table>
     </div>
     <div id="empty-state" class="empty-state">
       <div class="big">&#128203;</div>
-      No items logged yet. Use the form above to log the first damage or open item.
+      No items yet. Use the form above to log a damage or open item.
     </div>
   </div>
 </div>
@@ -891,121 +885,112 @@ renderBldgMatrix();
   sel.innerHTML = html;
 })();
 
-// ── DAMAGE / OPEN ITEMS ──
-const DMG_KEY = '10c_damage_v2';
-function loadItems() { try { return JSON.parse(localStorage.getItem(DMG_KEY)||'[]'); } catch(e){ return []; } }
-function saveItems(items) { localStorage.setItem(DMG_KEY, JSON.stringify(items)); }
+// ── DAMAGE REPORT (session-only) ──
+let SESSION_ITEMS = [];
 
-function renderItems() {
-  const items = loadItems();
-  const open   = items.filter(i => i.status === 'Open');
-  const closed = items.filter(i => i.status === 'Closed');
-  document.getElementById('dmg-count-label').textContent = items.length + ' item' + (items.length!==1?'s':'') + ' logged';
-  document.getElementById('open-count').textContent  = open.length;
-  document.getElementById('closed-count').textContent = closed.length;
-  document.getElementById('empty-state').style.display = items.length===0 ? 'block' : 'none';
-  document.getElementById('dmg-open-group').style.display   = open.length>0   ? 'block' : 'none';
-  document.getElementById('dmg-closed-group').style.display = closed.length>0 ? 'block' : 'none';
-  function row(item) {
-    const cl = item.status==='Closed';
-    return `<tr>
-      <td style="font-weight:600">${item.unit}</td><td>${item.date}</td>
-      <td class="mono">${item.code||'&#8212;'}</td><td>${item.component||'&#8212;'}</td>
-      <td>${item.issue}</td><td>${item.photo||'&#8212;'}</td><td>${item.comment||'&#8212;'}</td>
-      <td><span class="bdg ${cl?'b-closed':'b-open'}">${item.status}</span></td>
-      <td>
-        ${!cl?`<button onclick="closeItem(${item.id})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--ldd-text)">Close</button>`:''}
-        <button onclick="deleteItem(${item.id})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--text-3);margin-left:4px">Remove</button>
-      </td>
-    </tr>`;
-  }
-  document.getElementById('open-tbody').innerHTML   = open.map(row).join('');
-  document.getElementById('closed-tbody').innerHTML = closed.map(row).join('');
+function renderSession() {
+  const n = SESSION_ITEMS.length;
+  document.getElementById('dmg-count-label').textContent = n + ' item' + (n !== 1 ? 's' : '') + ' in this report';
+  document.getElementById('empty-state').style.display        = n === 0 ? 'block' : 'none';
+  document.getElementById('session-table-wrap').style.display = n > 0 ? 'block' : 'none';
+  document.getElementById('btn-send').style.display  = n > 0 ? '' : 'none';
+  document.getElementById('btn-clear').style.display = n > 0 ? '' : 'none';
+  document.getElementById('session-tbody').innerHTML = SESSION_ITEMS.map((item, idx) => `<tr>
+    <td style="font-weight:600">${item.unit}</td>
+    <td>${item.date}</td>
+    <td class="mono">${item.dtype || '&#8212;'}</td>
+    <td>${item.component || '&#8212;'}</td>
+    <td>${item.issue}</td>
+    <td>${item.photo || '&#8212;'}</td>
+    <td><button onclick="removeItem(${idx})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--text-3)">Remove</button></td>
+  </tr>`).join('');
 }
 
-function submitItem() {
+function addToReport() {
   const unit  = document.getElementById('f-unit').value;
   const issue = document.getElementById('f-issue').value.trim();
-  if (!unit)  { showMsg('Please select a unit.',      true); return; }
+  if (!unit)  { showMsg('Please select a unit.', true); return; }
   if (!issue) { showMsg('Please describe the issue.', true); return; }
-  const items = loadItems();
-  items.unshift({ id:Date.now(), unit, date:today(), dateISO:todayISO(),
-    code:document.getElementById('f-code').value.trim(),
-    component:document.getElementById('f-component').value.trim(),
-    issue, photo:document.getElementById('f-photo').value.trim(),
-    comment:document.getElementById('f-comment').value.trim(), status:'Open' });
-  saveItems(items); renderItems();
-  ['f-unit','f-code','f-component','f-issue','f-photo','f-comment'].forEach(id => document.getElementById(id).value = '');
-  showMsg('Item logged.', false);
+  SESSION_ITEMS.push({
+    unit,
+    date: today(),
+    dtype: document.getElementById('f-dtype').value,
+    component: document.getElementById('f-component').value.trim(),
+    issue,
+    photo: document.getElementById('f-photo').value.trim(),
+  });
+  renderSession();
+  ['f-unit','f-dtype','f-component','f-issue','f-photo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  showMsg('Added to report.', false);
 }
-function showMsg(t,e) {
-  const m = document.getElementById('form-msg');
-  m.textContent=t; m.className='form-msg'+(e?' err':''); m.style.display='inline';
-  setTimeout(()=>{ m.style.display='none'; }, 3200);
-}
-function closeItem(id) {
-  const items = loadItems(); const i = items.find(x=>x.id===id);
-  if(i){ i.status='Closed'; saveItems(items); renderItems(); }
-}
-function deleteItem(id) {
-  if(!confirm('Remove permanently?')) return;
-  saveItems(loadItems().filter(x=>x.id!==id)); renderItems();
-}
-function emailItems() {
-  const items = loadItems();
-  if (!items.length) { alert('No items to send.'); return; }
-  const open   = items.filter(i => i.status === 'Open');
-  const closed = items.filter(i => i.status === 'Closed');
 
-  // --- Text list ---
-  let body = '1010 CHURCH · DAMAGE / OPEN ITEMS LOG\n';
-  body += 'Sent: ' + today() + '\n';
-  body += open.length + ' open  |  ' + closed.length + ' closed  |  ' + items.length + ' total\n';
+function removeItem(idx) {
+  SESSION_ITEMS.splice(idx, 1);
+  renderSession();
+}
+
+function clearAll() {
+  if (!confirm('Clear all items from this report?')) return;
+  SESSION_ITEMS = [];
+  renderSession();
+}
+
+function showMsg(t, e) {
+  const m = document.getElementById('form-msg');
+  m.textContent = t; m.className = 'form-msg' + (e ? ' err' : ''); m.style.display = 'inline';
+  setTimeout(() => { m.style.display = 'none'; }, 3200);
+}
+
+function sendReport() {
+  if (!SESSION_ITEMS.length) { alert('No items to send.'); return; }
+  const n = SESSION_ITEMS.length;
+
+  // Build CSV string
+  const hdr  = ['Unit','Date','Type','Component','Issue','Photo'];
+  const rows  = SESSION_ITEMS.map(i =>
+    [i.unit, i.date, i.dtype||'', i.component||'', i.issue, i.photo||'']
+    .map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')
+  );
+  const csvStr = [hdr.join(','), ...rows].join('\r\n');
+
+  // 1. Download CSV
+  const blob = new Blob([csvStr], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = '10C_Damage_' + todayISO() + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+
+  // 2. Copy CSV to clipboard
+  navigator.clipboard.writeText(csvStr).catch(() => {});
+
+  // 3. Build email body (clean text list)
+  let body = '1010 CHURCH · DAMAGE REPORT\n';
+  body += 'Date: ' + today() + ' · ' + n + ' item' + (n !== 1 ? 's' : '') + '\n';
   body += '─'.repeat(48) + '\n\n';
-  items.forEach((item, i) => {
-    body += (i + 1) + '.  Unit ' + item.unit + '  [' + item.status.toUpperCase() + ']\n';
+  SESSION_ITEMS.forEach((item, i) => {
+    body += (i + 1) + '.  Unit ' + item.unit + '\n';
     body += '    Date:      ' + item.date + '\n';
-    if (item.code)      body += '    Code:      ' + item.code + '\n';
+    if (item.dtype)     body += '    Type:      ' + item.dtype + '\n';
     if (item.component) body += '    Component: ' + item.component + '\n';
     body += '    Issue:     ' + item.issue + '\n';
-    if (item.photo)   body += '    Photo:     ' + item.photo + '\n';
-    if (item.comment) body += '    Comment:   ' + item.comment + '\n';
+    if (item.photo)     body += '    Photo:     ' + item.photo + '\n';
     body += '\n';
   });
+  body += '─'.repeat(48) + '\n';
+  body += 'CSV attached / copied to clipboard.\n';
 
-  // --- CSV block ---
-  const hdr = ['Unit','Date','Code','Component','Issue','Photo','Comment','Status'];
-  const rows = items.map(i =>
-    [i.unit, i.date, i.code||'', i.component||'', i.issue, i.photo||'', i.comment||'', i.status]
-    .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')
-  );
-  body += '─'.repeat(48) + '\nCSV DATA\n' + '─'.repeat(48) + '\n';
-  body += [hdr.join(','), ...rows].join('\n');
-
-  const subject = '1010 Church Damage Log — ' + today() + ' (' + open.length + ' open)';
-  const mailto = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
+  const subject = '1010 Church Damage Report — ' + today() + ' (' + n + ' item' + (n !== 1 ? 's' : '') + ')';
+  const mailto  = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
     + '?subject=' + encodeURIComponent(subject)
     + '&body='    + encodeURIComponent(body);
 
-  if (mailto.length > 8000) {
-    alert('Log is very long — email may be truncated. Consider exporting to CSV instead.');
-  }
   window.location.href = mailto;
 }
 
-function exportCSV() {
-  const items = loadItems();
-  if(!items.length){ alert('No items to export.'); return; }
-  const hdr = ['Unit','Date','Code','Component','Issue','Photo','Comment','Status'];
-  const rows = items.map(i=>[i.unit,i.date,i.code||'',i.component||'',i.issue,i.photo||'',i.comment||'',i.status]
-    .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
-  const blob = new Blob([[hdr.join(','),...rows].join('\r\n')],{type:'text/csv'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a'); a.href=url;
-  a.download = '10C_Damage_'+todayISO()+'.csv'; a.click();
-  URL.revokeObjectURL(url);
-}
-renderItems();
+renderSession();
 </script>
 </body>
 </html>

@@ -154,8 +154,9 @@ i_load     = C("LOAD DATE")
 i_ship     = C("SHIP DATE")
 i_chs      = C("PORT ARRIVAL DATE/CHS", "PORT ARRIVAL DATE", "ARRIVAL DATE/CHS", "ETA CHS", "CHS")
 i_rail     = C("RAIL DATE")
-i_nash     = C("ARRIVAL DATE (Nashville)", "NASHVILLE DATE", "ETA NASH")
+i_nash     = C("ARRIVAL DATE (Nashville)", "NASHVILLE DATE", "ETA NASH", "ARRIVAL DATE")
 i_del      = C("DELIVERY DATE", "DELIVERED DATE", "DELIVERY")
+i_confirm  = C("CONFIRM")
 
 print(f"  Container table header on row {hdr_row+1}")
 
@@ -181,9 +182,21 @@ for row in all_rows[hdr_row + 1:]:
     if vessel in ("—", "--", "None"):
         vessel = "—"
 
+    # Normalize status from Excel to known status codes
+    raw_st = clean(row[i_status]).strip().upper() if i_status is not None else "PROJ"
+    STATUS_NORM = {
+        "PROJ":"PROJ","LDG":"LDG","LDD":"LDD","ENR":"ENR","CHS":"CHS","RAIL":"RAIL","INYRD":"INYRD","D":"D",
+        "LOADING":"LDG","LOADED":"LDD","EN ROUTE":"ENR","ENROUTE":"ENR","SEA FREIGHT":"ENR",
+        "PORT":"CHS","PORT (CHS)":"CHS","IN PORT":"CHS","CHS PORT":"CHS",
+        "ON RAIL":"RAIL","RAIL FREIGHT":"RAIL","ON RAIL FREIGHT":"RAIL","ONRAIL":"RAIL","RFT":"RAIL",
+        "IN YARD":"INYRD","IN YARD (NSH)":"INYRD","NHS":"INYRD","YARD":"INYRD",
+        "DELIVERED":"D","DELIVERY":"D",
+    }
+    status = STATUS_NORM.get(raw_st, raw_st if raw_st in STATUS_NORM.values() else "PROJ")
+
     CONTAINERS.append({
         "num":      num,
-        "status":   clean(row[i_status])  if i_status   is not None else "PROJ",
+        "status":   status,
         "week":     week,
         "floor":    int(row[i_floor])     if (i_floor   is not None and isinstance(row[i_floor],   (int, float))) else 0,
         "unitQty":  int(row[i_qty])       if (i_qty     is not None and isinstance(row[i_qty],     (int, float))) else 0,
@@ -198,6 +211,7 @@ for row in all_rows[hdr_row + 1:]:
         "railDate": fmt_date(row[i_rail])  if i_rail is not None else "—",
         "etaNash":  fmt_date(row[i_nash])  if i_nash is not None else "—",
         "delivery": fmt_date(row[i_del], year=True) if i_del is not None else "—",
+        "confirmed": bool(row[i_confirm]) if (i_confirm is not None and isinstance(row[i_confirm], bool)) else False,
     })
 
 CONTAINERS.sort(key=lambda c: c["num"])
@@ -207,15 +221,15 @@ CONTAINERS += [
     {"num":"BH",  "status":"PROJ", "week":"Wk 26", "floor":"10–39", "unitQty":30,
      "kitchens":"All unit-07 (30 floors)", "v1":"—", "v2":"—",
      "loadDate":"Jun 30, 2027", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Jul 30, 2027", "ordered":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Jul 30, 2027", "ordered":False, "confirmed":False},
     {"num":"ECT", "status":"PROJ", "week":"Wk 27", "floor":"—", "unitQty":4,
      "kitchens":"—", "v1":"1004, 2004, 2904, 3604", "v2":"—",
      "loadDate":"—", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False},
     {"num":"WCT", "status":"PROJ", "week":"Wk 27", "floor":"—", "unitQty":6,
      "kitchens":"1611, 2511, 3311", "v1":"1612, 2512, 3312", "v2":"—",
      "loadDate":"—", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False},
 ]
 
 print(f"  → {len(CONTAINERS)} containers total (including BH/ECT/WCT)")
@@ -331,13 +345,13 @@ else:
 # ─────────────────────────────────────────────────────────────
 
 TRANSIT_PERF = []
-SH_DASH = "dashboard in progress"
+SH_DASH = "1010 Dashboard"
 if SH_DASH in wb.sheetnames:
-    for row in wb[SH_DASH].iter_rows(min_row=5, max_row=10, min_col=3, max_col=4, values_only=True):
-        label = clean(row[0]);  value = clean(row[1])
+    for row in wb[SH_DASH].iter_rows(min_row=12, max_row=16, min_col=2, max_col=4, values_only=True):
+        label = clean(row[0]);  value = clean(row[2])
         if label not in ("—", "", "None"):
             TRANSIT_PERF.append({"label": label, "value": value})
-    print(f"  → Transit performance: {len(TRANSIT_PERF)} rows from '{SH_DASH}' C5:D10")
+    print(f"  → Transit performance: {len(TRANSIT_PERF)} rows from '{SH_DASH}' B12:D16")
 else:
     print(f"  ! Sheet '{SH_DASH}' not found — transit performance left empty")
 
@@ -433,8 +447,20 @@ print(f"  → {size_kb:.1f} KB written  ·  {len(CONTAINERS)} containers  ·  {l
 # -- Write index.html redirect so GitHub Pages root URL works --
 INDEX_HTML = os.path.join(SITE_DIR, "index.html")
 with open(INDEX_HTML, "w", encoding="utf-8") as f:
-    f.write('<meta http-equiv="refresh" content="0; url=10C_Container_Dashboard.html">\n'
-            '<a href="10C_Container_Dashboard.html">Redirecting…</a>\n')
+    f.write(
+        '<!DOCTYPE html>\n'
+        '<html lang="en">\n'
+        '<head>\n'
+        '  <meta charset="utf-8">\n'
+        '  <meta http-equiv="refresh" content="0; url=10C_Container_Dashboard.html">\n'
+        '  <link rel="canonical" href="10C_Container_Dashboard.html">\n'
+        '  <script>window.location.replace("10C_Container_Dashboard.html");</script>\n'
+        '</head>\n'
+        '<body>\n'
+        '  <a href="10C_Container_Dashboard.html">Click here if not redirected automatically.</a>\n'
+        '</body>\n'
+        '</html>\n'
+    )
 print(f"  → index.html redirect written")
 
 # ─────────────────────────────────────────────────────────────
@@ -451,17 +477,25 @@ if AUTO_GIT:
         return result.stdout.strip()
 
     try:
-        run_git("add", "10C_Container_Dashboard.html", "index.html")
+        # Add HTML + any logo files present in the folder
+        files_to_add = ["10C_Container_Dashboard.html", "index.html", "config.js"]
+        for logo in ["logo-lion.png", "logo-210.png", "logo-dandamudi.png"]:
+            if os.path.exists(os.path.join(SITE_DIR, logo)):
+                files_to_add.append(logo)
+        run_git("add", *files_to_add)
         msg = f"Dashboard update {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-        run_git("commit", "-m", msg)
-        run_git("push")
+        try:
+            run_git("commit", "-m", msg)
+        except RuntimeError as ce:
+            if "nothing to commit" not in str(ce):
+                raise
+            print("  → No changes to commit — HTML already up to date.")
+        run_git("push", "--force", "-u", "origin", "main")
         print(f"  → Pushed: \"{msg}\"")
         print("  → GitHub Pages will refresh in ~30–60 seconds.")
     except RuntimeError as e:
         err = str(e)
-        if "nothing to commit" in err:
-            print("  → No changes — HTML is already up to date on GitHub.")
-        elif "git: command not found" in err or ("'git'" in err and "not recognized" in err.lower()):
+        if "git: command not found" in err or ("'git'" in err and "not recognized" in err.lower()):
             print("  ! Git not found. Install Git for Windows from https://git-scm.com")
         else:
             print(f"  ! Git error: {err}")
