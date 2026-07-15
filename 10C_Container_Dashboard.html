@@ -244,7 +244,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 15, 2026 at 2:59 PM</em></div>
+      <div class="sub"><em>Updated Jul 15, 2026 at 3:07 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -449,7 +449,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 15, 2026 at 2:59 PM) ─────────────────────
+// ── DATA (auto-generated Jul 15, 2026 at 3:07 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:true, code:'—', delivTime:'—' },
   { num: 2, status:'D', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:true, code:'—', delivTime:'—' },
@@ -612,22 +612,30 @@ renderMiniMatrix();
 (function() {
   const canvas = document.getElementById('status-chart');
   const ctx = canvas.getContext('2d');
+  // Individual counts — used by pipeline badges
   const counts = {};
   CONTAINERS.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
-  const COLORS = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', CHS:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' };
-  const ORDER  = ['D','INYRD','RAIL','CHS','ENR','LDD','LDG','PROJ'];
+
+  // Grouped counts — used by donut chart
+  const GROUP_MAP    = { D:'Delivered', INYRD:'Arrived', RAIL:'EnRoute', CHS:'EnRoute', ENR:'EnRoute', LDD:'EnRoute', LDG:'EnRoute', PROJ:'Projected' };
+  const GROUP_ORDER  = ['Delivered','Arrived','EnRoute','Projected'];
+  const GROUP_COLORS = { Delivered:'#0A3D34', Arrived:'#2D8C74', EnRoute:'#7EC4B0', Projected:'#D5EDE7' };
+  const GROUP_LABELS = { Delivered:'Delivered', Arrived:'In Yard', EnRoute:'En Route', Projected:'Projected' };
+  const gCounts = { Delivered:0, Arrived:0, EnRoute:0, Projected:0 };
+  CONTAINERS.forEach(c => { const g = GROUP_MAP[c.status]||'Projected'; gCounts[g]++; });
+
   const total = CONTAINERS.length;
   const cx = 80, cy = 80, r = 68, ir = 40;
   let angle = -Math.PI / 2;
-  ORDER.forEach(s => {
-    const n = counts[s] || 0;
+  GROUP_ORDER.forEach(g => {
+    const n = gCounts[g];
     if (!n) return;
     const slice = (n / total) * Math.PI * 2;
     ctx.beginPath();
     ctx.arc(cx, cy, r, angle, angle + slice);
     ctx.arc(cx, cy, ir, angle + slice, angle, true);
     ctx.closePath();
-    ctx.fillStyle = COLORS[s];
+    ctx.fillStyle = GROUP_COLORS[g];
     ctx.fill();
     angle += slice;
   });
@@ -640,25 +648,25 @@ renderMiniMatrix();
   ctx.fillStyle = '#9A9A94';
   ctx.fillText('ctns', cx, cy + 11);
 
-  // Legend
+  // Legend (4 groups)
   const legend = document.getElementById('donut-legend');
-  const LEGEND_LABELS = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
   if (legend) {
-    legend.innerHTML = ORDER.map(s => {
-      const n = counts[s] || 0;
+    legend.innerHTML = GROUP_ORDER.map(g => {
+      const n = gCounts[g];
       if (!n) return '';
       return `<div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;">
         <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${COLORS[s]};display:inline-block;flex-shrink:0;"></span>
-          <span style="color:var(--text-2)">${LEGEND_LABELS[s] || s}</span>
+          <span style="width:8px;height:8px;border-radius:50%;background:${GROUP_COLORS[g]};display:inline-block;flex-shrink:0;"></span>
+          <span style="color:var(--text-2)">${GROUP_LABELS[g]}</span>
         </div>
         <span style="font-weight:600;color:var(--text)">${n}</span>
       </div>`;
     }).join('');
   }
 
-  // Pipeline badges
+  // Pipeline badges (individual status counts — unchanged)
   const LABELS = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
+  const ORDER  = ['D','INYRD','RAIL','CHS','ENR','LDD','LDG','PROJ'];
   ORDER.forEach(s => {
     const el = document.getElementById('rp-' + s);
     if (!el) return;
