@@ -244,7 +244,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 15, 2026 at 3:07 PM</em></div>
+      <div class="sub"><em>Updated Jul 15, 2026 at 3:58 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -435,7 +435,7 @@ tbody tr:hover td { background: var(--bg); }
     </div>
     <div id="session-table-wrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Item</th><th>Type</th><th>Issue</th><th></th></tr></thead>
+        <thead><tr><th>Unit</th><th>Code</th><th>Item</th><th>Type</th><th>Issue</th><th></th></tr></thead>
         <tbody id="session-tbody"></tbody>
       </table>
     </div>
@@ -449,7 +449,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 15, 2026 at 3:07 PM) ─────────────────────
+// ── DATA (auto-generated Jul 15, 2026 at 3:58 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:true, code:'—', delivTime:'—' },
   { num: 2, status:'D', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:true, code:'—', delivTime:'—' },
@@ -490,7 +490,12 @@ const ROJ = {
 
 };
 
-const EXCEPTIONS = {};
+const EXCEPTIONS = {
+  1004: { v1Status:'PROJ' },
+  1611: { kStatus:'PROJ' },
+  1612: { v1Status:'PROJ' },
+  2004: { v1Status:'PROJ' }
+};
 
 const TRANSIT_PERF = [
   {label:'Average Load Days', value:'5'},
@@ -501,6 +506,13 @@ const TRANSIT_PERF = [
 ];
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
+
+// ── FLOOR LOOKUP (by floor number, not array position — safe if a container
+//    row is ever missing, duplicated, or out of order in the data above) ──
+const FLOOR_CTN = {};
+CONTAINERS.forEach(c => { if (typeof c.floor === 'number') FLOOR_CTN[c.floor] = c; });
+function ctnForFloor(floor) { return FLOOR_CTN[floor] || { num: '—', status: 'PROJ' }; }
+const BH_STATUS = (CONTAINERS.find(c => c.num === 'BH') || {}).status || 'PROJ';
 
 // ── STATUS HELPERS ──
 const STATUS_RANK = { D:8, INYRD:7, RAIL:6, CHS:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
@@ -545,7 +557,7 @@ function renderMiniMatrix() {
   if (!grid) return;
   let html = '<div style="display:flex;flex-direction:column;gap:1px;">';
   for (let floor = 39; floor >= 10; floor--) {
-    const ctn = CONTAINERS[floor - 10];
+    const ctn = ctnForFloor(floor);
     html += `<div style="display:flex;align-items:center;gap:3px;">`;
     html += `<div style="display:flex;gap:2px;">`;
     for (let u = 1; u <= 12; u++) {
@@ -554,7 +566,7 @@ function renderMiniMatrix() {
       const isBH = (u === 7);
       let st;
       if (_miniMode === 'K') {
-        st = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
+        st = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
       } else if (_miniMode === 'V1') {
         st = exc.v1Status || ctn.status;
       } else {
@@ -689,7 +701,7 @@ renderMiniMatrix();
   // Get containers sorted by delivery date, show next 4 upcoming by date
   const today = new Date(); today.setHours(0,0,0,0);
   const upcoming = CONTAINERS
-    .filter(c => c.delivery && c.delivery !== '—' && !isNaN(new Date(c.delivery)))
+    .filter(c => c.status !== 'D' && c.delivery && c.delivery !== '—' && !isNaN(new Date(c.delivery)))
     .sort((a, b) => new Date(a.delivery) - new Date(b.delivery))
     .filter(c => new Date(c.delivery) >= today)
     .slice(0, 5);
@@ -772,12 +784,12 @@ function renderBldgMatrix() {
   if (_bldgAsc) floors.reverse();
 
   for (const floor of floors) {
-    const ctn = CONTAINERS[floor - 10];
+    const ctn = ctnForFloor(floor);
     // compute floor stats
     let kDel=0, v1Del=0, v2Del=0, v2Total=0;
     for (let u = 1; u <= 12; u++) {
       const uid = floor*100+u, exc = EXCEPTIONS[uid]||{}, hasV2 = V2_UNITS.has(u), isBH = (u===7);
-      const kS  = isBH ? 'PROJ' : (exc.kStatus  || ctn.status);
+      const kS  = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
       const v1S = exc.v1Status || ctn.status;
       const v2S = hasV2 ? (exc.v2Status || ctn.status) : null;
       if (kS==='D') kDel++; if (v1S==='D') v1Del++;
@@ -799,7 +811,7 @@ function renderBldgMatrix() {
       const unitId = floor * 100 + u;
       const exc    = EXCEPTIONS[unitId] || {};
       const isBH   = (u === 7);
-      const kSt    = isBH ? 'PROJ' : (exc.kStatus  || ctn.status);
+      const kSt    = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
       const v1St   = exc.v1Status || ctn.status;
       const v2St   = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
       const sp     = SPECIAL_COMPS[unitId] || {};
@@ -838,14 +850,14 @@ renderBldgMatrix();
     </tr></thead><tbody>`;
 
   for (let floor = 39; floor >= 10; floor--) {
-    const ctn = CONTAINERS[floor - 10];
+    const ctn = ctnForFloor(floor);
     let kDel=0, v1Del=0, v2Del=0, v2Total=0;
     for (let u = 1; u <= UNITS_PER_FLOOR; u++) {
       const unitId = floor * 100 + u;
       const exc = EXCEPTIONS[unitId] || {};
       const hasV2 = V2_UNITS.has(u);
       const isBH  = (u === 7);
-      const kStatus  = isBH ? 'PROJ' : (exc.kStatus || ctn.status);
+      const kStatus  = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
       const v1Status = exc.v1Status || ctn.status;
       const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
       if (kStatus  === 'D') kDel++;
@@ -904,7 +916,6 @@ function renderSession() {
   document.getElementById('btn-clear').style.display = n > 0 ? '' : 'none';
   document.getElementById('session-tbody').innerHTML = SESSION_ITEMS.map((item, idx) => `<tr>
     <td style="font-weight:600">${item.unit}</td>
-    <td>${item.date}</td>
     <td class="mono">${item.code || '&#8212;'}</td>
     <td>${item.itemdesc || '&#8212;'}</td>
     <td>${item.issuetype || '&#8212;'}</td>
@@ -973,25 +984,21 @@ function sendReport() {
   // 2. Copy CSV to clipboard
   navigator.clipboard.writeText(csvStr).catch(() => {});
 
-  // 3. Build email body (clean text list)
-  let body = '1010 CHURCH · DAMAGE REPORT\n';
-  body += 'Date: ' + today() + ' · ' + n + ' item' + (n !== 1 ? 's' : '') + '\n';
-  body += '─'.repeat(48) + '\n\n';
+  // 3. Build email body
+  let body = '1010 CHURCH · SERVICE REPORT\n';
+  body += 'Date: ' + today() + '\n';
+  body += 'Total Items: ' + n + ' item' + (n !== 1 ? 's' : '') + '\n\n';
+  body += 'Items:\n';
   SESSION_ITEMS.forEach((item, i) => {
-    body += (i + 1) + '.  Unit ' + item.unit + '\n';
-    body += '    Date:      ' + item.date + '\n';
-    if (item.code)      body += '    Code:      ' + item.code + '\n';
-    if (item.itemdesc)  body += '    Item:      ' + item.itemdesc + '\n';
-    if (item.issuetype) body += '    Type:      ' + item.issuetype + '\n';
-    body += '    Issue:     ' + item.issue + '\n';
+    body += (i + 1) + '. Unit: ' + item.unit + '\n';
+    body += '   Item Code: ' + (item.code || '—') + '\n';
+    body += '   Item Des.: ' + (item.itemdesc || '—') + '\n';
+    body += '   Issue Type: ' + (item.issuetype || '—') + '\n';
+    body += '   Issue Description: "' + item.issue + '"\n';
     body += '\n';
   });
-  body += '─'.repeat(48) + '\n';
-  body += 'CSV (also copied to clipboard):\n\n';
-  body += hdr.join(',') + '\n';
-  body += rows.join('\n') + '\n';
-
-  const subject = '1010 Church Damage Report — ' + today() + ' (' + n + ' item' + (n !== 1 ? 's' : '') + ')';
+  const _sd = new Date(); const _sdate = (_sd.getMonth()+1) + '/' + _sd.getDate() + '/' + _sd.getFullYear();
+  const subject = '1010 Church Service Request - ' + _sdate + ' - ' + n + ' item' + (n !== 1 ? 's' : '');
   const mailto  = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
     + '?subject=' + encodeURIComponent(subject)
     + '&body='    + encodeURIComponent(body);
