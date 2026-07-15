@@ -90,9 +90,9 @@ tbody tr:hover td { background: var(--bg); }
 .route-pipeline { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; overflow-x: auto; }
 .rp-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 64px; }
 .rp-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; margin-bottom: 4px; }
-.rp-name { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); text-align: center; }
-.rp-val  { font-size: 10px; color: var(--text-2); text-align: center; margin-top: 4px; }
-.rp-line { flex: 1; height: 2px; background: var(--border); align-self: center; margin-bottom: 20px; min-width: 10px; }
+.rp-name { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; text-align: center; }
+.rp-val  { font-size: 16px; font-weight: 700; color: var(--text); text-align: center; }
+.rp-line { flex: 1; height: 2px; background: var(--border); }
 .leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .leg-i { display: flex; align-items: center; gap: 5px; }
 .mm-btn { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text-2); cursor: pointer; font-family: inherit; }
@@ -202,7 +202,7 @@ tbody tr:hover td { background: var(--bg); }
   .rp-icon { width: 18px; height: 18px; font-size: 9px; margin-bottom: 2px; }
   .rp-icon svg { width: 10px; height: 9px; }
   .rp-name { display: none; }
-  .rp-val  { font-size: 9px; }
+  .rp-val  { font-size: 12px; font-weight: 700; }
 
   /* Container schedule table — hide non-essential columns, no scroll */
   .tw { overflow-x: unset; }
@@ -242,7 +242,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 15, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Jul 15, 2026 at 11:54 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -391,11 +391,11 @@ tbody tr:hover td { background: var(--bg); }
       </div>
       <div class="field">
         <label>2. Item Code</label>
-        <input type="text" id="f-code" placeholder="e.g. 10C-CAB-0042">
+        <input type="text" id="f-code" placeholder="e.g. 2PFCF000377 or 77">
       </div>
       <div class="field">
         <label>3. Item Description</label>
-        <input type="text" id="f-itemdesc" placeholder="e.g. Island back panel, upper cabinet door">
+        <input type="text" id="f-itemdesc" placeholder='e.g. Wall Unit W31" or Sink Base W31 1/2"'>
       </div>
       <div class="field">
         <label>4. Issue Type</label>
@@ -447,7 +447,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 15, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Jul 15, 2026 at 11:54 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false },
@@ -693,19 +693,16 @@ renderMiniMatrix();
     const borderTop = i > 0 ? 'border-top:1px solid var(--border);' : '';
     const dateParts = c.delivery.split(',');
     const dateMain = dateParts[0] || c.delivery;
-    const dateYear = dateParts[1] ? dateParts[1].trim() : '';
-    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const parsed = new Date(c.delivery);
     const dayOfWeek = (!isNaN(parsed)) ? DAYS[parsed.getDay()] : '';
-    html += `<div style="${borderTop}display:flex;align-items:center;gap:12px;padding:10px 4px;width:100%;">
-      <div style="flex-shrink:0;">
-        <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.3;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span style="font-weight:400;color:var(--text-3);">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
-        <div style="font-size:9px;color:var(--text-3);">${dateYear}</div>
-      </div>
-      <div style="flex:1;"></div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div style="font-size:12px;font-weight:700;color:var(--text);">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''}</div>
-      </div>
+    const daysAway = (!isNaN(parsed)) ? Math.round((parsed - today) / 86400000) : null;
+    const daysStr = daysAway === null ? '' : daysAway === 0 ? 'Today' : daysAway + ' day' + (daysAway !== 1 ? 's' : '');
+    const sLabel = STATUS_LABEL[c.status] || c.status;
+    const sColor = STATUS_COLOR[c.status] || '#9A9A94';
+    html += `<div style="${borderTop}display:flex;align-items:center;justify-content:space-between;padding:10px 4px;gap:8px;">
+      <div style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span style="font-weight:400;color:var(--text-3);font-size:11px;">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;text-align:right;">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''} &nbsp;·&nbsp; <span style="color:${sColor};font-weight:700;">● ${sLabel}</span> &nbsp;·&nbsp; ${daysStr}</div>
     </div>`;
   });
   html += '</div>';
