@@ -242,7 +242,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 14, 2026 at 1:55 PM</em></div>
+      <div class="sub"><em>Updated Jul 15, 2026 at 9:35 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -383,38 +383,37 @@ tbody tr:hover td { background: var(--bg); }
 <div id="dmg" class="panel">
   <div class="form-card">
     <h3>Log a damage or open item</h3>
-    <p class="form-sub">Items are held in this session only. Use Send Report to email a text list and download/copy the CSV.</p>
+    <p class="form-sub">Fill in each field and click <strong>+ Add to report</strong>. Repeat for each item. When done, click <strong>Send Report</strong> — this emails you the list and saves a CSV to your device. Items are cleared when you close the tab.</p>
     <div class="form-grid">
       <div class="field">
-        <label>Unit #</label>
+        <label>1. Unit Number</label>
         <select id="f-unit"><option value="">&#8212; Select unit &#8212;</option></select>
       </div>
       <div class="field">
-        <label>Damage type</label>
-        <select id="f-dtype">
+        <label>2. Item Code</label>
+        <input type="text" id="f-code" placeholder="e.g. 10C-CAB-0042">
+      </div>
+      <div class="field">
+        <label>3. Item Description</label>
+        <input type="text" id="f-itemdesc" placeholder="e.g. Island back panel, upper cabinet door">
+      </div>
+      <div class="field">
+        <label>4. Issue Type</label>
+        <select id="f-issuetype">
           <option value="">&#8212; Select type &#8212;</option>
-          <option value="D1 – Scratch/Mark">D1 &#8211; Scratch / Mark</option>
-          <option value="D2 – Dent/Ding">D2 &#8211; Dent / Ding</option>
-          <option value="D3 – Crack/Break">D3 &#8211; Crack / Break</option>
-          <option value="D4 – Missing part">D4 &#8211; Missing part</option>
-          <option value="D5 – Water damage">D5 &#8211; Water damage</option>
-          <option value="D6 – Wrong item">D6 &#8211; Wrong item</option>
-          <option value="D7 – Other">D7 &#8211; Other</option>
+          <option>Lost Item</option>
+          <option>Full Cabinet Broken</option>
+          <option>Door Broken Only</option>
+          <option>Carcass Broken Only</option>
         </select>
       </div>
       <div class="field">
-        <label>Component / cabinet</label>
-        <input type="text" id="f-component" placeholder="e.g. Island back panel">
-      </div>
-      <div class="field">
-        <label>Photo reference</label>
-        <input type="text" id="f-photo" placeholder="e.g. unit_1006_damage.jpg">
-      </div>
-    </div>
-    <div class="form-grid single">
-      <div class="field">
-        <label>Issue description</label>
+        <label>5. Issue Description</label>
         <textarea id="f-issue" placeholder="Describe what was found &#8212; damage type, location, severity&#8230;"></textarea>
+      </div>
+      <div class="field">
+        <label>6. Photo Reference</label>
+        <input type="text" id="f-photo" placeholder="e.g. unit_1006_damage.jpg">
       </div>
     </div>
     <div class="form-actions">
@@ -435,7 +434,7 @@ tbody tr:hover td { background: var(--bg); }
     </div>
     <div id="session-table-wrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Unit</th><th>Date</th><th>Type</th><th>Component</th><th>Issue</th><th>Photo</th><th></th></tr></thead>
+        <thead><tr><th>Unit</th><th>Date</th><th>Code</th><th>Item</th><th>Type</th><th>Issue</th><th>Photo</th><th></th></tr></thead>
         <tbody id="session-tbody"></tbody>
       </table>
     </div>
@@ -449,7 +448,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 14, 2026 at 1:55 PM) ─────────────────────
+// ── DATA (auto-generated Jul 15, 2026 at 9:35 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false },
@@ -898,8 +897,9 @@ function renderSession() {
   document.getElementById('session-tbody').innerHTML = SESSION_ITEMS.map((item, idx) => `<tr>
     <td style="font-weight:600">${item.unit}</td>
     <td>${item.date}</td>
-    <td class="mono">${item.dtype || '&#8212;'}</td>
-    <td>${item.component || '&#8212;'}</td>
+    <td class="mono">${item.code || '&#8212;'}</td>
+    <td>${item.itemdesc || '&#8212;'}</td>
+    <td>${item.issuetype || '&#8212;'}</td>
     <td>${item.issue}</td>
     <td>${item.photo || '&#8212;'}</td>
     <td><button onclick="removeItem(${idx})" style="font-size:10px;padding:2px 8px;border:1px solid var(--border-strong);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--text-3)">Remove</button></td>
@@ -914,13 +914,14 @@ function addToReport() {
   SESSION_ITEMS.push({
     unit,
     date: today(),
-    dtype: document.getElementById('f-dtype').value,
-    component: document.getElementById('f-component').value.trim(),
+    code: document.getElementById('f-code').value.trim(),
+    itemdesc: document.getElementById('f-itemdesc').value.trim(),
+    issuetype: document.getElementById('f-issuetype').value,
     issue,
     photo: document.getElementById('f-photo').value.trim(),
   });
   renderSession();
-  ['f-unit','f-dtype','f-component','f-issue','f-photo'].forEach(id => {
+  ['f-unit','f-code','f-itemdesc','f-issuetype','f-issue','f-photo'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -949,9 +950,9 @@ function sendReport() {
   const n = SESSION_ITEMS.length;
 
   // Build CSV string
-  const hdr  = ['Unit','Date','Type','Component','Issue','Photo'];
+  const hdr  = ['Unit','Date','Item Code','Item Description','Issue Type','Issue','Photo'];
   const rows  = SESSION_ITEMS.map(i =>
-    [i.unit, i.date, i.dtype||'', i.component||'', i.issue, i.photo||'']
+    [i.unit, i.date, i.code||'', i.itemdesc||'', i.issuetype||'', i.issue, i.photo||'']
     .map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')
   );
   const csvStr = [hdr.join(','), ...rows].join('\r\n');
@@ -973,14 +974,17 @@ function sendReport() {
   SESSION_ITEMS.forEach((item, i) => {
     body += (i + 1) + '.  Unit ' + item.unit + '\n';
     body += '    Date:      ' + item.date + '\n';
-    if (item.dtype)     body += '    Type:      ' + item.dtype + '\n';
-    if (item.component) body += '    Component: ' + item.component + '\n';
+    if (item.code)      body += '    Code:      ' + item.code + '\n';
+    if (item.itemdesc)  body += '    Item:      ' + item.itemdesc + '\n';
+    if (item.issuetype) body += '    Type:      ' + item.issuetype + '\n';
     body += '    Issue:     ' + item.issue + '\n';
     if (item.photo)     body += '    Photo:     ' + item.photo + '\n';
     body += '\n';
   });
   body += '─'.repeat(48) + '\n';
-  body += 'CSV attached / copied to clipboard.\n';
+  body += 'CSV (also copied to clipboard):\n\n';
+  body += hdr.join(',') + '\n';
+  body += rows.join('\n') + '\n';
 
   const subject = '1010 Church Damage Report — ' + today() + ' (' + n + ' item' + (n !== 1 ? 's' : '') + ')';
   const mailto  = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
