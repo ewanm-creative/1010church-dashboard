@@ -65,6 +65,27 @@ def clean(v):
     s = str(v).strip()
     return s if s else "—"
 
+STATUS_NORM = {
+    "PROJ":"PROJ","LDG":"LDG","LDD":"LDD","ENR":"ENR","CHS":"CHS","RAIL":"RAIL","INYRD":"INYRD","D":"D",
+    "LOADING":"LDG","LOADED":"LDD","EN ROUTE":"ENR","ENROUTE":"ENR","SEA FREIGHT":"ENR",
+    "PORT":"CHS","PORT (CHS)":"CHS","IN PORT":"CHS","CHS PORT":"CHS",
+    "ON RAIL":"RAIL","RAIL FREIGHT":"RAIL","ON RAIL FREIGHT":"RAIL","ONRAIL":"RAIL","RFT":"RAIL","ONR":"RAIL",
+    "IN YARD":"INYRD","IN YARD (NSH)":"INYRD","NHS":"INYRD","NSH":"INYRD","YARD":"INYRD","PULLED":"INYRD","IYD":"INYRD","PLD":"INYRD",
+    "DELIVERED":"D","DELIVERY":"D",
+}
+UNKNOWN_STATUSES = set()
+
+def norm_status(raw):
+    """Map a raw Excel status to a known code. Unknown codes pass through
+    verbatim (so they stay visible on the dashboard) and get reported."""
+    s = str(raw).strip().upper()
+    if not s or s in ("—", "--", "NONE"):
+        return "PROJ"
+    if s in STATUS_NORM:
+        return STATUS_NORM[s]
+    UNKNOWN_STATUSES.add(s)
+    return s
+
 def js_str(v):
     if isinstance(v, str):
         return "'" + v.replace("\\", "\\\\").replace("'", "\\'") + "'"
@@ -184,15 +205,7 @@ for row in all_rows[hdr_row + 1:]:
 
     # Normalize status from Excel to known status codes
     raw_st = clean(row[i_status]).strip().upper() if i_status is not None else "PROJ"
-    STATUS_NORM = {
-        "PROJ":"PROJ","LDG":"LDG","LDD":"LDD","ENR":"ENR","CHS":"CHS","RAIL":"RAIL","INYRD":"INYRD","D":"D",
-        "LOADING":"LDG","LOADED":"LDD","EN ROUTE":"ENR","ENROUTE":"ENR","SEA FREIGHT":"ENR",
-        "PORT":"CHS","PORT (CHS)":"CHS","IN PORT":"CHS","CHS PORT":"CHS",
-        "ON RAIL":"RAIL","RAIL FREIGHT":"RAIL","ON RAIL FREIGHT":"RAIL","ONRAIL":"RAIL","RFT":"RAIL",
-        "IN YARD":"INYRD","IN YARD (NSH)":"INYRD","NHS":"INYRD","YARD":"INYRD",
-        "DELIVERED":"D","DELIVERY":"D",
-    }
-    status = STATUS_NORM.get(raw_st, raw_st if raw_st in STATUS_NORM.values() else "PROJ")
+    status = norm_status(raw_st)
 
     CONTAINERS.append({
         "num":      num,
@@ -212,6 +225,8 @@ for row in all_rows[hdr_row + 1:]:
         "etaNash":  fmt_date(row[i_nash])  if i_nash is not None else "—",
         "delivery": fmt_date(row[i_del], year=True) if i_del is not None else "—",
         "confirmed": bool(row[i_confirm]) if (i_confirm is not None and isinstance(row[i_confirm], bool)) else False,
+        "code":     "—",
+        "delivTime":"—",
     })
 
 CONTAINERS.sort(key=lambda c: c["num"])
@@ -221,15 +236,18 @@ CONTAINERS += [
     {"num":"BH",  "status":"PROJ", "week":"Wk 26", "floor":"10–39", "unitQty":30,
      "kitchens":"All unit-07 (30 floors)", "v1":"—", "v2":"—",
      "loadDate":"Jun 30, 2027", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Jul 30, 2027", "ordered":False, "confirmed":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Jul 30, 2027", "ordered":False, "confirmed":False,
+     "code":"—", "delivTime":"—"},
     {"num":"ECT", "status":"PROJ", "week":"Wk 27", "floor":"—", "unitQty":4,
      "kitchens":"—", "v1":"1004, 2004, 2904, 3604", "v2":"—",
      "loadDate":"—", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False,
+     "code":"—", "delivTime":"—"},
     {"num":"WCT", "status":"PROJ", "week":"Wk 27", "floor":"—", "unitQty":6,
      "kitchens":"1611, 2511, 3311", "v1":"1612, 2512, 3312", "v2":"—",
      "loadDate":"—", "shipDate":"—", "vessel":"—", "etaChs":"—",
-     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False},
+     "railDate":"—", "etaNash":"—", "delivery":"Aug 6, 2027", "ordered":False, "confirmed":False,
+     "code":"—", "delivTime":"—"},
 ]
 
 print(f"  → {len(CONTAINERS)} containers total (including BH/ECT/WCT)")
@@ -241,77 +259,60 @@ floor_to_status = {c["floor"]: c["status"] for c in CONTAINERS if isinstance(c["
 # 2.  BUILDING MATRIX → EXCEPTIONS
 # ─────────────────────────────────────────────────────────────
 
+# The sheet is a floor-by-unit grid: each floor is a 4-row block —
+#   row 0: floor number in col B, unit IDs in cols D..O (units 01-12)
+#   row 1: "K"  in col C, kitchen status per unit
+#   row 2: "V1" in col C, vanity-1 status per unit
+#   row 3: "V2" in col C, vanity-2 status per unit ("--" = unit has no V2)
+# A unit becomes an "exception" when its component status differs from the
+# status the dashboard would otherwise assume (its floor's container status;
+# for unit-07 kitchens, the BH container's status).
 ws2 = wb[SH_BLD]
-bld_rows = list(ws2.iter_rows(values_only=True))
-
-bld_hdr_row, bld_hdr = None, None
-for i, row in enumerate(bld_rows):
-    strs = [str(v).strip() if v else "" for v in row]
-    if "UNIT #" in strs or "UNIT#" in strs:
-        bld_hdr_row, bld_hdr = i, strs
-        break
-
 EXCEPTIONS = {}
-if bld_hdr is not None:
-    def BC(*names):
-        for n in names:
-            if n in bld_hdr:
-                return bld_hdr.index(n)
-        return None
+COL_FLOOR, COL_LABEL, COL_U1, COL_U12 = 2, 3, 4, 15   # B, C, D..O
 
-    bi_unit  = BC("UNIT #", "UNIT#")
-    bi_floor = BC("FLOOR")
-    bi_tier  = BC("TIER")
-    bi_kc    = BC("K CTNR #")
-    bi_v1c   = BC("V1 CTNR #")
-    bi_v2c   = BC("V2 CTNR #")
-    bi_ks    = BC(" K STATUS", "K STATUS")
-    bi_v1s   = BC("V1 STATUS")
-    bi_v2s   = BC("V2 STATUS")
+bh_status = next((c["status"] for c in CONTAINERS if c["num"] == "BH"), "PROJ")
 
-    for row in bld_rows[bld_hdr_row + 1:]:
-        if not row or bi_unit is None:
-            continue
-        unit_raw = row[bi_unit]
+def grid_status(v):
+    """Grid cell → normalized status code, or None for blank/'--' (no component)."""
+    if v is None: return None
+    s = str(v).strip()
+    if not s or s in ("--", "—"): return None
+    return norm_status(s)
+
+blocks_found = 0
+for r in range(1, ws2.max_row + 1):
+    fv = ws2.cell(r, COL_FLOOR).value
+    if not (isinstance(fv, (int, float)) and 10 <= fv <= 39):
+        continue
+    floor = int(fv)
+    # confirm the block shape: next rows labeled K / V1 / V2 in col C
+    labels = [str(ws2.cell(r + i, COL_LABEL).value or "").strip() for i in (1, 2, 3)]
+    if labels[0] != "K":
+        continue
+    blocks_found += 1
+    main_status = floor_to_status.get(floor)
+    for col in range(COL_U1, COL_U12 + 1):
+        unit_raw = ws2.cell(r, col).value
         if not isinstance(unit_raw, (int, float)):
             continue
         unit_id = int(unit_raw)
-
-        tier = str(row[bi_tier] or "").strip() if bi_tier is not None else "APT"
-        if tier not in ("APT", "CONDO"):
-            continue
-
-        floor_raw = row[bi_floor] if bi_floor is not None else None
-        floor = int(floor_raw) if isinstance(floor_raw, (int, float)) else 0
-        main_ctn = floor_to_ctn.get(floor)
-        if main_ctn is None:
-            continue
-
-        def _ctnr(col):
-            if col is None: return None
-            v = row[col]
-            if v is None or str(v).strip() in ("", "--", "—"): return None
-            return int(v) if isinstance(v, (int, float)) else str(v).strip()
-
-        def _stat(col):
-            if col is None: return "PROJ"
-            v = row[col]
-            s = str(v).strip() if v else "PROJ"
-            return s if s and s not in ("--", "—") else "PROJ"
-
-        kc  = _ctnr(bi_kc);  v1c = _ctnr(bi_v1c);  v2c = _ctnr(bi_v2c)
-        ks  = _stat(bi_ks);  v1s = _stat(bi_v1s);   v2s = _stat(bi_v2s)
-
+        is_bh   = (unit_id % 100 == 7)
+        kS  = grid_status(ws2.cell(r + 1, col).value)
+        v1S = grid_status(ws2.cell(r + 2, col).value) if labels[1] == "V1" else None
+        v2S = grid_status(ws2.cell(r + 3, col).value) if labels[2] == "V2" else None
         exc = {}
-        if kc  is not None and kc  != main_ctn: exc["kCtnr"]   = str(kc);  exc["kStatus"]  = ks
-        if v1c is not None and v1c != main_ctn: exc["v1Ctnr"]  = str(v1c); exc["v1Status"] = v1s
-        if v2c is not None and v2c != main_ctn: exc["v2Ctnr"]  = str(v2c); exc["v2Status"] = v2s
+        k_default = bh_status if is_bh else main_status
+        if kS  is not None and kS  != k_default:    exc["kStatus"]  = kS
+        if v1S is not None and v1S != main_status:  exc["v1Status"] = v1S
+        if v2S is not None and v2S != main_status:  exc["v2Status"] = v2S
         if exc:
             EXCEPTIONS[unit_id] = exc
 
-    print(f"  → {len(EXCEPTIONS)} exception units detected")
+if blocks_found:
+    print(f"  → {blocks_found} floor blocks scanned · {len(EXCEPTIONS)} exception units detected")
 else:
-    print("  ! Building matrix header not found — exceptions left empty")
+    print("  ! Building matrix grid not recognized — exceptions left empty")
 
 # ─────────────────────────────────────────────────────────────
 # 3.  ROJ DATES
@@ -372,7 +373,8 @@ def js_containers():
             f"loadDate:{js_str(c['loadDate'])}, shipDate:{js_str(c['shipDate'])}, "
             f"vessel:{js_str(c['vessel'])}, etaChs:{js_str(c['etaChs'])}, "
             f"railDate:{js_str(c['railDate'])}, etaNash:{js_str(c['etaNash'])}, "
-            f"delivery:{js_str(c['delivery'])}, ordered:{'true' if c['ordered'] else 'false'} }}"
+            f"delivery:{js_str(c['delivery'])}, ordered:{'true' if c['ordered'] else 'false'}, "
+            f"code:{js_str(c.get('code','—'))}, delivTime:{js_str(c.get('delivTime','—'))} }}"
         )
     return "[\n" + ",\n".join(lines) + "\n]"
 
@@ -407,6 +409,12 @@ def js_transit_perf():
 # ─────────────────────────────────────────────────────────────
 
 generated_on = datetime.now().strftime("%b %#d, %Y at %#I:%M %p")
+
+if UNKNOWN_STATUSES:
+    print(f"\n  ! WARNING: unrecognized status code(s) found in Excel: {sorted(UNKNOWN_STATUSES)}")
+    print(f"    They are shown on the dashboard exactly as written (uncolored).")
+    print(f"    If one is a typo, fix it in the Excel file and rerun. If it's a real")
+    print(f"    new status, add it to STATUS_NORM in this script to give it a color.")
 
 print(f"\nUpdating  {os.path.basename(OUTPUT_HTML)} …")
 with open(OUTPUT_HTML, "r", encoding="utf-8") as f:
