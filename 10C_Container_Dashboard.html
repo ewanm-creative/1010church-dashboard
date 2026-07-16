@@ -150,6 +150,11 @@ tbody tr:hover td { background: var(--bg); }
 .empty-state { text-align: center; padding: 32px; color: var(--text-3); font-size: 12px; }
 .empty-state .big { font-size: 28px; margin-bottom: 8px; }
 .note-bar { font-size: 10px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; }
+.nu-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 4px; border-bottom:1px solid var(--border); }
+.nu-row:last-child { border-bottom:none; }
+.nu-date { font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; flex-shrink:0; }
+.nu-tag { font-weight:400; color:var(--text-3); font-size:11px; }
+.nu-info { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; text-align:right; }
 
 @media (max-width: 700px) {
   .shell { padding: 12px 10px 40px; }
@@ -194,6 +199,10 @@ tbody tr:hover td { background: var(--bg); }
   /* Next up — first on mobile */
   #next-up-card { order: -1; }
   #next-up-list { width: 100%; }
+  .nu-date { font-size: 11px !important; }
+  .nu-slabel { display: none !important; }
+  .nu-days { display: none !important; }
+  .nu-info { font-size: 10px !important; }
 
   /* Route pipeline — compact on mobile, icon + number only */
   .route-pipeline { flex-wrap: nowrap; gap: 0; padding: 8px 4px; }
@@ -244,7 +253,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 15, 2026 at 4:30 PM</em></div>
+      <div class="sub"><em>Updated Jul 16, 2026 at 9:22 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -449,7 +458,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 15, 2026 at 4:30 PM) ─────────────────────
+// ── DATA (auto-generated Jul 16, 2026 at 9:22 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'—', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'—', delivTime:'—' },
@@ -706,22 +715,21 @@ renderMiniMatrix();
     return;
   }
 
-  let html = '<div style="display:flex;flex-direction:column;">';
-  upcoming.forEach((c, i) => {
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = '<div>';
+  upcoming.forEach(c => {
     const floorLabel = c.floor && c.floor !== '—' ? `Floor ${c.floor}` : '';
-    const borderTop = i > 0 ? 'border-top:1px solid var(--border);' : '';
     const dateParts = c.delivery.split(',');
     const dateMain = dateParts[0] || c.delivery;
-    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const parsed = new Date(c.delivery);
-    const dayOfWeek = (!isNaN(parsed)) ? DAYS[parsed.getDay()] : '';
-    const daysAway = (!isNaN(parsed)) ? Math.round((parsed - today) / 86400000) : null;
-    const daysStr = daysAway === null ? '' : daysAway === 0 ? 'Today' : daysAway + ' day' + (daysAway !== 1 ? 's' : '');
+    const dayOfWeek = !isNaN(parsed) ? DAYS[parsed.getDay()] : '';
+    const daysAway = !isNaN(parsed) ? Math.round((parsed - today) / 86400000) : null;
+    const daysStr = daysAway === null ? '' : daysAway === 0 ? 'Today' : daysAway + 'd';
     const sLabel = STATUS_LABEL[c.status] || c.status;
     const sColor = STATUS_COLOR[c.status] || '#9A9A94';
-    html += `<div style="${borderTop}display:flex;align-items:center;justify-content:space-between;padding:10px 4px;gap:8px;">
-      <div style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span style="font-weight:400;color:var(--text-3);font-size:11px;">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
-      <div style="font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;text-align:right;">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''} &nbsp;·&nbsp; <span style="color:${sColor};font-weight:700;">● ${sLabel}</span> &nbsp;·&nbsp; ${daysStr}</div>
+    html += `<div class="nu-row">
+      <div class="nu-date">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span class="nu-tag">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
+      <div class="nu-info">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''} &nbsp;·&nbsp; <span style="color:${sColor};font-weight:700;">●</span><span class="nu-slabel" style="color:${sColor};font-weight:700;"> ${sLabel}</span><span class="nu-days"> &nbsp;·&nbsp; ${daysStr}</span></div>
     </div>`;
   });
   html += '</div>';
