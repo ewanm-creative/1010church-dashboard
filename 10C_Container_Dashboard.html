@@ -253,7 +253,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Jul 20, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Jul 20, 2026 at 3:52 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -458,9 +458,9 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Jul 20, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Jul 20, 2026 at 3:52 PM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'—', delivTime:'—' },
+  { num: 1, status:'CHS', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Oct 30, 2026', ordered:true, code:'—', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'—', delivTime:'—' },
   { num: 3, status:'PROJ', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'—', delivTime:'—' },
   { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'Oct 7', delivery:'Oct 9, 2026', ordered:false, code:'—', delivTime:'—' },
@@ -499,14 +499,16 @@ const ROJ = {
 
 };
 
-const EXCEPTIONS = {};
+const EXCEPTIONS = {
+  1004: { v1Status:'PROJ' }
+};
 
 const TRANSIT_PERF = [
   {label:'Average Load Days', value:'5'},
   {label:'Average International Transit Days', value:'23'},
   {label:'Average Domestic Transit Days', value:'3.5'},
-  {label:'Average In Port Days', value:'2'},
-  {label:'Total Transit Time', value:'33.5'}
+  {label:'Average In Port Days', value:'3.0606060606060606'},
+  {label:'Total Transit Time', value:'34.56060606060606'}
 ];
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
