@@ -253,7 +253,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 3, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Aug 3, 2026 at 4:30 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -458,7 +458,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 3, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Aug 3, 2026 at 4:30 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'—', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'—', delivTime:'—' },
@@ -965,6 +965,22 @@ function showMsg(t, e) {
   setTimeout(() => { m.style.display = 'none'; }, 3200);
 }
 
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => { copyTextFallback(text); });
+  } else {
+    copyTextFallback(text);
+  }
+}
+function copyTextFallback(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
 function showToast(html) {
   const t = document.createElement('div');
   t.innerHTML = html;
@@ -976,18 +992,18 @@ function showToast(html) {
 function sendReport() {
   if (!SESSION_ITEMS.length) { alert('No items to send.'); return; }
   const n = SESSION_ITEMS.length;
+  const dateStr = today();
 
-  // 1. Build report body and copy to clipboard
-  let body = 'Items:\n';
+  // 1. Build report text
+  let reportText = '';
   SESSION_ITEMS.forEach((item, i) => {
-    body += (i + 1) + '. Unit: ' + item.unit + '\n';
-    body += '   Item Code: ' + (item.code || '—') + '\n';
-    body += '   Item Des.: ' + (item.itemdesc || '—') + '\n';
-    body += '   Issue Type: ' + (item.issuetype || '—') + '\n';
-    body += '   Issue Description: "' + item.issue + '"\n';
-    body += '\n';
+    reportText += (i + 1) + '. Unit: ' + item.unit + '\n';
+    reportText += '   Item Code: ' + (item.code || '—') + '\n';
+    reportText += '   Item Des.: ' + (item.itemdesc || '—') + '\n';
+    reportText += '   Issue Type: ' + (item.issuetype || '—') + '\n';
+    reportText += '   Issue Description: "' + item.issue + '"\n';
+    reportText += '\n';
   });
-  navigator.clipboard.writeText(body).catch(() => {});
 
   // 2. Download CSV
   const hdr  = ['Unit','Date','Item Code','Item Description','Issue Type','Issue'];
@@ -997,21 +1013,39 @@ function sendReport() {
   );
   const csvStr = [hdr.join(','), ...rows].join('\r\n');
   const blob = new Blob([csvStr], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = '10C_Damage_' + todayISO() + '.csv'; a.click();
-  URL.revokeObjectURL(url);
+  const burl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = burl; a.download = '10C_Damage_' + todayISO() + '.csv'; a.click();
+  URL.revokeObjectURL(burl);
 
-  // 3. Open email with subject only — body is on clipboard
+  // 3. Build email subject
   const _sd = new Date(); const _sdate = (_sd.getMonth()+1) + '/' + _sd.getDate() + '/' + _sd.getFullYear();
   const subject = '1010 Church Service Request - ' + _sdate + ' - ' + n + ' item' + (n !== 1 ? 's' : '');
-  const emailNote = '1010 CHURCH · SERVICE REPORT\nDate: ' + today() + '\nTotal Items: ' + n + ' item' + (n !== 1 ? 's' : '') + '\n\n*Report copied to clipboard - please paste it into the email*';
-  window.location.href = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '')
-    + '?subject=' + encodeURIComponent(subject)
-    + '&body=' + encodeURIComponent(emailNote);
+  const mailtoHref = 'mailto:' + (typeof CONFIG !== 'undefined' ? CONFIG.notifyEmail : '') + '?subject=' + encodeURIComponent(subject);
 
-  // 4. Toast
-  showToast('<div style="font-size:13px;font-weight:700;margin-bottom:5px;">SERVICE ORDER REPORT</div><div style="font-size:11px;opacity:.75;">Report copied to clipboard - please paste it into the email and attach the CSV file in your downloads.</div>');
+  // 4. Show report panel
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+  overlay.innerHTML =
+    '<div style="background:#fff;width:100%;max-width:520px;border-radius:14px 14px 0 0;padding:20px 20px 28px;box-shadow:0 -4px 24px rgba(0,0,0,.2);">' +
+      '<div style="font-size:13px;font-weight:700;color:#111;margin-bottom:2px;">1010 CHURCH · SERVICE REPORT</div>' +
+      '<div style="font-size:11px;color:#666;margin-bottom:12px;">Date: ' + dateStr + ' &nbsp;·&nbsp; ' + n + ' item' + (n!==1?'s':'') + '</div>' +
+      '<textarea id="rpt-ta" readonly style="width:100%;height:160px;font-size:11px;font-family:monospace;border:1px solid #ddd;border-radius:6px;padding:8px;resize:none;box-sizing:border-box;color:#222;background:#fafafa;">' + reportText.trim() + '</textarea>' +
+      '<div style="display:flex;gap:8px;margin-top:12px;">' +
+        '<button id="rpt-copy" style="flex:1;padding:11px;background:#22735C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">Copy Report</button>' +
+        '<a id="rpt-email" href="' + mailtoHref + '" style="flex:1;padding:11px;background:#f0f0f0;color:#111;border-radius:8px;font-size:12px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;">Open Email</a>' +
+      '</div>' +
+      '<button id="rpt-close" style="width:100%;margin-top:8px;padding:8px;background:none;border:none;color:#999;font-size:12px;cursor:pointer;">Close</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  document.getElementById('rpt-copy').onclick = function() {
+    const ta = document.getElementById('rpt-ta');
+    ta.select(); ta.setSelectionRange(0, 99999);
+    try { document.execCommand('copy'); this.textContent = 'Copied!'; setTimeout(() => { this.textContent = 'Copy Report'; }, 2000); } catch(e) {}
+  };
+  document.getElementById('rpt-close').onclick = function() { overlay.remove(); };
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
 }
 
 renderSession();
