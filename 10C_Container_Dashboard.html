@@ -217,8 +217,7 @@ tbody tr:hover td { background: var(--bg); }
   .tw { overflow-x: unset; }
   th { padding: 6px 8px; font-size: 9px; }
   td { padding: 5px 8px; font-size: 10px; }
-  /* Keep: CTN#(1), Status(2), Delivery(7), Confirmed?(9), Floor(10) */
-  #ctn table th:nth-child(3),  #ctn table td:nth-child(3),
+  /* Keep: CTN#(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
   #ctn table th:nth-child(4),  #ctn table td:nth-child(4),
   #ctn table th:nth-child(5),  #ctn table td:nth-child(5),
   #ctn table th:nth-child(6),  #ctn table td:nth-child(6),
@@ -227,6 +226,7 @@ tbody tr:hover td { background: var(--bg); }
   #ctn table th:nth-child(12), #ctn table td:nth-child(12),
   #ctn table th:nth-child(13), #ctn table td:nth-child(13),
   #ctn table th:nth-child(14), #ctn table td:nth-child(14) { display: none; }
+  #ctn table th:nth-child(3), #ctn table td:nth-child(3) { font-size: 8px; padding: 4px 4px; }
 
   /* Building matrix — allow horizontal scroll on mobile */
   #bldg-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -253,7 +253,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 7, 2026 at 4:30 PM</em></div>
+      <div class="sub"><em>Updated Aug 7, 2026 at 4:38 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -458,7 +458,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 7, 2026 at 4:30 PM) ─────────────────────
+// ── DATA (auto-generated Aug 7, 2026 at 4:38 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'--', delivTime:'—' },
