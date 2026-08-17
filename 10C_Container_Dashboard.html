@@ -218,14 +218,15 @@ tbody tr:hover td { background: var(--bg); }
   th { padding: 6px 8px; font-size: 9px; }
   td { padding: 5px 8px; font-size: 10px; }
   /* Keep: CTN#(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
+  /* Keep: Ctnr No.(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
+  /* Hide: Load Wk(4), Load Date(5), ETA NSH(6), Del. Time(8), Kitchens(11), Vanity 1(12), Vanity 2(13) */
   #ctn table th:nth-child(4),  #ctn table td:nth-child(4),
   #ctn table th:nth-child(5),  #ctn table td:nth-child(5),
   #ctn table th:nth-child(6),  #ctn table td:nth-child(6),
   #ctn table th:nth-child(8),  #ctn table td:nth-child(8),
   #ctn table th:nth-child(11), #ctn table td:nth-child(11),
   #ctn table th:nth-child(12), #ctn table td:nth-child(12),
-  #ctn table th:nth-child(13), #ctn table td:nth-child(13),
-  #ctn table th:nth-child(14), #ctn table td:nth-child(14) { display: none; }
+  #ctn table th:nth-child(13), #ctn table td:nth-child(13) { display: none; }
   #ctn table th:nth-child(3), #ctn table td:nth-child(3) { font-size: 8px; padding: 4px 4px; }
 
   /* Building matrix — allow horizontal scroll on mobile */
@@ -258,7 +259,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 17, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Aug 17, 2026 at 3:50 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -363,7 +364,7 @@ tbody tr:hover td { background: var(--bg); }
       <thead><tr>
         <th>Ctnr No.</th><th>Status</th><th>Ctnr Code</th><th>Load Wk</th>
         <th>Load Date</th><th>ETA NSH</th><th>Delivery</th><th>Del. Time</th><th>Confirmed?</th>
-        <th>Floor</th><th>Unit Qty</th>
+        <th>Floor</th>
         <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
       </tr></thead>
       <tbody id="ctn-tbody"></tbody>
@@ -477,9 +478,9 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 17, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Aug 17, 2026 at 3:50 PM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'--', delivTime:'—' },
+  { num: 1, status:'ENR', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:true, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'--', delivTime:'—' },
   { num: 3, status:'PROJ', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'--', delivTime:'—' },
   { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'Oct 7', delivery:'Oct 9, 2026', ordered:false, code:'--', delivTime:'—' },
@@ -518,7 +519,9 @@ const ROJ = {
 
 };
 
-const EXCEPTIONS = {};
+const EXCEPTIONS = {
+  1004: { v1Status:'PROJ' }
+};
 
 const TRANSIT_PERF = [
   {label:'Average Load Days', value:'5'},
@@ -617,24 +620,63 @@ function setMiniMode(mode) {
 
 renderMiniMatrix();
 
+// ── PROJECTED DATE RANGES ──
+// While a container is still PROJ, show a Mon-Fri week window instead of a hard
+// date, so nobody reads a far-out estimate as a commitment.
+const MON3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Parse "Sep 25, 2026" or "Aug 26" (year optional). Returns a Date or null.
+function looseDate(s, anchorYear) {
+  if (!s) return null;
+  const m = String(s).trim().match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})(?:\s*,?\s*(\d{4}))?/);
+  if (!m) return null;
+  const mi = MON3.indexOf(m[1].charAt(0).toUpperCase() + m[1].slice(1,3).toLowerCase());
+  if (mi < 0) return null;
+  const yr = m[3] ? +m[3] : (anchorYear || new Date().getFullYear());
+  const d = new Date(yr, mi, +m[2]);
+  return isNaN(d) ? null : d;
+}
+
+// Mon-Fri window of the week a date falls in -> "Oct 19 - Oct 23"
+function weekRangeOf(d) {
+  if (!d || isNaN(d)) return null;
+  const day = d.getDay(), back = (day === 0) ? 6 : day - 1;
+  const mon = new Date(d); mon.setDate(d.getDate() - back);
+  const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+  return MON3[mon.getMonth()] + ' ' + mon.getDate() + ' - ' + MON3[fri.getMonth()] + ' ' + fri.getDate();
+}
+
+function projDeliveryRange(c) {
+  return weekRangeOf(looseDate(c.delivery)) || c.delivery;
+}
+
+// Load Date usually carries no year; anchor it to the delivery year and roll
+// back if that lands it after delivery (Dec load -> Jan delivery).
+function projLoadRange(c) {
+  const del = looseDate(c.delivery);
+  let d = looseDate(c.loadDate, del ? del.getFullYear() : null);
+  if (d && del && d > del) d = new Date(d.getFullYear() - 1, d.getMonth(), d.getDate());
+  return weekRangeOf(d) || c.loadDate;
+}
+
 // ── CONTAINER SCHEDULE ──
 (function() {
   let html = '';
   CONTAINERS.forEach(c => {
+    const isProj = c.status === 'PROJ';
     const dot = statusDot(c.status);
     const bdg = statusBadge(c.status);
     html += `<tr>
       <td><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
       <td><span class="bdg ${bdg}">${c.status}</span></td>
       <td class="mono" style="font-size:10px;">${c.code||'—'}</td>
-      <td>${c.week}</td>
-      <td>${c.loadDate}</td>
-      <td>${c.etaChs}</td>
-      <td style="font-weight:500">${c.delivery}</td>
+      <td style="color:var(--text-3)">${c.week}</td>
+      <td style="white-space:nowrap;color:var(--text-3)">${isProj ? projLoadRange(c) : c.loadDate}</td>
+      <td>${isProj ? '—' : c.etaChs}</td>
+      <td style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : c.delivery}</td>
       <td style="font-size:10px;">${c.delivTime||'—'}</td>
-      <td style="font-size:10px;color:var(--text-3)">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
+      <td style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
       <td>Fl. ${c.floor}</td>
-      <td style="text-align:center">${c.unitQty||'—'}</td>
       <td class="mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
       <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
       <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v2||'—'}</td>
