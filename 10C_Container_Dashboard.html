@@ -180,9 +180,18 @@ tbody tr:hover td { background: var(--bg); }
   .topbar-left img { height: 36px !important; width: 36px !important; }
 
   /* Tabs row — wrap to 2 lines, no scroll */
-  .tabs { width: 100%; overflow-x: unset; flex-wrap: wrap; }
-  .tab { padding: 7px 8px; font-size: 10px; white-space: nowrap; flex: 1; text-align: center; }
-  .tabs a[href] { width: 100%; margin-left: 0 !important; justify-content: center; margin-top: 2px; }
+  /* Tabs become a 2x2 grid: Schedule | Matrix / Damages | Shared Documents.
+     display:contents dissolves the two .tabs wrappers so all four tabs
+     become direct children of the grid. */
+  .tab-bar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
+  .tab-bar > .tabs { display: contents; }
+  .tab-bar .tabs .tab {
+    width: 100%; margin: 0 !important; box-sizing: border-box; min-height: 40px;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 8px 6px; font-size: 11px; line-height: 1.2; white-space: normal;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .tab-bar .tabs .tab.on { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   /* Top metrics row — stack all cards vertically, full width */
   #ctn > div[style*="display:flex"] {
@@ -273,7 +282,7 @@ tbody tr:hover td { background: var(--bg); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 17, 2026 at 4:30 PM</em></div>
+      <div class="sub"><em>Updated Aug 17, 2026 at 4:32 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -286,7 +295,7 @@ tbody tr:hover td { background: var(--bg); }
 </div>
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div class="tab-bar" style="display:flex;align-items:center;gap:8px;">
     <div class="tabs" style="margin-bottom:0;">
       <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
       <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
@@ -492,7 +501,7 @@ tbody tr:hover td { background: var(--bg); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 17, 2026 at 4:30 PM) ─────────────────────
+// ── DATA (auto-generated Aug 17, 2026 at 4:32 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 26', shipDate:'Aug 31', vessel:'—', etaChs:'Sep 16', railDate:'Sep 19', etaNash:'Sep 23', delivery:'Sep 25, 2026', ordered:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 30', delivery:'Oct 2, 2026', ordered:false, code:'--', delivTime:'—' },
