@@ -261,14 +261,14 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
   /* Keep: CTN#(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
   /* Keep: Ctnr No.(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
   /* Hide: Load Wk(4), Load Date(5), ETA NSH(6), Del. Time(8), Kitchens(11), Vanity 1(12), Vanity 2(13) */
-  #ctn table th:nth-child(4),  #ctn table td:nth-child(4),
-  #ctn table th:nth-child(5),  #ctn table td:nth-child(5),
-  #ctn table th:nth-child(6),  #ctn table td:nth-child(6),
-  #ctn table th:nth-child(8),  #ctn table td:nth-child(8),
-  #ctn table th:nth-child(11), #ctn table td:nth-child(11),
-  #ctn table th:nth-child(12), #ctn table td:nth-child(12),
-  #ctn table th:nth-child(13), #ctn table td:nth-child(13) { display: none; }
-  #ctn table th:nth-child(3), #ctn table td:nth-child(3) { font-size: 8px; padding: 4px 4px; }
+  /* Columns are targeted by CLASS, not nth-child, so adding, removing or
+     reordering a column can never silently blank the wrong one on phones.
+     Kept on mobile: Ctnr No., Status, Ctnr Code, Delivery, Confirmed?, Floor */
+  #ctn .c-loadwk, #ctn .c-loaddate, #ctn .c-etansh, #ctn .c-dtime,
+  #ctn .c-kitchens, #ctn .c-v1, #ctn .c-v2 { display: none; }
+  #ctn .c-code { font-size: 8px; padding: 4px 4px; }
+  /* Internal view on a phone: let the extra columns scroll instead of overflow */
+  body.staff-mode #ctn .tw { overflow-x: auto; }
 
   /* Building matrix — allow horizontal scroll on mobile */
   #bldg-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -300,7 +300,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 18, 2026 at 3:25 PM</em></div>
+      <div class="sub"><em>Updated Aug 18, 2026 at 4:05 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -403,12 +403,14 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
   <div class="tw">
     <table>
       <thead><tr>
-        <th>Ctnr No.</th><th>Status</th><th>Ctnr Code</th><th>Load Wk</th>
-        <th>Load Date</th><th>ETA NSH</th><th>Delivery</th><th>Del. Time</th><th>Confirmed?</th>
-        <th>Floor</th>
-        <th>Kitchens</th><th>Vanity 1</th><th>Vanity 2</th>
-        <th class="staff-col">Ship Date</th><th class="staff-col">Vessel</th>
-        <th class="staff-col">ETA CHS</th><th class="staff-col">Rail Date</th><th class="staff-col">Unit Qty</th>
+        <th class="c-num">Ctnr No.</th><th class="c-status">Status</th><th class="c-code">Ctnr Code</th>
+        <th class="c-loadwk">Load Wk</th><th class="c-loaddate">Load Date</th>
+        <th class="c-ship staff-col">Ship Date</th><th class="c-vessel staff-col">Vessel</th>
+        <th class="c-etachs staff-col">ETA CHS</th><th class="c-rail staff-col">Rail Date</th>
+        <th class="c-etansh">ETA NSH</th><th class="c-deliv">Delivery</th><th class="c-dtime">Del. Time</th>
+        <th class="c-conf">Confirmed?</th><th class="c-floor">Floor</th>
+        <th class="c-qty staff-col">Unit Qty</th>
+        <th class="c-kitchens">Kitchens</th><th class="c-v1">Vanity 1</th><th class="c-v2">Vanity 2</th>
       </tr></thead>
       <tbody id="ctn-tbody"></tbody>
     </table>
@@ -416,8 +418,8 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
   <button id="ctn-copy" onclick="copySchedule(this)" title="Copy the next 10 deliveries for an email" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--border);background:var(--surface);border-radius:99px;font-size:10px;font-weight:600;color:var(--text-2);cursor:pointer;font-family:inherit;line-height:1.6;">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy next 10
   </button>
-  <button id="staff-btn" onclick="staffClick()" title="Internal view — full dates, vessel, ship and rail dates">
-    <svg id="staff-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="staff-label">Internal view</span>
+  <button id="staff-btn" onclick="staffClick()" title="View options">
+    <svg id="staff-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span id="staff-label">View</span>
   </button>
   <input id="staff-pin" type="password" inputmode="text" placeholder="PIN" autocomplete="off">
   <div class="note-bar">
@@ -528,7 +530,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 18, 2026 at 3:25 PM) ─────────────────────
+// ── DATA (auto-generated Aug 18, 2026 at 4:05 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', delivery:'Oct 1, 2026', ordered:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', delivery:'Oct 6, 2026', ordered:false, code:'--', delivTime:'—' },
@@ -715,19 +717,14 @@ function projDeliveryRange(c) {
 // A convenience toggle, NOT security: everything it reveals is already present
 // in this file's data block and readable via View Source. It exists to keep the
 // contractor-facing table uncluttered, not to protect anything.
-const STAFF_PIN = '210D';
+const STAFF_PIN = '210DH';
 let STAFF = sessionStorage.getItem('staff10c') === '1';
 
 function applyStaff() {
   document.body.classList.toggle('staff-mode', STAFF);
+  // Label stays neutral in both states; the accent border is the only "on" cue.
   const lbl = document.getElementById('staff-label');
-  if (lbl) lbl.textContent = STAFF ? 'Internal view on' : 'Internal view';
-  const ico = document.getElementById('staff-icon');
-  if (ico) {   // swap padlock between closed and open shackle
-    ico.innerHTML = STAFF
-      ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'
-      : '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-  }
+  if (lbl) lbl.textContent = STAFF ? 'View · full' : 'View';
   renderSchedule();
 }
 
@@ -772,20 +769,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── COPY SCHEDULE (next 10 deliveries, plain text for email) ──
-// Format: • Fri, Sep 25 [ETA] -FL10-CTN 1 (code)
+// • 10C CTN-1(MEDU7973030) FL 10- ETA:Mon Sep 07
+// • 10C CTN-1(MEDU7973030) FL 10- Confirmed:Mon Sep 07
+// • 10C CTN-1 FL 10- Est: Sep 21- Sep 25            (no code yet -> omitted)
+const COPY_PREFIX = '10C';
+const _D2 = n => String(n).padStart(2, '0');          // day is zero-padded
+
+// Mon-Fri window of the week a date falls in, zero-padded: "Sep 21- Sep 25"
+function copyWeekRange(c) {
+  const dt = deliveryDate(c);
+  if (!dt) return '—';
+  const day = dt.getDay(), back = (day === 0) ? 6 : day - 1;
+  const mon = new Date(dt); mon.setDate(dt.getDate() - back);
+  const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+  return MON3[mon.getMonth()] + ' ' + _D2(mon.getDate()) + '- ' + MON3[fri.getMonth()] + ' ' + _D2(fri.getDate());
+}
+
 function scheduleLine(c, d) {
   const isProj = c.status === 'PROJ';
-  const dateTxt = isProj
-    ? projDeliveryRange(c)
-    : DAY3[d.getDay()] + ', ' + MON3[d.getMonth()] + ' ' + d.getDate();
-  const tag = isProj ? 'Projected' : (c.confirmed ? 'Confirmed' : 'ETA');
 
   const blank = v => v === undefined || v === null || v === '' ||
                      v === '--' || v === '---' || v === '—';
-  const flPart   = blank(c.floor) ? '-' : ' -FL' + c.floor + '-';
-  const codePart = blank(c.code)  ? ''  : ' (' + c.code + ')';
+  const code = blank(c.code)  ? '' : '(' + c.code + ')';     // omitted entirely when absent
+  const fl   = blank(c.floor) ? '—' : c.floor;
 
-  return '• ' + dateTxt + ' [' + tag + ']' + flPart + 'CTN ' + c.num + codePart;
+  // Projected -> week window with a leading space after the colon.
+  // Otherwise -> weekday + zero-padded date, no space after the colon.
+  const tail = isProj
+    ? 'Est: ' + copyWeekRange(c)
+    : (c.confirmed ? 'Confirmed:' : 'ETA:') +
+      DAY3[d.getDay()] + ' ' + MON3[d.getMonth()] + ' ' + _D2(d.getDate());
+
+  return '• ' + COPY_PREFIX + ' CTN-' + c.num + code + ' FL ' + fl + '- ' + tail;
 }
 
 function copySchedule(btn) {
@@ -858,24 +873,24 @@ function renderSchedule() {
     const dot = statusDot(c.status);
     const bdg = statusBadge(c.status);
     html += `<tr${isNext ? ' class="next-up-row"' : ''}>
-      <td><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
-      <td><span class="bdg ${bdg}">${c.status}</span></td>
-      <td class="mono" style="font-size:10px;">${c.code||'—'}</td>
-      <td style="color:var(--text-3)">${c.week}</td>
-      <td style="white-space:nowrap;color:var(--text-3)">${isProj ? projLoadRange(c) : c.loadDate}</td>
-      <td>${isProj ? '—' : c.etaNash}</td>
-      <td style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
-      <td style="font-size:10px;">${c.delivTime||'—'}</td>
-      <td style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
-      <td>Fl. ${c.floor}</td>
-      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
-      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
-      <td class="mono" style="font-size:10px;color:var(--text-2)">${c.v2||'—'}</td>
-      <td class="staff-col" style="font-size:10px;">${c.shipDate||'—'}</td>
-      <td class="staff-col" style="font-size:10px;color:var(--text-3)">${c.vessel||'—'}</td>
-      <td class="staff-col" style="font-size:10px;">${c.etaChs||'—'}</td>
-      <td class="staff-col" style="font-size:10px;">${c.railDate||'—'}</td>
-      <td class="staff-col" style="font-size:10px;text-align:center">${c.unitQty||'—'}</td>
+      <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
+      <td class="c-status"><span class="bdg ${bdg}">${c.status}</span></td>
+      <td class="c-code mono" style="font-size:10px;">${c.code||'—'}</td>
+      <td class="c-loadwk" style="color:var(--text-3)">${c.week}</td>
+      <td class="c-loaddate" style="white-space:nowrap;color:var(--text-3)">${isProj ? projLoadRange(c) : c.loadDate}</td>
+      <td class="c-ship staff-col" style="font-size:10px;">${c.shipDate||'—'}</td>
+      <td class="c-vessel staff-col" style="font-size:10px;color:var(--text-3)">${c.vessel||'—'}</td>
+      <td class="c-etachs staff-col" style="font-size:10px;">${c.etaChs||'—'}</td>
+      <td class="c-rail staff-col" style="font-size:10px;">${c.railDate||'—'}</td>
+      <td class="c-etansh">${isProj ? '—' : c.etaNash}</td>
+      <td class="c-deliv" style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
+      <td class="c-dtime" style="font-size:10px;">${c.delivTime||'—'}</td>
+      <td class="c-conf" style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
+      <td class="c-floor">Fl. ${c.floor}</td>
+      <td class="c-qty staff-col" style="font-size:10px;text-align:center">${c.unitQty||'—'}</td>
+      <td class="c-kitchens mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
+      <td class="c-v1 mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
+      <td class="c-v2 mono" style="font-size:10px;color:var(--text-2)">${c.v2||'—'}</td>
     </tr>`;
   });
   document.getElementById('ctn-tbody').innerHTML = html;
