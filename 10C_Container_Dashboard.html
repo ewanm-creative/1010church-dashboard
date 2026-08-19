@@ -75,7 +75,8 @@ body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMa
 .d-CHS  { background: #2D8C74; }
 .d-LDD  { background: #7EC4B0; }
 .d-LDG  { background: #B6DCCE; }
-.d-PROJ { background: #D5EDE7; }
+/* Hollow, matching .bm-badge-proj on the unit cards */
+.d-PROJ { background: transparent; border: 1px solid rgba(26,92,71,0.45); box-shadow: none; }
 .d-BH   { background: #BBBBBB; }
 .mdot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 .tw { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; overflow-x: auto; background: var(--surface); margin-bottom: 12px; }
@@ -88,6 +89,17 @@ tbody tr:hover td { background: var(--bg); }
 .proj-ok td { background: rgba(42,122,58,.03); }
 .proj-warn td { background: rgba(212,137,10,.04); }
 .route-pipeline { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; overflow-x: auto; }
+/* Narrow column with rotated (bottom-to-top) header — keeps short numeric
+   columns from taking the full width of their label. */
+/* The rotated label is taller than a normal header cell, so the row needs an
+   explicit height — without it the text overflows past the table's top border. */
+#ctn thead th { height: 76px; vertical-align: bottom; }
+#ctn th.vhdr { padding: 0 4px 8px; width: 1%; vertical-align: bottom; text-align: center; }
+#ctn th.vhdr > span { writing-mode: vertical-rl; transform: rotate(180deg);
+                      display: inline-block; white-space: nowrap; line-height: 1;
+                      letter-spacing: .06em; }
+#ctn td.vcol { padding-left: 4px; padding-right: 4px; width: 1%; text-align: center; }
+
 /* Internal ("staff") columns — hidden until the PIN is entered.
    Appended at the END of the table on purpose: the mobile rules below target
    columns by nth-child, so inserting mid-table would shift every index. */
@@ -260,11 +272,11 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
   td { padding: 5px 8px; font-size: 10px; }
   /* Keep: CTN#(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
   /* Keep: Ctnr No.(1), Status(2), Ctnr Code(3), Delivery(7), Confirmed?(9), Floor(10) */
-  /* Hide: Load Wk(4), Load Date(5), ETA NSH(6), Del. Time(8), Kitchens(11), Vanity 1(12), Vanity 2(13) */
+  /* Hidden on mobile: Load Wk, Load Date, ETA NSH, Yard Days, Time, Kitchens, Vanity 1, Vanity 2 */
   /* Columns are targeted by CLASS, not nth-child, so adding, removing or
      reordering a column can never silently blank the wrong one on phones.
      Kept on mobile: Ctnr No., Status, Ctnr Code, Delivery, Confirmed?, Floor */
-  #ctn .c-loadwk, #ctn .c-loaddate, #ctn .c-etansh, #ctn .c-dtime,
+  #ctn .c-loadwk, #ctn .c-loaddate, #ctn .c-etansh, #ctn .c-yard, #ctn .c-dtime,
   #ctn .c-kitchens, #ctn .c-v1, #ctn .c-v2 { display: none; }
   #ctn .c-code { font-size: 8px; padding: 4px 4px; }
   /* Internal view on a phone: let the extra columns scroll instead of overflow */
@@ -300,7 +312,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 19, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Aug 19, 2026 at 4:08 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -404,12 +416,13 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <table>
       <thead><tr>
         <th class="c-num">Ctnr No.</th><th class="c-status">Status</th><th class="c-code">Ctnr Code</th>
-        <th class="c-loadwk">Load Wk</th><th class="c-loaddate">Load Date</th>
+        <th class="c-loadwk staff-col">Load Wk</th><th class="c-loaddate">Load Date</th>
         <th class="c-ship staff-col">Ship Date</th><th class="c-vessel staff-col">Vessel</th>
         <th class="c-etachs staff-col">ETA CHS</th><th class="c-rail staff-col">Rail Date</th>
-        <th class="c-etansh">ETA NSH</th><th class="c-deliv">Delivery</th><th class="c-dtime">Del. Time</th>
+        <th class="c-etansh">ETA NSH</th><th class="c-yard vhdr"><span>Yard Days</span></th>
+        <th class="c-deliv">Delivery</th><th class="c-dtime vhdr"><span>Time</span></th>
         <th class="c-conf">Confirmed?</th><th class="c-floor">Floor</th>
-        <th class="c-qty staff-col">Unit Qty</th>
+        <th class="c-qty staff-col vhdr"><span>Unit Qty</span></th>
         <th class="c-kitchens">Kitchens</th><th class="c-v1">Vanity 1</th><th class="c-v2">Vanity 2</th>
       </tr></thead>
       <tbody id="ctn-tbody"></tbody>
@@ -530,41 +543,41 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 19, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Aug 19, 2026 at 4:08 PM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', delivery:'Oct 1, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', delivery:'Oct 6, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 3, status:'PROJ', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', delivery:'Oct 6, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Oct 4', railDate:'Oct 7', etaNash:'Oct 10', delivery:'Oct 13, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 5, status:'PROJ', week:'Wk 38', floor:14, unitQty:11, kitchens:'1401:1406,1408:1412', v1:'1401:1412', v2:'1404,1406,1410,1412', loadDate:'Sep 16', shipDate:'Sep 21', vessel:'—', etaChs:'Oct 11', railDate:'Oct 14', etaNash:'Oct 17', delivery:'Oct 20, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 6, status:'PROJ', week:'Wk 39', floor:15, unitQty:11, kitchens:'1501:1506,1508:1512', v1:'1501:1512', v2:'1504,1506,1510,1512', loadDate:'Sep 23', shipDate:'Sep 28', vessel:'—', etaChs:'Oct 18', railDate:'Oct 21', etaNash:'Oct 24', delivery:'Oct 27, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 7, status:'PROJ', week:'Wk 40', floor:16, unitQty:10, kitchens:'1601:1606,1608:1610,1612', v1:'1601:1611', v2:'1604,1606,1610,1612', loadDate:'Sep 30', shipDate:'Oct 5', vessel:'—', etaChs:'Oct 25', railDate:'Oct 28', etaNash:'Oct 31', delivery:'Nov 3, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 8, status:'PROJ', week:'Wk 41', floor:17, unitQty:11, kitchens:'1701:1706,1708:1712', v1:'1701:1712', v2:'1704,1706,1710,1712', loadDate:'Oct 7', shipDate:'Oct 12', vessel:'—', etaChs:'Nov 1', railDate:'Nov 4', etaNash:'Nov 7', delivery:'Nov 10, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num: 9, status:'PROJ', week:'Wk 42', floor:18, unitQty:11, kitchens:'1801:1806,1808:1812', v1:'1801:1812', v2:'1804,1806,1810,1812', loadDate:'Oct 14', shipDate:'Oct 19', vessel:'—', etaChs:'Nov 8', railDate:'Nov 11', etaNash:'Nov 14', delivery:'Nov 17, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:10, status:'PROJ', week:'Wk 43', floor:19, unitQty:11, kitchens:'1901:1906,1908:1912', v1:'1901:1912', v2:'1904,1906,1910,1912', loadDate:'Oct 21', shipDate:'Oct 26', vessel:'—', etaChs:'Nov 15', railDate:'Nov 18', etaNash:'Nov 21', delivery:'Nov 24, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:11, status:'PROJ', week:'Wk 44', floor:20, unitQty:11, kitchens:'2001:2006,2008:2012', v1:'2001:2003,2005:2012', v2:'2004,2006,2010,2012', loadDate:'Oct 28', shipDate:'Nov 2', vessel:'—', etaChs:'Nov 22', railDate:'Nov 25', etaNash:'Nov 28', delivery:'Dec 1, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:12, status:'PROJ', week:'Wk 45', floor:21, unitQty:11, kitchens:'2101:2106,2108:2112', v1:'2101:2112', v2:'2104,2106,2110,2112', loadDate:'Nov 4', shipDate:'Nov 9', vessel:'—', etaChs:'Nov 29', railDate:'Dec 2', etaNash:'Dec 5', delivery:'Dec 8, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:13, status:'PROJ', week:'Wk 46', floor:22, unitQty:11, kitchens:'2201:2206,2208:2212', v1:'2201:2212', v2:'2204,2206,2210,2212', loadDate:'Nov 11', shipDate:'Nov 16', vessel:'—', etaChs:'Dec 6', railDate:'Dec 9', etaNash:'Dec 12', delivery:'Dec 15, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:14, status:'PROJ', week:'Wk 47', floor:23, unitQty:12, kitchens:'2301:2306,2308:2312,3508', v1:'2301:2312', v2:'2304,2306,2310,2312', loadDate:'Nov 18', shipDate:'Nov 23', vessel:'—', etaChs:'Dec 13', railDate:'Dec 16', etaNash:'Dec 19', delivery:'Dec 22, 2026', ordered:false, code:'--', delivTime:'—' },
-  { num:15, status:'PROJ', week:'Wk 49', floor:24, unitQty:11, kitchens:'2401:2406,2408:2412', v1:'2401:2412', v2:'2404,2406,2410,2412', loadDate:'Dec 2', shipDate:'Dec 7', vessel:'—', etaChs:'Dec 27', railDate:'Dec 30', etaNash:'Jan 2', delivery:'Jan 5, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:16, status:'PROJ', week:'Wk 50', floor:25, unitQty:10, kitchens:'2501:2506,2508:2510,2512', v1:'2501:2511', v2:'2504,2506,2510,2512', loadDate:'Dec 9', shipDate:'Dec 14', vessel:'—', etaChs:'Jan 3', railDate:'Jan 6', etaNash:'Jan 9', delivery:'Jan 12, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:17, status:'PROJ', week:'Wk 51', floor:26, unitQty:11, kitchens:'2601:2606,2608:2612', v1:'2601:2612', v2:'2604,2606,2610,2612', loadDate:'Dec 16', shipDate:'Dec 21', vessel:'—', etaChs:'Jan 10', railDate:'Jan 13', etaNash:'Jan 16', delivery:'Jan 19, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:18, status:'PROJ', week:'Wk 52', floor:27, unitQty:11, kitchens:'2701:2706,2708:2712', v1:'2701:2712', v2:'2704,2706,2710,2712', loadDate:'Dec 23', shipDate:'Dec 28', vessel:'—', etaChs:'Jan 17', railDate:'Jan 20', etaNash:'Jan 23', delivery:'Jan 26, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:19, status:'PROJ', week:'Wk 53', floor:28, unitQty:11, kitchens:'2801:2806,2808:2812', v1:'2801:2812', v2:'2804,2806,2810,2812', loadDate:'Dec 30', shipDate:'Jan 4', vessel:'—', etaChs:'Jan 24', railDate:'Jan 27', etaNash:'Jan 30', delivery:'Feb 2, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:20, status:'PROJ', week:'Wk 1', floor:29, unitQty:11, kitchens:'2901:2906,2908:2912', v1:'2901:2903,2905:2912', v2:'2906,2910,2912', loadDate:'Jan 6', shipDate:'Jan 11', vessel:'—', etaChs:'Jan 31', railDate:'Feb 3', etaNash:'Feb 6', delivery:'Feb 9, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:21, status:'PROJ', week:'Wk 2', floor:30, unitQty:11, kitchens:'3001:3006,3008:3012', v1:'3001:3012', v2:'3004,3006,3010,3012', loadDate:'Jan 13', shipDate:'Jan 18', vessel:'—', etaChs:'Feb 7', railDate:'Feb 10', etaNash:'Feb 13', delivery:'Feb 16, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:22, status:'PROJ', week:'Wk 3', floor:31, unitQty:11, kitchens:'3101:3106,3108:3112', v1:'3101:3112', v2:'3104,3106,3110,3112', loadDate:'Jan 20', shipDate:'Jan 25', vessel:'—', etaChs:'Feb 14', railDate:'Feb 17', etaNash:'Feb 20', delivery:'Feb 23, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:23, status:'PROJ', week:'Wk 4', floor:32, unitQty:11, kitchens:'3201:3206,3208:3212', v1:'3201:3212', v2:'3204,3206,3210,3212', loadDate:'Jan 27', shipDate:'Feb 1', vessel:'—', etaChs:'Feb 21', railDate:'Feb 24', etaNash:'Feb 27', delivery:'Mar 2, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:24, status:'PROJ', week:'Wk 5', floor:33, unitQty:10, kitchens:'3301:3306,3308:3310,3312', v1:'3301:3311', v2:'3304,3306,3310', loadDate:'Feb 3', shipDate:'Feb 8', vessel:'—', etaChs:'Feb 28', railDate:'Mar 3', etaNash:'Mar 6', delivery:'Mar 9, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:25, status:'PROJ', week:'Wk 6', floor:34, unitQty:11, kitchens:'3401:3406,3408:3412', v1:'3401:3412', v2:'3404,3406,3410,3412', loadDate:'Feb 10', shipDate:'Feb 15', vessel:'—', etaChs:'Mar 7', railDate:'Mar 10', etaNash:'Mar 13', delivery:'Mar 16, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:26, status:'PROJ', week:'Wk 9', floor:35, unitQty:10, kitchens:'3501:3506,3509:3512', v1:'3501:3512', v2:'3504,3506,3510,3512', loadDate:'Mar 3', shipDate:'Mar 8', vessel:'—', etaChs:'Mar 28', railDate:'Mar 31', etaNash:'Apr 3', delivery:'Apr 6, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:27, status:'PROJ', week:'Wk 10', floor:36, unitQty:11, kitchens:'3601:3606,3608:3612', v1:'3601:3603,3605:3612', v2:'3606,3610,3612', loadDate:'Mar 10', shipDate:'Mar 15', vessel:'—', etaChs:'Apr 4', railDate:'Apr 7', etaNash:'Apr 10', delivery:'Apr 13, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:28, status:'PROJ', week:'Wk 11', floor:37, unitQty:11, kitchens:'3701:3706,3708:3712', v1:'3701:3712', v2:'3704,3706,3710,3712', loadDate:'Mar 17', shipDate:'Mar 22', vessel:'—', etaChs:'Apr 11', railDate:'Apr 14', etaNash:'Apr 17', delivery:'Apr 20, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:29, status:'PROJ', week:'Wk 12', floor:38, unitQty:11, kitchens:'3801:3806,3808:3812', v1:'3801:3812', v2:'3804,3806,3810,3812', loadDate:'Mar 24', shipDate:'Mar 29', vessel:'—', etaChs:'Apr 18', railDate:'Apr 21', etaNash:'Apr 24', delivery:'Apr 27, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:30, status:'PROJ', week:'Wk 13', floor:39, unitQty:11, kitchens:'3901:3906,3908:3912', v1:'3901:3912', v2:'3904,3906,3910,3912', loadDate:'Mar 31', shipDate:'Apr 5', vessel:'—', etaChs:'Apr 25', railDate:'Apr 28', etaNash:'May 1', delivery:'May 4, 2027', ordered:false, code:'--', delivTime:'—' },
-  { num:'BH', status:'PROJ', week:'Wk 26', floor:'10–39', unitQty:30, kitchens:'All unit-07 (30 floors)', v1:'—', v2:'—', loadDate:'Jun 30, 2027', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Jul 30, 2027', ordered:false, code:'—', delivTime:'—' },
-  { num:'ECT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:4, kitchens:'—', v1:'1004, 2004, 2904, 3604', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Aug 6, 2027', ordered:false, code:'—', delivTime:'—' },
-  { num:'WCT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:6, kitchens:'1611, 2511, 3311', v1:'1612, 2512, 3312', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', delivery:'Aug 6, 2027', ordered:false, code:'—', delivTime:'—' }
+  { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', yardDays:'3', delivery:'Oct 1, 2026', deliveryISO:'2026-10-01', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 3, status:'PROJ', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Oct 4', railDate:'Oct 7', etaNash:'Oct 10', yardDays:'3', delivery:'Oct 13, 2026', deliveryISO:'2026-10-13', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 5, status:'PROJ', week:'Wk 38', floor:14, unitQty:11, kitchens:'1401:1406,1408:1412', v1:'1401:1412', v2:'1404,1406,1410,1412', loadDate:'Sep 16', shipDate:'Sep 21', vessel:'—', etaChs:'Oct 11', railDate:'Oct 14', etaNash:'Oct 17', yardDays:'3', delivery:'Oct 20, 2026', deliveryISO:'2026-10-20', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 6, status:'PROJ', week:'Wk 39', floor:15, unitQty:11, kitchens:'1501:1506,1508:1512', v1:'1501:1512', v2:'1504,1506,1510,1512', loadDate:'Sep 23', shipDate:'Sep 28', vessel:'—', etaChs:'Oct 18', railDate:'Oct 21', etaNash:'Oct 24', yardDays:'3', delivery:'Oct 27, 2026', deliveryISO:'2026-10-27', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 7, status:'PROJ', week:'Wk 40', floor:16, unitQty:10, kitchens:'1601:1606,1608:1610,1612', v1:'1601:1611', v2:'1604,1606,1610,1612', loadDate:'Sep 30', shipDate:'Oct 5', vessel:'—', etaChs:'Oct 25', railDate:'Oct 28', etaNash:'Oct 31', yardDays:'3', delivery:'Nov 3, 2026', deliveryISO:'2026-11-03', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 8, status:'PROJ', week:'Wk 41', floor:17, unitQty:11, kitchens:'1701:1706,1708:1712', v1:'1701:1712', v2:'1704,1706,1710,1712', loadDate:'Oct 7', shipDate:'Oct 12', vessel:'—', etaChs:'Nov 1', railDate:'Nov 4', etaNash:'Nov 7', yardDays:'3', delivery:'Nov 10, 2026', deliveryISO:'2026-11-10', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num: 9, status:'PROJ', week:'Wk 42', floor:18, unitQty:11, kitchens:'1801:1806,1808:1812', v1:'1801:1812', v2:'1804,1806,1810,1812', loadDate:'Oct 14', shipDate:'Oct 19', vessel:'—', etaChs:'Nov 8', railDate:'Nov 11', etaNash:'Nov 14', yardDays:'3', delivery:'Nov 17, 2026', deliveryISO:'2026-11-17', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:10, status:'PROJ', week:'Wk 43', floor:19, unitQty:11, kitchens:'1901:1906,1908:1912', v1:'1901:1912', v2:'1904,1906,1910,1912', loadDate:'Oct 21', shipDate:'Oct 26', vessel:'—', etaChs:'Nov 15', railDate:'Nov 18', etaNash:'Nov 21', yardDays:'3', delivery:'Nov 24, 2026', deliveryISO:'2026-11-24', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:11, status:'PROJ', week:'Wk 44', floor:20, unitQty:11, kitchens:'2001:2006,2008:2012', v1:'2001:2003,2005:2012', v2:'2004,2006,2010,2012', loadDate:'Oct 28', shipDate:'Nov 2', vessel:'—', etaChs:'Nov 22', railDate:'Nov 25', etaNash:'Nov 28', yardDays:'3', delivery:'Dec 1, 2026', deliveryISO:'2026-12-01', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:12, status:'PROJ', week:'Wk 45', floor:21, unitQty:11, kitchens:'2101:2106,2108:2112', v1:'2101:2112', v2:'2104,2106,2110,2112', loadDate:'Nov 4', shipDate:'Nov 9', vessel:'—', etaChs:'Nov 29', railDate:'Dec 2', etaNash:'Dec 5', yardDays:'3', delivery:'Dec 8, 2026', deliveryISO:'2026-12-08', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:13, status:'PROJ', week:'Wk 46', floor:22, unitQty:11, kitchens:'2201:2206,2208:2212', v1:'2201:2212', v2:'2204,2206,2210,2212', loadDate:'Nov 11', shipDate:'Nov 16', vessel:'—', etaChs:'Dec 6', railDate:'Dec 9', etaNash:'Dec 12', yardDays:'3', delivery:'Dec 15, 2026', deliveryISO:'2026-12-15', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:14, status:'PROJ', week:'Wk 47', floor:23, unitQty:12, kitchens:'2301:2306,2308:2312,3508', v1:'2301:2312', v2:'2304,2306,2310,2312', loadDate:'Nov 18', shipDate:'Nov 23', vessel:'—', etaChs:'Dec 13', railDate:'Dec 16', etaNash:'Dec 19', yardDays:'3', delivery:'Dec 22, 2026', deliveryISO:'2026-12-22', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:15, status:'PROJ', week:'Wk 49', floor:24, unitQty:11, kitchens:'2401:2406,2408:2412', v1:'2401:2412', v2:'2404,2406,2410,2412', loadDate:'Dec 2', shipDate:'Dec 7', vessel:'—', etaChs:'Dec 27', railDate:'Dec 30', etaNash:'Jan 2', yardDays:'3', delivery:'Jan 5, 2027', deliveryISO:'2027-01-05', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:16, status:'PROJ', week:'Wk 50', floor:25, unitQty:10, kitchens:'2501:2506,2508:2510,2512', v1:'2501:2511', v2:'2504,2506,2510,2512', loadDate:'Dec 9', shipDate:'Dec 14', vessel:'—', etaChs:'Jan 3', railDate:'Jan 6', etaNash:'Jan 9', yardDays:'3', delivery:'Jan 12, 2027', deliveryISO:'2027-01-12', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:17, status:'PROJ', week:'Wk 51', floor:26, unitQty:11, kitchens:'2601:2606,2608:2612', v1:'2601:2612', v2:'2604,2606,2610,2612', loadDate:'Dec 16', shipDate:'Dec 21', vessel:'—', etaChs:'Jan 10', railDate:'Jan 13', etaNash:'Jan 16', yardDays:'3', delivery:'Jan 19, 2027', deliveryISO:'2027-01-19', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:18, status:'PROJ', week:'Wk 52', floor:27, unitQty:11, kitchens:'2701:2706,2708:2712', v1:'2701:2712', v2:'2704,2706,2710,2712', loadDate:'Dec 23', shipDate:'Dec 28', vessel:'—', etaChs:'Jan 17', railDate:'Jan 20', etaNash:'Jan 23', yardDays:'3', delivery:'Jan 26, 2027', deliveryISO:'2027-01-26', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:19, status:'PROJ', week:'Wk 53', floor:28, unitQty:11, kitchens:'2801:2806,2808:2812', v1:'2801:2812', v2:'2804,2806,2810,2812', loadDate:'Dec 30', shipDate:'Jan 4', vessel:'—', etaChs:'Jan 24', railDate:'Jan 27', etaNash:'Jan 30', yardDays:'3', delivery:'Feb 2, 2027', deliveryISO:'2027-02-02', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:20, status:'PROJ', week:'Wk 1', floor:29, unitQty:11, kitchens:'2901:2906,2908:2912', v1:'2901:2903,2905:2912', v2:'2906,2910,2912', loadDate:'Jan 6', shipDate:'Jan 11', vessel:'—', etaChs:'Jan 31', railDate:'Feb 3', etaNash:'Feb 6', yardDays:'3', delivery:'Feb 9, 2027', deliveryISO:'2027-02-09', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:21, status:'PROJ', week:'Wk 2', floor:30, unitQty:11, kitchens:'3001:3006,3008:3012', v1:'3001:3012', v2:'3004,3006,3010,3012', loadDate:'Jan 13', shipDate:'Jan 18', vessel:'—', etaChs:'Feb 7', railDate:'Feb 10', etaNash:'Feb 13', yardDays:'3', delivery:'Feb 16, 2027', deliveryISO:'2027-02-16', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:22, status:'PROJ', week:'Wk 3', floor:31, unitQty:11, kitchens:'3101:3106,3108:3112', v1:'3101:3112', v2:'3104,3106,3110,3112', loadDate:'Jan 20', shipDate:'Jan 25', vessel:'—', etaChs:'Feb 14', railDate:'Feb 17', etaNash:'Feb 20', yardDays:'3', delivery:'Feb 23, 2027', deliveryISO:'2027-02-23', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:23, status:'PROJ', week:'Wk 4', floor:32, unitQty:11, kitchens:'3201:3206,3208:3212', v1:'3201:3212', v2:'3204,3206,3210,3212', loadDate:'Jan 27', shipDate:'Feb 1', vessel:'—', etaChs:'Feb 21', railDate:'Feb 24', etaNash:'Feb 27', yardDays:'3', delivery:'Mar 2, 2027', deliveryISO:'2027-03-02', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:24, status:'PROJ', week:'Wk 5', floor:33, unitQty:10, kitchens:'3301:3306,3308:3310,3312', v1:'3301:3311', v2:'3304,3306,3310', loadDate:'Feb 3', shipDate:'Feb 8', vessel:'—', etaChs:'Feb 28', railDate:'Mar 3', etaNash:'Mar 6', yardDays:'3', delivery:'Mar 9, 2027', deliveryISO:'2027-03-09', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:25, status:'PROJ', week:'Wk 6', floor:34, unitQty:11, kitchens:'3401:3406,3408:3412', v1:'3401:3412', v2:'3404,3406,3410,3412', loadDate:'Feb 10', shipDate:'Feb 15', vessel:'—', etaChs:'Mar 7', railDate:'Mar 10', etaNash:'Mar 13', yardDays:'3', delivery:'Mar 16, 2027', deliveryISO:'2027-03-16', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:26, status:'PROJ', week:'Wk 9', floor:35, unitQty:10, kitchens:'3501:3506,3509:3512', v1:'3501:3512', v2:'3504,3506,3510,3512', loadDate:'Mar 3', shipDate:'Mar 8', vessel:'—', etaChs:'Mar 28', railDate:'Mar 31', etaNash:'Apr 3', yardDays:'3', delivery:'Apr 6, 2027', deliveryISO:'2027-04-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:27, status:'PROJ', week:'Wk 10', floor:36, unitQty:11, kitchens:'3601:3606,3608:3612', v1:'3601:3603,3605:3612', v2:'3606,3610,3612', loadDate:'Mar 10', shipDate:'Mar 15', vessel:'—', etaChs:'Apr 4', railDate:'Apr 7', etaNash:'Apr 10', yardDays:'3', delivery:'Apr 13, 2027', deliveryISO:'2027-04-13', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:28, status:'PROJ', week:'Wk 11', floor:37, unitQty:11, kitchens:'3701:3706,3708:3712', v1:'3701:3712', v2:'3704,3706,3710,3712', loadDate:'Mar 17', shipDate:'Mar 22', vessel:'—', etaChs:'Apr 11', railDate:'Apr 14', etaNash:'Apr 17', yardDays:'3', delivery:'Apr 20, 2027', deliveryISO:'2027-04-20', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:29, status:'PROJ', week:'Wk 12', floor:38, unitQty:11, kitchens:'3801:3806,3808:3812', v1:'3801:3812', v2:'3804,3806,3810,3812', loadDate:'Mar 24', shipDate:'Mar 29', vessel:'—', etaChs:'Apr 18', railDate:'Apr 21', etaNash:'Apr 24', yardDays:'3', delivery:'Apr 27, 2027', deliveryISO:'2027-04-27', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:30, status:'PROJ', week:'Wk 13', floor:39, unitQty:11, kitchens:'3901:3906,3908:3912', v1:'3901:3912', v2:'3904,3906,3910,3912', loadDate:'Mar 31', shipDate:'Apr 5', vessel:'—', etaChs:'Apr 25', railDate:'Apr 28', etaNash:'May 1', yardDays:'3', delivery:'May 4, 2027', deliveryISO:'2027-05-04', ordered:false, confirmed:false, code:'--', delivTime:'—' },
+  { num:'BH', status:'PROJ', week:'Wk 26', floor:'10–39', unitQty:30, kitchens:'All unit-07 (30 floors)', v1:'—', v2:'—', loadDate:'Jun 30, 2027', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Jul 30, 2027', deliveryISO:'2027-07-30', ordered:false, confirmed:false, code:'—', delivTime:'—' },
+  { num:'ECT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:4, kitchens:'—', v1:'1004, 2004, 2904, 3604', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' },
+  { num:'WCT', status:'PROJ', week:'Wk 27', floor:'—', unitQty:6, kitchens:'1611, 2511, 3311', v1:'1612, 2512, 3312', v2:'—', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' }
 ];
 
 const ROJ = {
@@ -880,18 +893,19 @@ function renderSchedule() {
       <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}</span></td>
       <td class="c-status"><span class="bdg ${bdg}">${c.status}</span></td>
       <td class="c-code mono" style="font-size:10px;">${c.code||'—'}</td>
-      <td class="c-loadwk" style="color:var(--text-3)">${c.week}</td>
+      <td class="c-loadwk staff-col" style="color:var(--text-3)">${c.week}</td>
       <td class="c-loaddate" style="white-space:nowrap;color:var(--text-3)">${isProj ? projLoadRange(c) : c.loadDate}</td>
       <td class="c-ship staff-col" style="font-size:10px;">${c.shipDate||'—'}</td>
       <td class="c-vessel staff-col" style="font-size:10px;color:var(--text-3)">${c.vessel||'—'}</td>
       <td class="c-etachs staff-col" style="font-size:10px;">${c.etaChs||'—'}</td>
       <td class="c-rail staff-col" style="font-size:10px;">${c.railDate||'—'}</td>
       <td class="c-etansh">${isProj ? '—' : c.etaNash}</td>
+      <td class="c-yard vcol" style="font-size:10px;color:var(--text-3);">${isProj || !c.yardDays || c.yardDays === '—' ? '—' : c.yardDays}</td>
       <td class="c-deliv" style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
-      <td class="c-dtime" style="font-size:10px;">${c.delivTime||'—'}</td>
+      <td class="c-dtime vcol" style="font-size:10px;">${c.delivTime||'—'}</td>
       <td class="c-conf" style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
       <td class="c-floor">Fl. ${c.floor}</td>
-      <td class="c-qty staff-col" style="font-size:10px;text-align:center">${c.unitQty||'—'}</td>
+      <td class="c-qty staff-col vcol" style="font-size:10px;">${c.unitQty||'—'}</td>
       <td class="c-kitchens mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
       <td class="c-v1 mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
       <td class="c-v2 mono" style="font-size:10px;color:var(--text-2)">${c.v2||'—'}</td>
@@ -998,8 +1012,14 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
     const daysStr = daysAway === null ? '' : daysAway === 0 ? 'Today' : daysAway + 'd';
     const sLabel = STATUS_LABEL[c.status] || c.status;
     const sColor = STATUS_COLOR[c.status] || '#9A9A94';
+    // Projected containers show the week window, not a hard date — same rule
+    // as the schedule table, so the two panels can't contradict each other.
+    const isProj = c.status === 'PROJ';
+    const dateStr = isProj
+      ? `${projDeliveryRange(c)} <span class="nu-tag">[Projected]</span>`
+      : `${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span class="nu-tag">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span>`;
     html += `<div class="nu-row">
-      <div class="nu-date">${dayOfWeek ? dayOfWeek + ', ' : ''}${dateMain} <span class="nu-tag">[${c.confirmed ? 'Confirmed' : 'ETA'}]</span></div>
+      <div class="nu-date">${dateStr}</div>
       <div class="nu-info">CTN ${c.num}${floorLabel ? ' · ' + floorLabel : ''} &nbsp;·&nbsp; <span style="color:${sColor};font-weight:700;">●</span><span class="nu-slabel" style="color:${sColor};font-weight:700;"> ${sLabel}</span><span class="nu-days"> &nbsp;·&nbsp; ${daysStr}</span></div>
     </div>`;
   });
