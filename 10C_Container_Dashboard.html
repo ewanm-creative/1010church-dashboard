@@ -17,7 +17,7 @@
   --c-D:     #0A3D34;  --ct-D:    #ffffff;
   --c-INYRD: #125649;  --ct-INYRD:#ffffff;
   --c-RAIL:  #1B7060;  --ct-RAIL: #ffffff;
-  --c-CHS:   #2D8C74;  --ct-CHS:  #ffffff;
+  --c-PORT:   #2D8C74;  --ct-PORT:  #ffffff;
   --c-ENR:   #47A98F;  --ct-ENR:  #ffffff;
   --c-LDD:   #7EC4B0;  --ct-LDD:  #0D3D2C;
   --c-LDG:   #B6DCCE;  --ct-LDG:  #0D3D2C;
@@ -59,7 +59,7 @@ body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMa
 .b-D    { background: var(--c-D);     color: var(--ct-D);     }
 .b-INYRD{ background: var(--c-INYRD); color: var(--ct-INYRD); }
 .b-RAIL { background: var(--c-RAIL);  color: var(--ct-RAIL);  }
-.b-CHS  { background: var(--c-CHS);   color: var(--ct-CHS);   }
+.b-PORT { background: var(--c-PORT);  color: var(--ct-PORT);  }
 .b-ENR  { background: var(--c-ENR);   color: var(--ct-ENR);   }
 .b-LDD  { background: var(--c-LDD);   color: var(--ct-LDD);   }
 .b-LDG  { background: var(--c-LDG);   color: var(--ct-LDG);   }
@@ -72,7 +72,7 @@ body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMa
 .d-INYRD{ background: #125649; }
 .d-RAIL { background: #1B7060; }
 .d-ENR  { background: #47A98F; }
-.d-CHS  { background: #2D8C74; }
+.d-PORT { background: #2D8C74; }
 .d-LDD  { background: #7EC4B0; }
 .d-LDG  { background: #B6DCCE; }
 /* Hollow, matching .bm-badge-proj on the unit cards */
@@ -318,7 +318,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 20, 2026 at 10:50 AM</em></div>
+      <div class="sub"><em>Updated Aug 20, 2026 at 10:59 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -386,7 +386,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div class="rp-line"></div>
     <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#128674;</div><div class="rp-name">Sea Freight</div><div id="rp-ENR" class="rp-val"></div></div>
     <div class="rp-line"></div>
-    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#9875;</div><div class="rp-name">Port (CHS)</div><div id="rp-CHS" class="rp-val"></div></div>
+    <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE">&#9875;</div><div class="rp-name">Port</div><div id="rp-PORT" class="rp-val"></div></div>
     <div class="rp-line"></div>
     <div class="rp-step"><div class="rp-icon" style="background:#E5F2EE"><svg width="18" height="16" viewBox="0 0 36 32" xmlns="http://www.w3.org/2000/svg" style="display:block">
   <rect x="12" y="5"  width="12" height="2.2" rx="0.5" fill="#8B5E3C"/>
@@ -424,7 +424,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
         <th class="c-num">Ctnr No.</th><th class="c-status">Status</th><th class="c-code">Ctnr Code</th>
         <th class="c-loadwk staff-col">Load Wk</th><th class="c-loaddate">Load Date</th>
         <th class="c-ship staff-col">Ship Date</th><th class="c-vessel staff-col">Vessel</th>
-        <th class="c-etachs staff-col">ETA CHS</th><th class="c-rail staff-col">Rail Date</th>
+        <th class="c-etachs staff-col">ETA Port</th><th class="c-rail staff-col">Rail Date</th>
         <th class="c-etansh">ETA NSH</th><th class="c-yard vhdr"><span>Yard Days</span></th>
         <th class="c-deliv">Delivery</th><th class="c-dtime vhdr"><span>Time</span></th>
         <th class="c-conf">Confirmed?</th><th class="c-floor">Floor</th>
@@ -462,7 +462,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
       <span class="leg-i"><span class="dot d-LDG"></span> Loading</span>
       <span class="leg-i"><span class="dot d-LDD"></span> Loaded</span>
       <span class="leg-i"><span class="dot d-ENR"></span> Sea Freight</span>
-      <span class="leg-i"><span class="dot d-CHS"></span> Port (CHS)</span>
+      <span class="leg-i"><span class="dot d-PORT"></span> Port</span>
       <span class="leg-i"><span class="dot d-RAIL"></span> On Rail</span>
       <span class="leg-i"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
       <span class="leg-i"><span class="dot d-D"></span> Delivered</span>
@@ -549,9 +549,9 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 20, 2026 at 10:50 AM) ─────────────────────
+// ── DATA (auto-generated Aug 20, 2026 at 10:59 AM) ─────────────────────
 const CONTAINERS = [
-  { num: 1, status:'CHS', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', yardDays:'3', delivery:'Oct 1, 2026', deliveryISO:'2026-10-01', ordered:true, confirmed:false, code:'--', delivTime:'—' },
+  { num: 1, status:'PORT', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', yardDays:'3', delivery:'Oct 1, 2026', deliveryISO:'2026-10-01', ordered:true, confirmed:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num: 3, status:'PROJ', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Oct 4', railDate:'Oct 7', etaNash:'Oct 10', yardDays:'3', delivery:'Oct 13, 2026', deliveryISO:'2026-10-13', ordered:false, confirmed:false, code:'--', delivTime:'—' },
@@ -604,6 +604,22 @@ const TRANSIT_PERF = [
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
 
+// ── LEGACY STATUS CODE ──
+// "CHS" was this status's old code, from when the port was assumed to be
+// Charleston. Anything still carrying it is normalised to PORT here, so a
+// dashboard published before the rename keeps rendering correctly.
+(function () {
+  const fix = s => (s === 'CHS' ? 'PORT' : s);
+  if (typeof CONTAINERS !== 'undefined')
+    CONTAINERS.forEach(c => { c.status = fix(c.status); });
+  if (typeof EXCEPTIONS !== 'undefined')
+    Object.values(EXCEPTIONS).forEach(e => {
+      if (e.kStatus)  e.kStatus  = fix(e.kStatus);
+      if (e.v1Status) e.v1Status = fix(e.v1Status);
+      if (e.v2Status) e.v2Status = fix(e.v2Status);
+    });
+})();
+
 // ── FLOOR LOOKUP (by floor number, not array position — safe if a container
 //    row is ever missing, duplicated, or out of order in the data above) ──
 const FLOOR_CTN = {};
@@ -612,14 +628,14 @@ function ctnForFloor(floor) { return FLOOR_CTN[floor] || { num: '—', status: '
 const BH_STATUS = (CONTAINERS.find(c => c.num === 'BH') || {}).status || 'PROJ';
 
 // ── STATUS HELPERS ──
-const STATUS_RANK = { D:8, INYRD:7, RAIL:6, CHS:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
+const STATUS_RANK = { D:8, INYRD:7, RAIL:6, PORT:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
 function worstStatus(arr) {
   return arr.filter(Boolean).reduce((w, s) => (STATUS_RANK[s]||0) < (STATUS_RANK[w]||0) ? s : w);
 }
 function statusDot(s)   { return `d-${s}`; }
 function statusBadge(s) { return `b-${s}`; }
 function statusColor(s) {
-  return { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', CHS:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' }[s] || '#9A9A94';
+  return { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' }[s] || '#9A9A94';
 }
 
 // ── TODAY ──
@@ -648,7 +664,7 @@ function sw(id, el) {
 
 // ── MINI BUILDING MATRIX ──
 let _miniMode = 'K';
-const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', RAIL:'#287A64', CHS:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
+const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', RAIL:'#287A64', PORT:'#2E8C70', ENR:'#3EA882', LDD:'#6DC4A8', LDG:'#A0D8C8', PROJ:'#C8E8DF' };
 
 function renderMiniMatrix() {
   const grid = document.getElementById('mini-matrix-grid');
@@ -933,7 +949,7 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
   CONTAINERS.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
 
   // Grouped counts — used by donut chart
-  const GROUP_MAP    = { D:'Delivered', INYRD:'Arrived', RAIL:'EnRoute', CHS:'EnRoute', ENR:'EnRoute', LDD:'EnRoute', LDG:'EnRoute', PROJ:'Projected' };
+  const GROUP_MAP    = { D:'Delivered', INYRD:'Arrived', RAIL:'EnRoute', PORT:'EnRoute', ENR:'EnRoute', LDD:'EnRoute', LDG:'EnRoute', PROJ:'Projected' };
   const GROUP_ORDER  = ['Delivered','Arrived','EnRoute','Projected'];
   const GROUP_COLORS = { Delivered:'#0A3D34', Arrived:'#2D8C74', EnRoute:'#7EC4B0', Projected:'#D5EDE7' };
   const GROUP_LABELS = { Delivered:'Delivered', Arrived:'In Yard', EnRoute:'En Route', Projected:'Projected' };
@@ -981,7 +997,7 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
   }
 
   // Pipeline counts — plain number under each icon (matches 111 Wall)
-  const ORDER = ['D','INYRD','RAIL','CHS','ENR','LDD','LDG','PROJ'];
+  const ORDER = ['D','INYRD','RAIL','PORT','ENR','LDD','LDG','PROJ'];
   ORDER.forEach(s => {
     const el = document.getElementById('rp-' + s);
     if (el) el.textContent = counts[s] || 0;
@@ -991,9 +1007,9 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
 // ── NEXT UP ──
 (function() {
   const el = document.getElementById('next-up-list');
-  const STATUS_ORDER = { D:0, INYRD:1, RAIL:2, CHS:3, ENR:4, LDD:5, LDG:6, PROJ:7 };
-  const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', CHS:'Port (CHS)', ENR:'Sea Freight', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
-  const STATUS_COLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', CHS:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' };
+  const STATUS_ORDER = { D:0, INYRD:1, RAIL:2, PORT:3, ENR:4, LDD:5, LDG:6, PROJ:7 };
+  const STATUS_LABEL = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', PORT:'Port', ENR:'Sea Freight', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
+  const STATUS_COLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' };
 
   // Get containers sorted by delivery date, show next 4 upcoming by date
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1064,9 +1080,9 @@ for (let f = 10; f <= 39; f++) SPECIAL_COMPS[f*100+7] = { K: true };
 [1612,2512,3312].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {V1:true}); });
 
 function renderBldgMatrix() {
-  const SCOLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', CHS:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', BH:'#C8C6BE' };
-  const STXT   = { D:'#fff', INYRD:'#fff', RAIL:'#fff', CHS:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
-  const ABBR   = { D:'D', INYRD:'IYD', CHS:'CHS', ENR:'ENR', LDD:'LDD', LDG:'LDG', PROJ:'PRJ', BH:'BH' };
+  const SCOLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', BH:'#C8C6BE' };
+  const STXT   = { D:'#fff', INYRD:'#fff', RAIL:'#fff', PORT:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
+  const ABBR   = { D:'D', INYRD:'IYD', PORT:'PORT', ENR:'ENR', LDD:'LDD', LDG:'LDG', PROJ:'PRJ', BH:'BH' };
 
   const badge = (lbl, st, isSpec) => {
     if (st === null) return '';
@@ -1131,11 +1147,11 @@ function renderBldgMatrix() {
 // ── BUILDING MATRIX UNIT PREVIEW ──
 // Hover on desktop, tap on mobile. Delegated off #bldg-grid so it survives
 // every re-render (only the grid's children get replaced, not the grid).
-const BMP_LABEL = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', CHS:'Port (CHS)',
+const BMP_LABEL = { D:'Delivered', INYRD:'In Yard', RAIL:'On Rail', PORT:'Port',
                     ENR:'Sea Freight', LDD:'Loaded', LDG:'Loading', PROJ:'Projected' };
-const BMP_BG    = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', CHS:'#2D8C74',
+const BMP_BG    = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74',
                     ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', PROJ:'#D5EDE7' };
-const BMP_FG    = { D:'#fff', INYRD:'#fff', RAIL:'#fff', CHS:'#fff',
+const BMP_FG    = { D:'#fff', INYRD:'#fff', RAIL:'#fff', PORT:'#fff',
                     ENR:'#0D3D2C', LDD:'#0D3D2C', LDG:'#0D3D2C', PROJ:'#1A5C47' };
 
 function initBldgPreview() {
