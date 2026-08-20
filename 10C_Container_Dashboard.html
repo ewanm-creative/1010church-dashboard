@@ -200,6 +200,41 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 .nu-tag { font-weight:400; color:var(--text-3); font-size:11px; }
 .nu-info { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; text-align:right; }
 
+/* ── PHONE HELD SIDEWAYS (roughly 860 x 400) ──────────────────────────────
+   Landscape phones are ~860px wide, so they fall past the 700px mobile
+   breakpoint and get the full desktop layout — which assumes a tall window.
+   You rotate the phone to see MORE of the schedule, so this keeps every
+   column and instead strips back the surrounding furniture, which is what
+   was eating the 400px of height. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .shell { padding: 10px 12px 32px; }
+
+  /* Header down to one compact line */
+  .topbar { margin-bottom: 10px; padding-bottom: 8px; }
+  .topbar h1 { font-size: 14px; }
+  .topbar img { height: 24px !important; }
+  .shell > div:first-child { padding: 4px 0 0 !important; }
+  .shell > div:first-child img { height: 26px !important; }
+
+  /* The donut and unit-status cards are fixed-width and can't shrink, so they
+     force the row wide. Neither is needed when you're after the schedule. */
+  #mini-matrix-card { display: none !important; }
+  #ctn > div[style*="display:flex"] > div:has(canvas) { display: none !important; }
+
+  /* Remaining cards tighter */
+  .mc { padding: 7px 10px; }
+  .mc .val { font-size: 16px; }
+  .rp-icon { width: 20px; height: 20px; font-size: 10px; }
+  .rp-icon svg { width: 12px; height: 11px; }
+  .rp-val { font-size: 13px; }
+  .rp-name { font-size: 8px; }
+
+  /* Denser table so more columns land on screen before you have to scroll */
+  table { font-size: 10px; }
+  th { padding: 5px 6px; font-size: 9px; }
+  td { padding: 4px 6px; }
+}
+
 @media (max-width: 700px) {
   .shell { padding: 12px 10px 40px; }
 
@@ -318,7 +353,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 20, 2026 at 10:59 AM</em></div>
+      <div class="sub"><em>Updated Aug 20, 2026 at 11:59 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -549,7 +584,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 20, 2026 at 10:59 AM) ─────────────────────
+// ── DATA (auto-generated Aug 20, 2026 at 11:59 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PORT', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', yardDays:'3', delivery:'Oct 1, 2026', deliveryISO:'2026-10-01', ordered:true, confirmed:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
