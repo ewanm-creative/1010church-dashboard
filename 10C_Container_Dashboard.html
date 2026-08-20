@@ -312,7 +312,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 19, 2026 at 4:08 PM</em></div>
+      <div class="sub"><em>Updated Aug 20, 2026 at 10:00 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -543,7 +543,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 19, 2026 at 4:08 PM) ─────────────────────
+// ── DATA (auto-generated Aug 20, 2026 at 10:00 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'PROJ', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 22', railDate:'Sep 25', etaNash:'Sep 28', yardDays:'3', delivery:'Oct 1, 2026', deliveryISO:'2026-10-01', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num: 2, status:'PROJ', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'—', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
@@ -895,10 +895,10 @@ function renderSchedule() {
       <td class="c-code mono" style="font-size:10px;">${c.code||'—'}</td>
       <td class="c-loadwk staff-col" style="color:var(--text-3)">${c.week}</td>
       <td class="c-loaddate" style="white-space:nowrap;color:var(--text-3)">${isProj ? projLoadRange(c) : c.loadDate}</td>
-      <td class="c-ship staff-col" style="font-size:10px;">${c.shipDate||'—'}</td>
+      <td class="c-ship staff-col" style="font-size:10px;color:var(--text-3)">${c.shipDate||'—'}</td>
       <td class="c-vessel staff-col" style="font-size:10px;color:var(--text-3)">${c.vessel||'—'}</td>
-      <td class="c-etachs staff-col" style="font-size:10px;">${c.etaChs||'—'}</td>
-      <td class="c-rail staff-col" style="font-size:10px;">${c.railDate||'—'}</td>
+      <td class="c-etachs staff-col" style="font-size:10px;color:var(--text-3)">${c.etaChs||'—'}</td>
+      <td class="c-rail staff-col" style="font-size:10px;color:var(--text-3)">${c.railDate||'—'}</td>
       <td class="c-etansh">${isProj ? '—' : c.etaNash}</td>
       <td class="c-yard vcol" style="font-size:10px;color:var(--text-3);">${isProj || !c.yardDays || c.yardDays === '—' ? '—' : c.yardDays}</td>
       <td class="c-deliv" style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
