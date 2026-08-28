@@ -368,7 +368,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 28, 2026 at 4:14 PM</em></div>
+      <div class="sub"><em>Updated Aug 28, 2026 at 4:16 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -611,7 +611,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 28, 2026 at 4:14 PM) ─────────────────────
+// ── DATA (auto-generated Aug 28, 2026 at 4:16 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'LDD', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 29', yardDays:'3', delivery:'Oct 2, 2026', deliveryISO:'2026-10-02', ordered:true, confirmed:false, code:'--', delivTime:'—' },
   { num: 2, status:'LDG', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'--', delivTime:'—' },
@@ -853,11 +853,18 @@ function projDeliveryRange(c) {
 function renderConstruction() {
   const wrap = document.getElementById('cs-wrap');
   const cards = document.getElementById('cs-cards');
-  if (!wrap || typeof CONSTRUCTION === 'undefined') return;
+  if (!wrap) return;
 
-  if (!CONSTRUCTION.length) {
-    wrap.innerHTML = '<div style="padding:20px;font-size:11px;color:var(--text-3)">' +
-                     'No construction schedule data. Re-run the update script.</div>';
+  // 1010 has no global esc() helper (111W does) — keep a local one.
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // Data only appears after the update script has run once with the
+  // construction-schedule support in it.
+  if (typeof CONSTRUCTION === 'undefined' || !CONSTRUCTION.length) {
+    wrap.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text-2)">' +
+                     'No construction schedule data yet &mdash; run <strong>publish_all.bat</strong> ' +
+                     'to pull it from the <em>10C_Construction Schedule</em> tab.</div>';
     if (cards) cards.innerHTML = '';
     return;
   }
