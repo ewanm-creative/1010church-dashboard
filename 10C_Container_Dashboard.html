@@ -100,6 +100,21 @@ tbody tr:hover td { background: var(--bg); }
                       letter-spacing: .06em; }
 #ctn td.vcol { padding-left: 4px; padding-right: 4px; width: 1%; text-align: center; }
 
+/* The Construction tab only exists once the PIN is entered. */
+.staff-tab { display: none !important; }
+body.staff-mode .staff-tab { display: inline-block !important; }
+
+/* Construction schedule table */
+#cs-wrap { max-width: 820px; }
+#cs-wrap table { table-layout: fixed; font-size: 13px; }
+#cs-wrap td { padding: 9px 10px; white-space: nowrap; }
+#cs-wrap tbody tr:nth-child(even) { background: rgba(0,0,0,.028); }
+#cs-wrap tbody tr:hover { background: rgba(0,0,0,.055); }
+#cs-wrap .cs-fl  { font-weight: 700; width: 74px; }
+#cs-wrap .cs-win { width: 118px; font-variant-numeric: tabular-nums; }
+#cs-wrap .cs-b   { font-weight: 700; }
+#cs-wrap .cs-num { text-align: right; width: 56px; font-variant-numeric: tabular-nums; }
+
 /* Internal ("staff") columns — hidden until the PIN is entered.
    Appended at the END of the table on purpose: the mobile rules below target
    columns by nth-child, so inserting mid-table would shift every index. */
@@ -353,7 +368,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Aug 28, 2026 at 12:50 PM</em></div>
+      <div class="sub"><em>Updated Aug 28, 2026 at 4:13 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -371,6 +386,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
       <button class="tab on" onclick="sw('ctn',this)">Container schedule</button>
       <button class="tab" onclick="sw('bldg',this)">Building matrix</button>
       <button class="tab" onclick="sw('dmg',this)">Damages/Service Orders</button>
+      <button class="tab staff-tab" onclick="sw('cs',this)">Construction</button>
     </div>
     <div class="tabs" style="margin-bottom:0;">
       <a href="https://1843288studiosnaiderochicag-my.sharepoint.com/:f:/g/personal/ewan_210designhouse_com/IgD8nv6pRfGZR7fWpkCt68KjATn_sy9WDRCm22IscBM8x3M?e=XViD3r" target="_blank" class="tab" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;opacity:.75"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2L9.5 1.5z"/></svg>Shared Documents</a>
@@ -581,14 +597,25 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
   </div>
 </div>
 
+<!-- ===== CONSTRUCTION SCHEDULE (internal view only) ===== -->
+<div id="cs" class="panel">
+  <div id="cs-cards" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
+  <div class="leg" style="margin-bottom:10px;">
+    <span class="leg-i"><b style="color:#22735C">&#9679;</b> 4+ days cushion</span>
+    <span class="leg-i"><b style="color:#B06A00">&#9679;</b> 0&ndash;3 days &mdash; tight</span>
+    <span class="leg-i"><b style="color:#D01C1F">&#9679;</b> negative &mdash; arriving after install starts</span>
+  </div>
+  <div id="cs-wrap" class="tw"></div>
+</div>
+
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Aug 28, 2026 at 12:50 PM) ─────────────────────
+// ── DATA (auto-generated Aug 28, 2026 at 4:13 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'LDD', week:'Wk 35', floor:10, unitQty:11, kitchens:'1001:1006,1008:1012', v1:'1001:1003,1005:1012', v2:'1004,1006,1010,1012', loadDate:'Aug 28', shipDate:'Sep 2', vessel:'—', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 29', yardDays:'3', delivery:'Oct 2, 2026', deliveryISO:'2026-10-02', ordered:true, confirmed:false, code:'--', delivTime:'—' },
-  { num: 2, status:'LDG', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN V. MG636W', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'--', delivTime:'—' },
-  { num: 3, status:'LDG', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN V. MG636W', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'--', delivTime:'—' },
+  { num: 2, status:'LDG', week:'Wk 36', floor:11, unitQty:11, kitchens:'1101:1106,1108:1112', v1:'1101:1112', v2:'1104,1106,1110,1112', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'--', delivTime:'—' },
+  { num: 3, status:'LDG', week:'Wk 36', floor:12, unitQty:11, kitchens:'1201:1206,1208:1212', v1:'1201:1212', v2:'1204,1206,1210,1212', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'--', delivTime:'—' },
   { num: 4, status:'PROJ', week:'Wk 37', floor:13, unitQty:11, kitchens:'1301:1306,1308:1312', v1:'1301:1312', v2:'1304,1306,1310,1312', loadDate:'Sep 9', shipDate:'Sep 14', vessel:'—', etaChs:'Oct 4', railDate:'Oct 7', etaNash:'Oct 10', yardDays:'3', delivery:'Oct 13, 2026', deliveryISO:'2026-10-13', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num: 5, status:'PROJ', week:'Wk 39', floor:14, unitQty:11, kitchens:'1401:1406,1408:1412', v1:'1401:1412', v2:'1404,1406,1410,1412', loadDate:'Sep 23', shipDate:'Sep 28', vessel:'—', etaChs:'Oct 18', railDate:'Oct 21', etaNash:'Oct 24', yardDays:'3', delivery:'Oct 27, 2026', deliveryISO:'2026-10-27', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num: 6, status:'PROJ', week:'Wk 40', floor:15, unitQty:11, kitchens:'1501:1506,1508:1512', v1:'1501:1512', v2:'1504,1506,1510,1512', loadDate:'Sep 30', shipDate:'Oct 5', vessel:'—', etaChs:'Oct 25', railDate:'Oct 28', etaNash:'Oct 31', yardDays:'3', delivery:'Nov 3, 2026', deliveryISO:'2026-11-03', ordered:false, confirmed:false, code:'--', delivTime:'—' },
@@ -636,6 +663,41 @@ const TRANSIT_PERF = [
   {label:'Average In Port Days', value:'3'},
   {label:'Total Transit Time', value:'31.03030303030303'}
 ];
+
+const CONSTRUCTION = [
+  {floor:10, delivWin:'09/28 - 10/02', instWin:'10/05 - 10/12', instISO:'2026-10-05', slip:'14'},
+  {floor:11, delivWin:'10/05 - 10/09', instWin:'10/12 - 10/19', instISO:'2026-10-12', slip:'10'},
+  {floor:12, delivWin:'10/12 - 10/16', instWin:'10/19 - 10/26', instISO:'2026-10-19', slip:'13'},
+  {floor:13, delivWin:'10/19 - 10/23', instWin:'10/26 - 11/02', instISO:'2026-10-26', slip:'12'},
+  {floor:14, delivWin:'10/26 - 10/30', instWin:'11/02 - 11/09', instISO:'2026-11-02', slip:'12'},
+  {floor:15, delivWin:'11/02 - 11/06', instWin:'11/09 - 11/16', instISO:'2026-11-09', slip:'12'},
+  {floor:16, delivWin:'11/09 - 11/13', instWin:'11/16 - 11/23', instISO:'2026-11-16', slip:'12'},
+  {floor:17, delivWin:'11/16 - 11/20', instWin:'11/23 - 12/02', instISO:'2026-11-23', slip:'12'},
+  {floor:18, delivWin:'11/23 - 12/01', instWin:'12/02 - 12/09', instISO:'2026-12-02', slip:'12'},
+  {floor:19, delivWin:'12/02 - 12/08', instWin:'12/09 - 12/16', instISO:'2026-12-09', slip:'14'},
+  {floor:20, delivWin:'12/09 - 12/15', instWin:'12/16 - 12/23', instISO:'2026-12-16', slip:'14'},
+  {floor:21, delivWin:'12/16 - 12/22', instWin:'12/23 - 01/04', instISO:'2026-12-23', slip:'12'},
+  {floor:22, delivWin:'12/23 - 12/31', instWin:'01/04 - 01/11', instISO:'2027-01-04', slip:'12'},
+  {floor:23, delivWin:'01/04 - 01/08', instWin:'01/11 - 01/18', instISO:'2027-01-11', slip:'17'},
+  {floor:24, delivWin:'01/11 - 01/15', instWin:'01/18 - 01/25', instISO:'2027-01-18', slip:'13'},
+  {floor:25, delivWin:'01/18 - 01/22', instWin:'01/25 - 02/01', instISO:'2027-01-25', slip:'12'},
+  {floor:26, delivWin:'01/25 - 01/29', instWin:'02/01 - 02/08', instISO:'2027-02-01', slip:'12'},
+  {floor:27, delivWin:'02/01 - 02/05', instWin:'02/08 - 02/15', instISO:'2027-02-08', slip:'12'},
+  {floor:28, delivWin:'02/08 - 02/12', instWin:'02/15 - 02/22', instISO:'2027-02-15', slip:'12'},
+  {floor:29, delivWin:'02/15 - 02/19', instWin:'02/22 - 03/01', instISO:'2027-02-22', slip:'12'},
+  {floor:30, delivWin:'02/22 - 02/26', instWin:'03/01 - 03/08', instISO:'2027-03-01', slip:'12'},
+  {floor:31, delivWin:'03/01 - 03/05', instWin:'03/08 - 03/15', instISO:'2027-03-08', slip:'12'},
+  {floor:32, delivWin:'03/08 - 03/12', instWin:'03/15 - 03/22', instISO:'2027-03-15', slip:'12'},
+  {floor:33, delivWin:'03/15 - 03/19', instWin:'03/22 - 03/29', instISO:'2027-03-22', slip:'12'},
+  {floor:34, delivWin:'03/22 - 03/26', instWin:'03/29 - 04/05', instISO:'2027-03-29', slip:'12'},
+  {floor:35, delivWin:'03/29 - 04/02', instWin:'04/05 - 04/12', instISO:'2027-04-05', slip:'0'},
+  {floor:36, delivWin:'04/05 - 04/09', instWin:'04/12 - 04/19', instISO:'2027-04-12', slip:'0'},
+  {floor:37, delivWin:'04/12 - 04/16', instWin:'04/19 - 04/26', instISO:'2027-04-19', slip:'0'},
+  {floor:38, delivWin:'04/19 - 04/23', instWin:'04/26 - 05/03', instISO:'2027-04-26', slip:'0'},
+  {floor:39, delivWin:'04/26 - 04/30', instWin:'05/03 - 05/10', instISO:'2027-05-03', slip:'0'}
+];
+const CONSTR_UPDATED = 'Aug 21, 2026';
+const CONSTR_AVG = '10.37 Days';
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
 
@@ -785,6 +847,76 @@ function projDeliveryRange(c) {
   return weekRangeOf(deliveryDate(c)) || c.delivery;
 }
 
+// ── CONSTRUCTION SCHEDULE (internal view only) ──
+// BG's per-floor delivery/install windows, cross-referenced against our own
+// container deliveries so the float between them is visible at a glance.
+function renderConstruction() {
+  const wrap = document.getElementById('cs-wrap');
+  const cards = document.getElementById('cs-cards');
+  if (!wrap || typeof CONSTRUCTION === 'undefined') return;
+
+  if (!CONSTRUCTION.length) {
+    wrap.innerHTML = '<div style="padding:20px;font-size:11px;color:var(--text-3)">' +
+                     'No construction schedule data. Re-run the update script.</div>';
+    if (cards) cards.innerHTML = '';
+    return;
+  }
+
+  const pad = n => String(n).padStart(2, '0');
+  const mmdd = iso => { const d = isoDate(iso); return d ? pad(d.getMonth()+1) + '/' + pad(d.getDate()) : '—'; };
+  function isoDate(s) {
+    if (!s) return null;
+    const p = String(s).split('-');
+    if (p.length !== 3) return null;
+    const d = new Date(+p[0], +p[1]-1, +p[2]);
+    return isNaN(d) ? null : d;
+  }
+
+  let tight = 0, late = 0;
+  const rows = CONSTRUCTION.map(c => {
+    const ctn = FLOOR_CTN[c.floor];
+    const dd  = ctn ? deliveryDate(ctn) : null;
+    const ist = isoDate(c.instISO);
+    let flt = null;
+    if (dd && ist) flt = Math.round((ist - dd) / 86400000);
+    if (flt !== null && flt < 0) late++;
+    if (flt !== null && flt <= 3) tight++;
+
+    let col = '#9A9A94', txt = '—';
+    if (flt !== null) {
+      col = flt < 0 ? '#D01C1F' : (flt <= 3 ? '#B06A00' : '#22735C');
+      txt = (flt < 0 ? '' : '+') + flt + 'd';
+    }
+    const eta = dd ? pad(dd.getMonth()+1) + '/' + pad(dd.getDate()) : '—';
+    return `<tr>
+      <td class="cs-fl">Floor ${c.floor}</td>
+      <td class="cs-win cs-b">${esc(c.delivWin)}</td>
+      <td class="cs-win">${esc(c.instWin)}</td>
+      <td>CTN ${ctn ? esc(String(ctn.num)) : '—'}</td>
+      <td class="cs-win">${eta}</td>
+      <td class="cs-num" style="color:${col}">${txt}</td>
+      <td class="cs-num">${esc(c.slip)}d</td>
+    </tr>`;
+  }).join('');
+
+  const card = (lbl, val, sub, colr) =>
+    `<div class="mc"><div class="lbl">${lbl}</div>` +
+    `<div class="val"${colr ? ` style="color:${colr}"` : ''}>${val}</div>` +
+    `<div class="vsub">${sub}</div></div>`;
+
+  if (cards) cards.innerHTML =
+      card('BG schedule updated', esc(typeof CONSTR_UPDATED !== 'undefined' ? CONSTR_UPDATED : '—'), 'from the construction schedule')
+    + card('Avg slip', esc(typeof CONSTR_AVG !== 'undefined' ? CONSTR_AVG : '—'), 'vs the original schedule')
+    + card('Floors', CONSTRUCTION.length, 'per BG schedule')
+    + card('Arriving late', late, 'negative float', late ? '#D01C1F' : '#22735C')
+    + card('Tight floors', tight, '3 days or less', tight ? '#B06A00' : '#22735C');
+
+  wrap.innerHTML = '<table><thead><tr>' +
+    '<th>Floor</th><th>Delivery</th><th>Install</th><th>Ctnr</th><th>Delivery ETA</th>' +
+    '<th style="text-align:right">Float</th><th style="text-align:right">Slip</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
 // ── INTERNAL VIEW ──
 // A convenience toggle, NOT security: everything it reveals is already present
 // in this file's data block and readable via View Source. It exists to keep the
@@ -798,6 +930,20 @@ function applyStaff() {
   const lbl = document.getElementById('staff-label');
   if (lbl) lbl.textContent = STAFF ? 'View · full' : 'View';
   renderSchedule();
+  if (STAFF) {
+    renderConstruction();
+  } else {
+    // Turning the view off while sitting on the Construction tab would leave a
+    // visible panel with no tab to get back from — fall back to the schedule.
+    const cs = document.getElementById('cs');
+    if (cs && cs.classList.contains('on')) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+      document.getElementById('ctn').classList.add('on');
+      const first = document.querySelector('.tabs .tab');
+      if (first) first.classList.add('on');
+    }
+  }
 }
 
 function staffClick() {
