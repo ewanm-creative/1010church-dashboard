@@ -397,7 +397,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Sep 8, 2026 at 3:03 PM</em></div>
+      <div class="sub"><em>Updated Sep 8, 2026 at 3:13 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -640,7 +640,7 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Sep 8, 2026 at 3:03 PM) ─────────────────────
+// ── DATA (auto-generated Sep 8, 2026 at 3:13 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'ENR', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:16, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 23', railDate:'Sep 26', etaNash:'Sep 29', yardDays:'3', delivery:'Oct 2, 2026', deliveryISO:'2026-10-02', ordered:true, confirmed:false, code:'MSDU5321045', delivTime:'—' },
   { num: 2, status:'ENR', week:'Wk 36', floor:11, floors:'11,12,13', floorList:[11, 12, 13], unitQty:15, kitchens:'1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', loadDate:'Sep 2', shipDate:'Sep 7', vessel:'MSC SWEDEN', etaChs:'Sep 27', railDate:'Sep 30', etaNash:'Oct 3', yardDays:'3', delivery:'Oct 6, 2026', deliveryISO:'2026-10-06', ordered:true, confirmed:false, code:'MSMU6104375', delivTime:'—' },
@@ -873,6 +873,37 @@ CONTAINERS.forEach(c => {
   list.forEach(f => { FLOOR_CTN[f] = c; });
 });
 function ctnForFloor(floor) { return FLOOR_CTN[floor] || { num: '—', status: 'PROJ' }; }
+
+// ── UNIT → CONTAINER MAPS ────────────────────────────────────────────────
+// A floor is NOT served by a single container: floor 11's kitchens are split
+// across CTN 1 (1101:1103,1106,1108:1109), CTN 2 (1110:1112) and CTN 3
+// (1104:1105). Mapping by floor made whichever container was parsed last win.
+// These maps resolve each product of each unit to its actual container.
+function expandUnits(spec) {
+  const out = [];
+  if (!spec) return out;
+  String(spec).split(',').forEach(part => {
+    const s = part.trim();
+    if (!s) return;
+    const m = s.match(/^(\d+)\s*:\s*(\d+)$/);          // "1101:1103"
+    if (m) {
+      let a = +m[1], b = +m[2];
+      if (a > b) { const t = a; a = b; b = t; }
+      for (let i = a; i <= b; i++) out.push(i);
+    } else if (/^\d+$/.test(s)) {                       // "1106"
+      out.push(+s);
+    }
+    // anything else (e.g. "All unit-07 (30 floors)") is descriptive, skip it
+  });
+  return out;
+}
+
+const K_CTN = {}, V1_CTN = {}, V2_CTN = {};
+CONTAINERS.forEach(c => {
+  expandUnits(c.kitchens).forEach(u => { K_CTN[u]  = c; });
+  expandUnits(c.v1).forEach(u       => { V1_CTN[u] = c; });
+  expandUnits(c.v2).forEach(u       => { V2_CTN[u] = c; });
+});
 const BH_STATUS = (CONTAINERS.find(c => c.num === 'BH') || {}).status || 'PROJ';
 
 // ── STATUS HELPERS ──
@@ -1470,9 +1501,11 @@ function renderBldgMatrix() {
     let kDel=0, v1Del=0, v2Del=0, v2Total=0;
     for (let u = 1; u <= 12; u++) {
       const uid = floor*100+u, exc = EXCEPTIONS[uid]||{}, hasV2 = V2_UNITS.has(u), isBH = (u===7);
-      const kS  = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
-      const v1S = exc.v1Status || ctn.status;
-      const v2S = hasV2 ? (exc.v2Status || ctn.status) : null;
+      // Each product resolves to its OWN container - a floor's units can be
+      // split across several (floor 11 spans CTN 1, 2 and 3).
+      const kS  = exc.kStatus  || (isBH ? BH_STATUS : (K_CTN[uid]  || ctn).status);
+      const v1S = exc.v1Status || (V1_CTN[uid] || ctn).status;
+      const v2S = hasV2 ? (exc.v2Status || (V2_CTN[uid] || ctn).status) : null;
       if (kS==='D') kDel++; if (v1S==='D') v1Del++;
       if (hasV2) { v2Total++; if (v2S==='D') v2Del++; }
     }
@@ -1492,11 +1525,14 @@ function renderBldgMatrix() {
       const unitId = floor * 100 + u;
       const exc    = EXCEPTIONS[unitId] || {};
       const isBH   = (u === 7);
-      const kSt    = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
-      const v1St   = exc.v1Status || ctn.status;
-      const v2St   = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
+      const kCtn   = K_CTN[unitId]  || ctn;
+      const v1Ctn  = V1_CTN[unitId] || ctn;
+      const v2Ctn  = V2_CTN[unitId] || ctn;
+      const kSt    = exc.kStatus  || (isBH ? BH_STATUS : kCtn.status);
+      const v1St   = exc.v1Status || v1Ctn.status;
+      const v2St   = V2_UNITS.has(u) ? (exc.v2Status || v2Ctn.status) : null;
       const sp     = SPECIAL_COMPS[unitId] || {};
-      html += `<td class="bm-cell" data-uid="${unitId}" data-floor="${floor}" data-k="${kSt||''}" data-v1="${v1St||''}" data-v2="${v2St||''}"><div class="bm-card">
+      html += `<td class="bm-cell" data-uid="${unitId}" data-floor="${floor}" data-k="${kSt||''}" data-v1="${v1St||''}" data-v2="${v2St||''}" data-kc="${kCtn.num}" data-v1c="${v1Ctn.num}" data-v2c="${v2Ctn.num}"><div class="bm-card">
         <div class="bm-card-id">${unitId}</div>
         ${badge('K',kSt,!!sp.K)}${badge('V1',v1St,!!sp.V1)}${badge('V2',v2St,!!sp.V2)}
       </div></td>`;
@@ -1535,31 +1571,28 @@ function initBldgPreview() {
   function build(td) {
     const uid = td.getAttribute('data-uid');
     if (!uid) return null;
-    const floor = +td.getAttribute('data-floor');
-    const c = FLOOR_CTN[floor];
+
+    // Each product can sit in a DIFFERENT container - unit 1109's kitchen is in
+    // CTN 1 while its Vanity 1 is in CTN 2 - so report the container and its
+    // delivery per item rather than one line for the whole unit.
+    const byNum = n => CONTAINERS.find(x => String(x.num) === String(n));
+    function row(label, st, ctnNum) {
+      if (!st) return '';
+      const c = byNum(ctnNum);
+      let meta = '';
+      if (c) {
+        const isProj = c.status === 'PROJ';
+        meta = '<div style="font-size:9px;color:var(--text-3);text-align:right;margin-top:1px;">CTN '
+             + c.num + ' &middot; ' + (isProj ? projDeliveryRange(c) : deliveryDisplay(c)) + '</div>';
+      }
+      return '<div class="bmp-row"><span class="bmp-lbl">' + label + '</span>'
+           + '<span class="bmp-val">' + pill(st) + meta + '</span></div>';
+    }
 
     let h = '<div class="bmp-id">Unit ' + uid + '</div>';
-    h += '<div class="bmp-row"><span class="bmp-lbl">Kitchen</span><span class="bmp-val">' +
-         pill(td.getAttribute('data-k')) + '</span></div>';
-    h += '<div class="bmp-row"><span class="bmp-lbl">Vanity 1</span><span class="bmp-val">' +
-         pill(td.getAttribute('data-v1')) + '</span></div>';
-    const v2 = td.getAttribute('data-v2');
-    if (v2) {
-      h += '<div class="bmp-row"><span class="bmp-lbl">Vanity 2</span><span class="bmp-val">' +
-           pill(v2) + '</span></div>';
-    }
-    h += '<div class="bmp-sep"></div>';
-    if (c) {
-      const isProj = c.status === 'PROJ';
-      const deliv = isProj ? projDeliveryRange(c) : deliveryDisplay(c);
-      h += '<div class="bmp-row"><span class="bmp-lbl">Container</span>' +
-           '<span class="bmp-val">CTN ' + c.num + '</span></div>';
-      h += '<div class="bmp-row"><span class="bmp-lbl">' + (isProj ? 'Est. delivery' : 'Delivery') +
-           '</span><span class="bmp-val">' + deliv + '</span></div>';
-    } else {
-      h += '<div class="bmp-row"><span class="bmp-lbl">Container</span>' +
-           '<span class="bmp-val" style="color:var(--text-3);font-weight:400;">Not assigned</span></div>';
-    }
+    h += row('Kitchen',  td.getAttribute('data-k'),  td.getAttribute('data-kc'));
+    h += row('Vanity 1', td.getAttribute('data-v1'), td.getAttribute('data-v1c'));
+    h += row('Vanity 2', td.getAttribute('data-v2'), td.getAttribute('data-v2c'));
     return h;
   }
 
