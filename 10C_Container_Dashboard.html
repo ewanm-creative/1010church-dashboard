@@ -425,7 +425,7 @@ body.bm-ctn #leg-ctn { display: flex; }
 
   /* Screen chrome that never belongs on paper. */
   .tab-bar, #staff-btn, #staff-pin, #ctn-copy, .print-btn,
-  #bldg-scroll-top, #btn-top-down, #btn-bottom-up,
+  #bldg-scroll-top, #btn-bldg-dir, #btn-bldg-mode,
   #mini-matrix-card, #bldg-mobile-note { display: none !important; }
 
   #dmg, #cs, #ctn, #bldg { display: none !important; }
@@ -504,7 +504,7 @@ body.bm-ctn #leg-ctn { display: flex; }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Sep 23, 2026 at 4:43 PM</em></div>
+      <div class="sub"><em>Updated Sep 23, 2026 at 5:29 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -647,9 +647,8 @@ body.bm-ctn #leg-ctn { display: flex; }
   <div class="print-sec" id="print-sec-bldg">Building Matrix</div>
   <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap;">
     <div style="display:flex;gap:6px;">
-      <button id="btn-top-down" onclick="setBldgDir(false)" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-weight:600;">Top Down</button>
-      <button id="btn-bottom-up" onclick="setBldgDir(true)"  style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;">Bottom Up</button>
-      <button id="btn-bldg-mode" onclick="toggleBldgMode()" title="Swap the cards between delivery status and container numbers" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;">Container #</button>
+      <button id="btn-bldg-dir" onclick="toggleBldgDir()" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit;">Top Down</button>
+      <button id="btn-bldg-mode" onclick="toggleBldgMode()" title="Showing delivery status — click for container numbers" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit;">CTNR #</button>
     </div>
     <div class="leg" style="margin-bottom:0">
       <span class="leg-i leg-status"><span class="dot d-PROJ"></span> Projected</span>
@@ -758,7 +757,7 @@ body.bm-ctn #leg-ctn { display: flex; }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Sep 23, 2026 at 4:43 PM) ─────────────────────
+// ── DATA (auto-generated Sep 23, 2026 at 5:29 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'ENR', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 29', etaNash:'Oct 1', yardDays:'4', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:false, code:'MSDU5321045', delivTime:'—' },
   { num: 2, status:'ENR', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', loadDate:'Sep 2', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'Oct 6', yardDays:'3', delivery:'Oct 9, 2026', deliveryISO:'2026-10-09', ordered:true, confirmed:false, code:'MSMU6104375', delivTime:'—' },
@@ -782,9 +781,9 @@ const CONTAINERS = [
   { num:20, status:'PROJ', week:'Wk 9', floor:36, floors:'36,37,38', floorList:[36, 37, 38], unitQty:16, kitchens:'3611:3612,3701:3706,3708:3712,3801:3803', v1:'3611:3612,3701:3712,3801:3803', v2:'3612,3704,3706,3710,3712', extra:'', loadDate:'Mar 3', shipDate:'Mar 8', vessel:'—', etaChs:'Mar 28', railDate:'Mar 31', etaNash:'Apr 3', yardDays:'3', delivery:'Apr 6, 2027', deliveryISO:'2027-04-06', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num:21, status:'PROJ', week:'Wk 11', floor:38, floors:'38,39', floorList:[38, 39], unitQty:15, kitchens:'3804:3806,3808:3812,3901:3906,3908', v1:'3804:3812,3901:3908', v2:'3804,3806,3810,3812,3904,3906', extra:'', loadDate:'Mar 17', shipDate:'Mar 22', vessel:'—', etaChs:'Apr 11', railDate:'Apr 14', etaNash:'Apr 17', yardDays:'3', delivery:'Apr 20, 2027', deliveryISO:'2027-04-20', ordered:false, confirmed:false, code:'--', delivTime:'—' },
   { num:22, status:'PROJ', week:'Wk 12', floor:39, floors:'39', floorList:[39], unitQty:4, kitchens:'3909:3912', v1:'3909:3912', v2:'3910,3912', extra:'', loadDate:'Mar 24', shipDate:'Mar 29', vessel:'—', etaChs:'Apr 18', railDate:'Apr 21', etaNash:'Apr 24', yardDays:'3', delivery:'Apr 27, 2027', deliveryISO:'2027-04-27', ordered:false, confirmed:false, code:'--', delivTime:'—' },
-  { num:'BH', status:'PROJ', week:'Wk 26', floor:'10–39', floors:'10–39', floorList:[], unitQty:30, kitchens:'All unit-07 (30 floors)', v1:'—', v2:'—', extra:'', loadDate:'Jun 30, 2027', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Jul 30, 2027', deliveryISO:'2027-07-30', ordered:false, confirmed:false, code:'—', delivTime:'—' },
-  { num:'ECT', status:'PROJ', week:'Wk 27', floor:'—', floors:'—', floorList:[], unitQty:4, kitchens:'—', v1:'1004, 2004, 2904, 3604', v2:'—', extra:'', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' },
-  { num:'WCT', status:'PROJ', week:'Wk 27', floor:'—', floors:'—', floorList:[], unitQty:6, kitchens:'1611, 2511, 3311', v1:'1612, 2512, 3312', v2:'—', extra:'', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' }
+  { num:'BH', status:'PROJ', week:'Wk 26', floor:'10–39', floors:'10–39', floorList:[], unitQty:30, kitchens:'1107,1207,1307,1407,1507,1607,1707,1807,1907,2007,2107,2207,2307,2407,2507,2607,2707,2807,2907,3007,3107,3207,3307,3407,3507,3607,3707,3807,3907', v1:'—', v2:'—', extra:'', loadDate:'Jun 30, 2027', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Jul 30, 2027', deliveryISO:'2027-07-30', ordered:false, confirmed:false, code:'—', delivTime:'—' },
+  { num:'ECT', status:'PROJ', week:'Wk 27', floor:'—', floors:'—', floorList:[], unitQty:4, kitchens:'—', v1:'1004,2004,2904,3604', v2:'—', extra:'', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' },
+  { num:'WCT', status:'PROJ', week:'Wk 27', floor:'—', floors:'—', floorList:[], unitQty:6, kitchens:'1611,2511,3311', v1:'1612,2512,3312', v2:'—', extra:'', loadDate:'—', shipDate:'—', vessel:'—', etaChs:'—', railDate:'—', etaNash:'—', yardDays:'—', delivery:'Aug 6, 2027', deliveryISO:'2027-08-06', ordered:false, confirmed:false, code:'—', delivTime:'—' }
 ];
 
 const ROJ = {
@@ -1627,6 +1626,14 @@ CONTAINERS.forEach(c => {
   expandUnits(c.v1).forEach(u       => mark(u, 'V1'));
   expandUnits(c.v2).forEach(u       => mark(u, 'V2'));
 });
+// ...plus every unit-07 kitchen, floors 10-39. This one IS hardcoded on
+// purpose: being a hoist/comeback unit is a DESIGNATION, separate from which
+// container carries it. BH's range starts at 1107, so floor 10 would lose its
+// ring otherwise - but 1007's kitchen still belongs to CTN 1 and must keep
+// showing '1'. Ring only; never write this into K_CTN.
+for (let f = 10; f <= 39; f++) {
+  (SPECIAL_COMPS[f * 100 + 7] = SPECIAL_COMPS[f * 100 + 7] || {}).K = true;
+}
 
 function renderBldgMatrix() {
   const SCOLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', BH:'#C8C6BE' };
@@ -1820,23 +1827,41 @@ function initBldgPreview() {
   window.addEventListener('resize', () => { pinned = null; hide(); });
 }
 
+// One source of truth for the two matrix toggles' styling. Non-default view
+// (top-down / CTNR #) gets the accent fill, exactly like the old active pill.
+const BM_BTN_BASE = 'font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;font-family:inherit;';
+const BM_BTN_ON   = 'background:var(--accent);color:#fff;font-weight:600;border-color:var(--accent);';
+const BM_BTN_OFF  = 'background:var(--surface);color:var(--text-2);font-weight:400;border-color:var(--border);';
+function bmBtnStyle(el, active) {
+  if (el) el.setAttribute('style', BM_BTN_BASE + (active ? BM_BTN_ON : BM_BTN_OFF));
+}
+
+// Both matrix controls are single toggles whose LABEL is the destination, not
+// the current state - click 'Top Down' to go top-down. The tooltip spells out
+// where you are now, since a bare destination label is ambiguous on its own.
 function setBldgDir(asc) {
   _bldgAsc = asc;
-  const on  = 'background:var(--accent);color:#fff;font-weight:600;border-color:var(--accent)';
-  const off = 'background:var(--surface);color:var(--text-2);font-weight:400;border-color:var(--border)';
-  document.getElementById('btn-top-down').setAttribute('style', `font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;${asc ? off : on}`);
-  document.getElementById('btn-bottom-up').setAttribute('style', `font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;${asc ? on : off}`);
+  const b = document.getElementById('btn-bldg-dir');
+  if (b) {
+    b.textContent = asc ? 'Top Down' : 'Bottom Up';
+    bmBtnStyle(b, !asc);                        // accent while top-down (non-default)
+    b.title = asc ? 'Showing bottom-up (10\u219239) \u2014 click for top-down'
+                  : 'Showing top-down (39\u219210) \u2014 click for bottom-up';
+  }
   renderBldgMatrix();
 }
+function toggleBldgDir() { setBldgDir(!_bldgAsc); }
 
 function setBldgMode(mode) {
   _bldgMode = (mode === 'ctn') ? 'ctn' : 'status';
   document.body.classList.toggle('bm-ctn', _bldgMode === 'ctn');
   const b = document.getElementById('btn-bldg-mode');
   if (b) {
-    const on  = 'background:var(--accent);color:#fff;font-weight:600;border-color:var(--accent)';
-    const off = 'background:var(--surface);color:var(--text-2);font-weight:400;border-color:var(--border)';
-    b.setAttribute('style', `font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;${_bldgMode === 'ctn' ? on : off}`);
+    const ctn = _bldgMode === 'ctn';
+    b.textContent = ctn ? 'Status' : 'CTNR #';
+    bmBtnStyle(b, ctn);                         // accent while showing CTNR # (non-default)
+    b.title = ctn ? 'Showing container numbers \u2014 click for delivery status'
+                  : 'Showing delivery status \u2014 click for container numbers';
   }
   renderBldgMatrix();
 }
