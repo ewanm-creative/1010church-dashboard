@@ -504,7 +504,7 @@ body.bm-ctn #leg-ctn { display: flex; }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Sep 23, 2026 at 4:31 PM</em></div>
+      <div class="sub"><em>Updated Sep 23, 2026 at 4:43 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -661,7 +661,7 @@ body.bm-ctn #leg-ctn { display: flex; }
       <span class="leg-i leg-status"><span class="dot d-INYRD"></span> In Yard (NSH)</span>
       <span class="leg-i leg-status"><span class="dot d-D"></span> Delivered</span>
       <span class="leg-i"><span class="dot" style="background:transparent;outline:2.5px solid #93C5FD;outline-offset:1px;"></span> Hoist/Comeback Units</span>
-      <span class="leg-i" id="leg-ctn">Colour groups containers on a repeating cycle, matching the Excel matrix. <span class="bm-badge bm-badge-ctn" style="background:#37474F;color:#FFFFFF;padding:1px 5px;flex:none;">BH / ECT / WCT</span></span>
+      <span class="leg-i" id="leg-ctn">Colour groups containers on a repeating cycle, matching the Excel matrix. <span class="bm-badge bm-badge-ctn" style="background:transparent;color:#37474F;border:1px solid rgba(55,71,79,.55);padding:1px 5px;flex:none;">BH / ECT / WCT</span></span>
     </div>
     <button class="print-btn" onclick="printReport('bldg')" title="Print the building matrix" style="margin-left:auto;">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print matrix
@@ -758,7 +758,7 @@ body.bm-ctn #leg-ctn { display: flex; }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Sep 23, 2026 at 4:31 PM) ─────────────────────
+// ── DATA (auto-generated Sep 23, 2026 at 4:43 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'ENR', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 29', etaNash:'Oct 1', yardDays:'4', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:false, code:'MSDU5321045', delivTime:'—' },
   { num: 2, status:'ENR', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', loadDate:'Sep 2', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Oct 3', etaNash:'Oct 6', yardDays:'3', delivery:'Oct 9, 2026', deliveryISO:'2026-10-09', ordered:true, confirmed:false, code:'MSMU6104375', delivTime:'—' },
@@ -1025,21 +1025,17 @@ function expandUnits(spec) {
 }
 
 const K_CTN = {}, V1_CTN = {}, V2_CTN = {};
-const BH_CTN = CONTAINERS.find(c => c.num === 'BH') || null;
 CONTAINERS.forEach(c => {
   expandUnits(c.kitchens).forEach(u => { K_CTN[u]  = c; });
   expandUnits(c.v1).forEach(u       => { V1_CTN[u] = c; });
   expandUnits(c.v2).forEach(u       => { V2_CTN[u] = c; });
 });
 
-// The BH (hoist / comeback) container carries the unit-07 kitchen on every
-// floor, but its cell reads "All unit-07 (30 floors)" - prose, with no unit
-// numbers to parse. Map those explicitly so unit x07 doesn't fall back to
-// whichever container happens to own the floor.
-if (BH_CTN) {
-  for (let f = 10; f <= 39; f++) K_CTN[f * 100 + 7] = BH_CTN;
-}
-const BH_STATUS = (CONTAINERS.find(c => c.num === 'BH') || {}).status || 'PROJ';
+// BH's kitchens cell used to read "All unit-07 (30 floors)" - prose with no
+// parseable units - so unit x07 was hardcoded to BH for floors 10-39. The
+// Excel now lists them explicitly (1107..3907, i.e. floors 11-39), so the
+// hardcode is gone: it was both unnecessary AND wrong, claiming floor 10.
+// Let the ranges resolve everything. Don't reintroduce a floor loop here.
 
 // ── STATUS HELPERS ──
 const STATUS_RANK = { D:8, INYRD:7, RAIL:6, PORT:5, ENR:4, LDD:3, LDG:2, PROJ:1 };
@@ -1101,10 +1097,9 @@ function renderMiniMatrix() {
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc = EXCEPTIONS[unitId] || {};
-      const isBH = (u === 7);
       let st;
       if (_miniMode === 'K') {
-        st = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
+        st = exc.kStatus || (K_CTN[unitId] || ctn).status;
       } else if (_miniMode === 'V1') {
         st = exc.v1Status || ctn.status;
       } else {
@@ -1619,40 +1614,48 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
 let _bldgAsc = true; // false = top-down (39→10), true = bottom-up (10→39) — default
 let _bldgMode = 'status'; // 'status' = delivery badges | 'ctn' = container numbers
 
-// Special component rules from note-bar
+// Hoist / crane tie-in comeback components (the blue outline on a card).
 const SPECIAL_COMPS = {};
-// BH: K on unit 07 for all floors 10–39
-for (let f = 10; f <= 39; f++) SPECIAL_COMPS[f*100+7] = { K: true };
-// ECT: V1 on specific units
-[1004,2004,2904,3604].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {V1:true}); });
-// WCT: K on 1611/2511/3311 · V1 on 1612/2512/3312
-[1611,2511,3311].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {K:true}); });
-[1612,2512,3312].forEach(u => { SPECIAL_COMPS[u] = Object.assign({}, SPECIAL_COMPS[u]||{}, {V1:true}); });
+// Derived from the container ranges, never hardcoded: any product whose
+// container is BH / ECT / WCT is a hoist or crane tie-in comeback. Hardcoded
+// unit lists here drifted from the Excel once already.
+const SPECIAL_NUMS = new Set(['BH', 'ECT', 'WCT']);
+CONTAINERS.forEach(c => {
+  if (!SPECIAL_NUMS.has(String(c.num).toUpperCase())) return;
+  const mark = (u, k) => { (SPECIAL_COMPS[u] = SPECIAL_COMPS[u] || {})[k] = true; };
+  expandUnits(c.kitchens).forEach(u => mark(u, 'K'));
+  expandUnits(c.v1).forEach(u       => mark(u, 'V1'));
+  expandUnits(c.v2).forEach(u       => mark(u, 'V2'));
+});
 
 function renderBldgMatrix() {
   const SCOLOR = { D:'#0A3D34', INYRD:'#125649', RAIL:'#1B7060', PORT:'#2D8C74', ENR:'#47A98F', LDD:'#7EC4B0', LDG:'#B6DCCE', BH:'#C8C6BE' };
   const STXT   = { D:'#fff', INYRD:'#fff', RAIL:'#fff', PORT:'#fff', ENR:'#fff', LDD:'#0D3D2C', LDG:'#0D3D2C', BH:'#555' };
   const ABBR   = { D:'D', INYRD:'IYD', PORT:'PORT', ENR:'ENR', LDD:'LDD', LDG:'LDG', PROJ:'PRJ', BH:'BH' };
 
-  // Container view. Astro 7 status palette, LIGHT-theme row, in Astro's own
-  // order: Off, Standby, Normal, Caution, Serious, Critical -> containers
-  // 1..6, then repeating on MOD(n-1,6). NOTE these are severity colours being
-  // used for identity: CTN 6 is red and CTN 3 green with no such meaning. That
-  // is a deliberate choice, not a bug - don't 'fix' it by reordering.
+  // Container view. FIVE colours cycling on MOD(n-1,5): yellow, green, red,
+  // grey, blue. Orange was dropped deliberately.
+  // The hues come from the Astro 7 light-theme status scale, but the ORDER is
+  // the user's own - it is NOT Astro's Off..Critical sequence, so don't
+  // 'restore' that. The cycle length is driven by CTN_RAMP.length, so adding
+  // or removing a colour here is all it takes (keep the Excel CF in step:
+  // its MOD(n-1,N) formulas must match).
   // Text colours are picked for contrast (>=4.5:1), not copied from Astro.
-  const CTN_RAMP = ['#6E7880','#4DB8FF','#00B300','#FFD900','#F5A623','#E50000'];
-  const CTN_TXT  = ['#FFFFFF','#05293D','#062D06','#3D3200','#3D2600','#FFFFFF'];
+  const CTN_RAMP = ['#FFD900','#00B300','#E50000','#6E7880','#4DB8FF'];
+  const CTN_TXT  = ['#3D3200','#062D06','#FFFFFF','#FFFFFF','#05293D'];
   // BH / ECT / WCT stay off the cycle entirely - a hoist or crane tie-in
-  // container must never read as a numbered one. Cyan is no longer free for
-  // this: it is Standby in the ramp above.
+  // container must never read as a numbered one. They render HOLLOW (no fill,
+  // just an outline), matching how the status view draws its PROJ badge, so a
+  // special reads as 'not one of the six' at a glance.
   const CTN_SPEC = { BH:1, ECT:1, WCT:1 };
   const ctnStyle = (num) => {
     const s = String(num == null ? '' : num).trim();
     if (!s || s === '--') return 'background:#e8e6e1;color:var(--text-3);';
-    if (CTN_SPEC[s.toUpperCase()]) return 'background:#37474F;color:#FFFFFF;';
+    if (CTN_SPEC[s.toUpperCase()]) return 'background:transparent;color:#37474F;border:1px solid rgba(55,71,79,.55);';
     const n = parseInt(s, 10);
     if (!isFinite(n)) return 'background:#e8e6e1;color:var(--text-3);';
-    const i = ((n - 1) % 6 + 6) % 6;
+    const L = CTN_RAMP.length;
+    const i = ((n - 1) % L + L) % L;
     return 'background:' + CTN_RAMP[i] + ';color:' + CTN_TXT[i] + ';';
   };
 
@@ -1682,10 +1685,10 @@ function renderBldgMatrix() {
     // compute floor stats
     let kDel=0, v1Del=0, v2Del=0, v2Total=0;
     for (let u = 1; u <= 12; u++) {
-      const uid = floor*100+u, exc = EXCEPTIONS[uid]||{}, hasV2 = V2_UNITS.has(u), isBH = (u===7);
+      const uid = floor*100+u, exc = EXCEPTIONS[uid]||{}, hasV2 = V2_UNITS.has(u);
       // Each product resolves to its OWN container - a floor's units can be
       // split across several (floor 11 spans CTN 1, 2 and 3).
-      const kS  = exc.kStatus  || (isBH ? BH_STATUS : (K_CTN[uid]  || ctn).status);
+      const kS  = exc.kStatus  || (K_CTN[uid]  || ctn).status;
       const v1S = exc.v1Status || (V1_CTN[uid] || ctn).status;
       const v2S = hasV2 ? (exc.v2Status || (V2_CTN[uid] || ctn).status) : null;
       if (kS==='D') kDel++; if (v1S==='D') v1Del++;
@@ -1706,11 +1709,10 @@ function renderBldgMatrix() {
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc    = EXCEPTIONS[unitId] || {};
-      const isBH   = (u === 7);
       const kCtn   = K_CTN[unitId]  || ctn;
       const v1Ctn  = V1_CTN[unitId] || ctn;
       const v2Ctn  = V2_CTN[unitId] || ctn;
-      const kSt    = exc.kStatus  || (isBH ? BH_STATUS : kCtn.status);
+      const kSt    = exc.kStatus  || kCtn.status;
       const v1St   = exc.v1Status || v1Ctn.status;
       const v2St   = V2_UNITS.has(u) ? (exc.v2Status || v2Ctn.status) : null;
       const sp     = SPECIAL_COMPS[unitId] || {};
@@ -1862,8 +1864,7 @@ initBldgPreview();
       const unitId = floor * 100 + u;
       const exc = EXCEPTIONS[unitId] || {};
       const hasV2 = V2_UNITS.has(u);
-      const isBH  = (u === 7);
-      const kStatus  = exc.kStatus || (isBH ? BH_STATUS : ctn.status);
+      const kStatus  = exc.kStatus || (K_CTN[unitId] || ctn).status;
       const v1Status = exc.v1Status || ctn.status;
       const v2Status = hasV2 ? (exc.v2Status || ctn.status) : null;
       if (kStatus  === 'D') kDel++;
