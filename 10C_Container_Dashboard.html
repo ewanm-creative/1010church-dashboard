@@ -58,7 +58,7 @@
 body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
 .shell { max-width: 1240px; margin: 0 auto; padding: 24px 20px 60px; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-.topbar-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+.topbar-left h1 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
 .topbar-left .sub { font-size: 11px; color: var(--text-2); margin-top: 3px; }
 .date-pill { font-size: 11px; background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 99px; }
 .metrics { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 20px; }
@@ -102,7 +102,7 @@ th { text-align: left; padding: 8px 10px; color: var(--text-3); font-weight: 600
 td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--bg); }
-.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 10px; }
+.mono { font-size: 10px; }   /* same font as body - matches 111W */
 .proj-ok td { background: rgba(42,122,58,.03); }
 .proj-warn td { background: rgba(212,137,10,.04); }
 .route-pipeline { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; overflow-x: auto; }
@@ -225,7 +225,7 @@ body.bm-ctn #leg-ctn { display: flex; }
 .field input,.field select,.field textarea { border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 8px 10px; font-size: 12px; font-family: inherit; color: var(--text); background: var(--bg); outline: none; transition: border-color .12s; }
 .field input:focus,.field select:focus,.field textarea:focus { border-color: var(--accent); background: #fff; }
 .field textarea { resize: vertical; min-height: 70px; }
-.field .date-fixed { font-size: 12px; color: var(--text-2); padding: 8px 10px; background: var(--scope-bg); border: 1px solid var(--border); border-radius: var(--radius); font-family: 'SF Mono', monospace; }
+.field .date-fixed { font-size: 12px; color: var(--text-2); padding: 8px 10px; background: var(--scope-bg); border: 1px solid var(--border); border-radius: var(--radius); }
 .form-actions { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
 .btn-submit { background: var(--accent); color: #fff; border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
 .btn-submit:hover { opacity: .88; }
@@ -506,7 +506,7 @@ body.bm-ctn #leg-ctn { display: flex; }
     <div>
       <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Oct 5, 2026 at 2:09 PM</em></div>
+      <div class="sub"><em>Updated Oct 5, 2026 at 4:30 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -758,7 +758,7 @@ body.bm-ctn #leg-ctn { display: flex; }
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Oct 5, 2026 at 2:09 PM) ─────────────────────
+// ── DATA (auto-generated Oct 5, 2026 at 4:30 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', note:'1008 missing vanity base in CTNR#6', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 27', etaNash:'Sep 29', yardDays:'6', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:true, code:'MSDU5321045', delivTime:'12:00pm' },
   { num: 2, status:'INYRD', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', note:'', loadDate:'Sep 3', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Sep 30', etaNash:'Oct 5', yardDays:'4', delivery:'Oct 9, 2026', deliveryISO:'2026-10-09', ordered:true, confirmed:false, code:'MSMU6104375', delivTime:'—' },
