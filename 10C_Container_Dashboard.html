@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <title>1010 Church · Concerto Millwork · Logistics Dashboard</title>
 <link rel="icon" id="favicon" type="image/png" href="logo-lion.png">
 <link rel="apple-touch-icon" href="logo-lion.png">
@@ -55,7 +58,7 @@
   --radius-lg: 12px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: 'Bahnschrift', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
+body { background: var(--bg); font-family: 'Barlow', 'Bahnschrift', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); font-size: 13px; line-height: 1.5; }
 .shell { max-width: 1240px; margin: 0 auto; padding: 24px 20px 60px; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 .topbar-left h1 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
@@ -520,6 +523,35 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
 .eta-note, .note-bar { background: none !important; border: none !important; border-radius: 0 !important; padding: 2px 0 !important; margin: 0 0 6px !important; font-size: 11px; color: var(--text-3); text-align: left; }
 .eta-note { color: #D01C1F !important; text-align: center !important; }   /* ETA note sits above the table, in the site's red */
 /* ===== LOOK-V2D END ===== */
+/* ===== DESLOP START (Oct 22 de-slop list). Revert: restore *.bak-deslop ===== */
+/* G5: tabs as separate bordered buttons; the active one is filled */
+.tabs { background: none !important; border: none !important; padding: 0 !important; gap: 6px !important; }
+.tab, .tab-bar .tabs .tab { background: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 2px !important; padding: 6px 14px !important; color: var(--text-2) !important; }
+.tab:hover { border-color: var(--accent) !important; color: var(--text) !important; }
+.tab.on, .tab-bar .tabs .tab.on { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; font-weight: 600 !important; }
+/* C4: no status dot before CTN # (status column already says it) */
+#ctn td.c-num .dot { display: none !important; }
+/* C7: normal text colour in the schedule instead of light grey */
+#ctn tbody td[style*="color:var(--text-3)"] { color: var(--text) !important; }
+/* C9: next-up row keeps its fill, loses the left accent bar */
+#ctn tbody tr.next-up-row > td:first-child { box-shadow: none !important; }
+/* D2: field labels in normal case */
+#dmg label { text-transform: none !important; letter-spacing: normal !important; font-size: 11px !important; }
+/* D4: report date as plain text */
+#dmg .date-pill { background: none !important; border: none !important; padding: 0 !important; color: var(--text) !important; font-weight: 600 !important; }
+/* Mobile unit numbers: phone browsers (iOS Safari, Chrome Android) auto-enlarge text in wide
+   table columns such as the unit lists. Turn that "text autosizing" off so the sizes set here are used. */
+html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* Schedule tables: one line per row on both sites (scroll sideways for long unit lists) */
+#ctn .tw td { white-space: nowrap; }
+/* 1010 table styled like 111 Wall: 10px cells, bold CTNR # and floor, unit lists in normal text colour */
+#ctn .tw td { font-size: 10px !important; }
+#ctn .tw td.c-num, #ctn .tw td.c-status { font-size: 11px !important; }
+#ctn .tw td.c-num { font-weight: 600; }
+#ctn .tw td.c-floor { font-weight: 600; }
+#ctn th.gapl, #ctn td.gapl { padding-left: 24px; }
+#ctn .tw td.c-kitchens, #ctn .tw td.c-v1, #ctn .tw td.c-v2 { color: var(--text) !important; }
+/* ===== DESLOP END ===== */
 </style>
 </head>
 <script src="config.js"></script>
@@ -535,9 +567,9 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
   <div class="topbar-left" style="display:flex;align-items:center;gap:14px;">
     <img src="logo-lion.png" alt="" style="height:56px;width:56px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">
     <div>
-      <h1>1010 Church · Concerto Millwork · Logistics Dashboard</h1>
-      <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Oct 22, 2026 at 10:00 AM</em></div>
+      <h1>1010 Church — Container Logistics</h1>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Concerto Millwork · Apartment Tower · Condo phase tracked separately</div>
+      <div class="sub"><em>Updated Oct 22, 2026 at 10:31 AM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -622,13 +654,13 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
   <div class="tw">
     <table>
       <thead><tr>
-        <th class="c-num">Ctnr No.</th><th class="c-status">Status</th><th class="c-code">Ctnr Code</th>
+        <th class="c-num">CTN #</th><th class="c-status">Status</th><th class="c-code">Ctnr Code</th>
         <th class="c-loadwk staff-col">Load Wk</th><th class="c-loaddate">Load Date</th>
         <th class="c-ship staff-col">Ship Date</th><th class="c-vessel staff-col">Vessel</th>
         <th class="c-etachs staff-col">ETA Port</th><th class="c-rail staff-col">Rail Date</th>
         <th class="c-etansh">ETA NSH</th><th class="c-yard vhdr"><span>Yard Days</span></th>
         <th class="c-deliv">Delivery</th><th class="c-dtime vhdr"><span>Time</span></th>
-        <th class="c-conf">Confirmed?</th><th class="c-floor">Floor</th>
+        <th class="c-conf">Confirmed?</th><th class="c-floor gapl">Floor</th>
         <th class="c-qty staff-col vhdr"><span>Unit Qty</span></th>
         <th class="c-kitchens">Kitchens</th><th class="c-v1">Vanity 1</th><th class="c-v2">Vanity 2</th>
       </tr></thead>
@@ -679,11 +711,9 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
 <!-- ===== DAMAGE / OPEN ITEMS ===== -->
 <div id="dmg" class="panel">
 
-  <div style="margin-bottom:16px;padding:14px 16px;background:#fffbf0;border:1px solid #c8a84b;border-radius:8px;font-size:12px;color:var(--text-1);line-height:1.6;">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a6800;margin-bottom:10px;">⚠ REPORT DAMAGES IMMEDIATELY — READ BEFORE SUBMITTING</div>
-    <p style="margin:0 0 8px;"><strong>Check every item as soon as the container is unloaded and shaken out in the building.</strong> Report on the spot — do not set it aside to do later.</p>
-    <p style="margin:0 0 8px;">If something is damaged, lost, or wrong → fill this form and submit promptly. <strong>Anything reported more than a couple of days after unload cannot be claimed as transportation damage</strong> — by that point the damage is assumed to have happened during handling or installation, and it will not be covered.</p>
-    <p style="margin:0;">Reports through Procore, Autodesk, or similar platforms come in during or after installation — those are installation reports, not delivery reports. Our contract ends at delivery, so by the time those come in the damage can no longer be traced back to transport.</p>
+  <div class="dmg-note" style="margin-bottom:16px;font-size:12px;line-height:1.6;color:var(--text);">
+    <p style="margin:0 0 4px;"><strong>Check every item as soon as the container is unloaded, and report anything damaged, lost or wrong the same day.</strong></p>
+    <p style="margin:0;color:var(--text-2);">Damage reported more than a couple of days after unload cannot be claimed as transportation damage; Procore or Autodesk reports made during installation are installation reports, not delivery reports.</p>
   </div>
 
   <div class="form-card">
@@ -691,19 +721,19 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
     <p class="form-sub">Fill in each field and click <strong>+ Add to report</strong>. Repeat for each item. When done, click <strong>Send Report</strong> to email the list. Items are cleared when you close the tab.</p>
     <div class="form-grid">
       <div class="field">
-        <label>1. Unit Number</label>
+        <label>Unit number</label>
         <select id="f-unit"><option value="">&#8212; Select unit &#8212;</option></select>
       </div>
       <div class="field">
-        <label>2. Item Code</label>
+        <label>Item code</label>
         <input type="text" id="f-code" placeholder="e.g. 2PFCF000377 or 77">
       </div>
       <div class="field">
-        <label>3. Item Description</label>
+        <label>Item description</label>
         <input type="text" id="f-itemdesc" placeholder='e.g. Wall Unit W31" or Sink Base W31 1/2"'>
       </div>
       <div class="field">
-        <label>4. Issue Type</label>
+        <label>Issue type</label>
         <select id="f-issuetype">
           <option value="">&#8212; Select type &#8212;</option>
           <option value="LMI">LMI &#8211; Lost / Missing Item</option>
@@ -716,7 +746,7 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
         </select>
       </div>
       <div class="field">
-        <label>5. Issue Description</label>
+        <label>Issue description</label>
         <textarea id="f-issue" placeholder="Describe what was found &#8212; damage type, location, severity&#8230;"></textarea>
       </div>
     </div>
@@ -743,7 +773,6 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
       </table>
     </div>
     <div id="empty-state" class="empty-state">
-      <div class="big">&#128203;</div>
       No items yet. Use the form above to log a damage or open item.
     </div>
   </div>
@@ -754,7 +783,8 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
   <div id="cs-cards" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
   <div class="leg" style="margin-bottom:10px;">
     <span class="leg-i">In window or up to 3 days early &mdash; OK</span>
-    <span class="leg-i"><b style="color:#D01C1F">&#9679;</b> more than 3 days early, or after the BG delivery window</span>
+    <span class="leg-i"><b style="color:#D01C1F">&#9679;</b> after the BG delivery window</span>
+    <span class="leg-i"><b style="color:#B06A00">&#9679;</b> more than 3 days early</span>
   </div>
   <div id="cs-wrap" class="tw"></div>
 </div>
@@ -762,7 +792,7 @@ div[style*="text-transform:uppercase"][style*="font-size:10px"] { font-size: 13p
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Oct 22, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Oct 22, 2026 at 10:31 AM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', note:'1008 missing vanity base in CTNR#6', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 27', etaNash:'Sep 29', yardDays:'6', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:true, code:'MSDU5321045', delivTime:'12:00pm' },
   { num: 2, status:'D', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', note:'', loadDate:'Sep 3', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Sep 30', etaNash:'Oct 5', yardDays:'9', delivery:'Oct 14, 2026', deliveryISO:'2026-10-14', ordered:true, confirmed:true, code:'MSMU6104375', delivTime:'1:00pm' },
@@ -1255,7 +1285,7 @@ function renderConstruction() {
       const after  = Math.round((dd - win.e) / day);   // days past window end
       const plural = n => n + (n === 1 ? ' day' : ' days');
       if (after > 0)            { txt = plural(after) + ' late';   col = '#D01C1F'; late++; }
-      else if (before > EARLY_OK) { txt = plural(before) + ' early'; col = '#D01C1F'; early++; }
+      else if (before > EARLY_OK) { txt = plural(before) + ' early'; col = '#B06A00'; early++; }
       else if (before > 0)      { txt = plural(before) + ' early'; col = 'var(--text)'; }
       else                      { txt = 'In window';               col = 'var(--text)'; }
     }
@@ -1278,12 +1308,15 @@ function renderConstruction() {
 
   // The BG date is an external link in the Excel; flag it when it looks stale
   // (the scheduled refresh can publish an old cached value).
-  let bgSub = 'from the construction schedule', bgCol = '';
+  let bgSub = '', bgCol = '';
   const bgD = isoDate(typeof CONSTR_UPDATED_ISO !== 'undefined' ? CONSTR_UPDATED_ISO : '');
   if (bgD) {
     const age = Math.floor((new Date().setHours(0,0,0,0) - bgD) / 86400000);
-    if (age > 10) { bgSub = age + ' days old - check the Excel link'; bgCol = '#B06A00'; }
+    bgSub = ' (' + age + (age === 1 ? ' day' : ' days') + ' old)';
+    if (age > 10) { bgSub = ' (' + age + ' days old - check the Excel link)'; bgCol = '#B06A00'; }
   }
+  const avgN = parseFloat(typeof CONSTR_AVG !== 'undefined' ? CONSTR_AVG : '');
+  const avgTxt = isFinite(avgN) ? Math.round(avgN) + (Math.round(avgN) === 1 ? ' day' : ' days') : '—';
 
   const card = (lbl, val, sub, colr) =>
     `<div class="mc"><div class="lbl">${lbl}</div>` +
@@ -1291,11 +1324,10 @@ function renderConstruction() {
     `<div class="vsub">${sub}</div></div>`;
 
   if (cards) cards.innerHTML =
-      card('BG schedule updated', esc(typeof CONSTR_UPDATED !== 'undefined' ? CONSTR_UPDATED : '—'), bgSub, bgCol)
-    + card('Avg slip', esc(typeof CONSTR_AVG !== 'undefined' ? CONSTR_AVG : '—'), 'vs the original schedule')
-    + card('Floors', CONSTRUCTION.length, 'per BG schedule')
+      `<div style="flex:1 0 100%;font-size:13px;margin-bottom:2px;${bgCol ? 'color:' + bgCol + ';' : ''}">BG schedule <strong>${esc(typeof CONSTR_UPDATED !== 'undefined' ? CONSTR_UPDATED : '—')}</strong>${esc(bgSub)}</div>`
+    + card('Avg slip', avgTxt, 'vs the original schedule')
     + card('Arriving late', late, 'after BG delivery window', late ? '#D01C1F' : '#22735C')
-    + card('Arriving too early', early, 'over 3 days before window', early ? '#D01C1F' : '#22735C');
+    + card('Arriving too early', early, 'over 3 days before window', early ? '#B06A00' : '#22735C');
 
   wrap.innerHTML = '<table><thead><tr>' +
     '<th>Floor</th><th>Delivery</th><th>Install</th><th>Ctnr</th><th>Delivery ETA</th>' +
@@ -1545,7 +1577,7 @@ function renderSchedule() {
     const bdg = statusBadge(c.status);
     const rowCls = [isNext ? 'next-up-row' : '', c.status === 'D' ? 'del-row' : ''].filter(Boolean).join(' ');
     html += `<tr${rowCls ? ' class="' + rowCls + '"' : ''}>
-      <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>${c.num}${extraTag}${noteTag}</span></td>
+      <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span>CTNR ${c.num}${extraTag}${noteTag}</span></td>
       <td class="c-status"><span class="bdg ${bdg}">${c.status}</span></td>
       <td class="c-code mono" style="font-size:10px;">${c.code||'—'}</td>
       <td class="c-loadwk staff-col" style="color:var(--text-3)">${c.week}</td>
@@ -1559,7 +1591,7 @@ function renderSchedule() {
       <td class="c-deliv" style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
       <td class="c-dtime vcol" style="font-size:10px;">${c.delivTime||'—'}</td>
       <td class="c-conf" style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
-      <td class="c-floor">Fl. ${c.floors || c.floor}</td>
+      <td class="c-floor gapl">${c.floors || c.floor}</td>
       <td class="c-qty staff-col vcol" style="font-size:10px;">${c.unitQty||'—'}</td>
       <td class="c-kitchens mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
       <td class="c-v1 mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
@@ -1570,6 +1602,47 @@ function renderSchedule() {
 }
 applyStaff();   // renders the schedule, and restores internal view if it was on
 
+
+// ── Container status ring (crisp on high-DPI screens, thin ring, square-swatch legend) ──
+// Function declarations so they are hoisted ahead of the init chain.
+function drawStatusRing(canvas, groups, total) {
+  if (!canvas || !canvas.getContext) return;
+  const S = 160, dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
+  canvas.width = S * dpr; canvas.height = S * dpr;
+  if (canvas.style) { canvas.style.width = S + 'px'; canvas.style.height = S + 'px'; }
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  if (typeof ctx.setTransform === 'function') ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, S, S);
+  const cx = 80, cy = 80, r = 62, gap = 0.035;
+  let a = -Math.PI / 2;
+  for (const g of groups) {
+    const sl = (g.n / total) * Math.PI * 2;
+    ctx.beginPath(); ctx.arc(cx, cy, r, a + gap / 2, a + sl - gap / 2);
+    ctx.strokeStyle = g.color; ctx.lineWidth = 12; ctx.lineCap = 'butt'; ctx.stroke();
+    a += sl;
+  }
+  const font = (typeof getComputedStyle === 'function' && document.body) ? getComputedStyle(document.body).fontFamily : 'sans-serif';
+  ctx.fillStyle = '#1C1B18'; ctx.font = '600 30px ' + (font || 'sans-serif');
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy + 1);
+}
+function statusRingLegend(groups) {
+  return groups.map(g =>
+    '<div style="display:flex;align-items:center;gap:6px;font-size:10px;">' +
+      '<span style="width:8px;height:8px;background:' + g.color + ';flex-shrink:0;display:inline-block;"></span>' +
+      '<span style="color:var(--text-2);flex:1;">' + g.label + '</span>' +
+      '<span style="font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;">' + g.n + '</span>' +
+    '</div>').join('');
+}
+function renderStatusRing(canvas, groups, total) {
+  drawStatusRing(canvas, groups, total);
+  const leg = document.getElementById('donut-legend');
+  if (leg) leg.innerHTML = statusRingLegend(groups);
+  // redraw once the web font has loaded so the centre number uses it
+  if (typeof document !== 'undefined' && document.fonts && document.fonts.ready)
+    document.fonts.ready.then(() => drawStatusRing(canvas, groups, total));
+}
 
 // ── STATUS DONUT CHART + PIPELINE BADGES ──
 (function() {
@@ -1587,45 +1660,8 @@ applyStaff();   // renders the schedule, and restores internal view if it was on
   const gCounts = { Delivered:0, Arrived:0, EnRoute:0, Projected:0 };
   CONTAINERS.forEach(c => { const g = GROUP_MAP[c.status]||'Projected'; gCounts[g]++; });
 
-  const total = CONTAINERS.length;
-  const cx = 80, cy = 80, r = 68, ir = 40;
-  let angle = -Math.PI / 2;
-  GROUP_ORDER.forEach(g => {
-    const n = gCounts[g];
-    if (!n) return;
-    const slice = (n / total) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, angle, angle + slice);
-    ctx.arc(cx, cy, ir, angle + slice, angle, true);
-    ctx.closePath();
-    ctx.fillStyle = GROUP_COLORS[g];
-    ctx.fill();
-    angle += slice;
-  });
-  ctx.fillStyle = '#1A1A18';
-  ctx.font = 'bold 20px -apple-system,sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(total, cx, cy - 9);
-  ctx.font = '11px -apple-system,sans-serif';
-  ctx.fillStyle = '#9A9A94';
-  ctx.fillText('ctns', cx, cy + 11);
-
-  // Legend (4 groups)
-  const legend = document.getElementById('donut-legend');
-  if (legend) {
-    legend.innerHTML = GROUP_ORDER.map(g => {
-      const n = gCounts[g];
-      if (!n) return '';
-      return `<div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${GROUP_COLORS[g]};display:inline-block;flex-shrink:0;"></span>
-          <span style="color:var(--text-2)">${GROUP_LABELS[g]}</span>
-        </div>
-        <span style="font-weight:600;color:var(--text)">${n}</span>
-      </div>`;
-    }).join('');
-  }
+  const groups = GROUP_ORDER.filter(g => gCounts[g]).map(g => ({ label: GROUP_LABELS[g], color: GROUP_COLORS[g], n: gCounts[g] }));
+  renderStatusRing(canvas, groups, CONTAINERS.length);
 
   // Pipeline counts — plain number under each icon (matches 111 Wall)
   const ORDER = ['D','INYRD','RAIL','PORT','ENR','LDD','LDG','PROJ'];
