@@ -159,7 +159,8 @@ body.staff-mode #staff-btn { border-color:var(--accent); color:var(--accent); }
 
 /* Next-up row in the container schedule */
 /* Delivered containers: dim the row data, but not CTN #, status or +EXTRA/notes. */
-#ctn tbody tr.del-row > td:not(.c-num):not(.c-status),
+#ctn tbody tr.del-row > td:not(.c-num):not(.c-status):not(.c-floor),
+#ctn tbody tr.del-row .fl-txt,
 #ctn tbody tr.del-row .num-txt { opacity: .5; }
 #ctn tbody tr.next-up-row > td { background: #E5F2EE; font-weight: 500; }
 #ctn tbody tr.next-up-row > td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
@@ -553,6 +554,9 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 #ctn th.gapl, #ctn td.gapl { padding-left: 24px; }
 #ctn .tw td.c-kitchens, #ctn .tw td.c-v1, #ctn .tw td.c-v2 { color: var(--text) !important; }
 /* ===== DESLOP END ===== */
+/* +EXTRA shortens to +E on phones */
+.extra-tag .x-short { display: none; }
+@media (max-width: 700px) { .extra-tag .x-full { display: none; } .extra-tag .x-short { display: inline; } }
 </style>
 </head>
 <script src="config.js"></script>
@@ -570,7 +574,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
     <div>
       <h1>1010 Church — Container Logistics</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Concerto Millwork · Apartment Tower · Condo phase tracked separately</div>
-      <div class="sub"><em>Updated Oct 22, 2026 at 12:38 PM</em></div>
+      <div class="sub"><em>Updated Oct 22, 2026 at 4:30 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -793,7 +797,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Oct 22, 2026 at 12:38 PM) ─────────────────────
+// ── DATA (auto-generated Oct 22, 2026 at 4:30 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', note:'1008 missing vanity base in CTNR#6', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 27', etaNash:'Sep 29', yardDays:'6', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:true, code:'MSDU5321045', delivTime:'12:00pm' },
   { num: 2, status:'D', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', note:'', loadDate:'Sep 3', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Sep 30', etaNash:'Oct 5', yardDays:'9', delivery:'Oct 14, 2026', deliveryISO:'2026-10-14', ordered:true, confirmed:true, code:'MSMU6104375', delivTime:'1:00pm' },
@@ -1567,7 +1571,7 @@ function renderSchedule() {
     // string can't widen the column for every row.
     const extraTag = (c.extra && String(c.extra).trim())
       ? ' <span class="extra-tag" tabindex="0" title="' + String(c.extra).replace(/"/g,'&quot;') +
-        '" data-extra="' + String(c.extra).replace(/"/g,'&quot;') + '">+EXTRA</span>'
+        '" data-extra="' + String(c.extra).replace(/"/g,'&quot;') + '"><span class="x-full">+EXTRA</span><span class="x-short">+E</span></span>'
       : '';
     /* Internal commentary - staff view only. 1010 has no global esc(), so the
        quote-escaping is inline, matching extraTag above. The text still ships
@@ -1578,7 +1582,7 @@ function renderSchedule() {
     const bdg = statusBadge(c.status);
     const rowCls = [isNext ? 'next-up-row' : '', c.status === 'D' ? 'del-row' : ''].filter(Boolean).join(' ');
     html += `<tr${rowCls ? ' class="' + rowCls + '"' : ''}>
-      <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span><span class="num-txt">CTNR ${c.num}</span>${extraTag}${noteTag}</span></td>
+      <td class="c-num"><span style="display:inline-flex;align-items:center;gap:5px"><span class="dot ${dot}"></span><span class="num-txt">CTNR ${c.num}</span>${noteTag}</span></td>
       <td class="c-status"><span class="bdg ${bdg}">${c.status}</span></td>
       <td class="c-code mono" style="font-size:10px;">${c.code||'—'}</td>
       <td class="c-loadwk staff-col" style="color:var(--text-3)">${c.week}</td>
@@ -1592,7 +1596,7 @@ function renderSchedule() {
       <td class="c-deliv" style="font-weight:700;white-space:nowrap${isProj ? ';color:var(--text-2)' : ''}">${isProj ? projDeliveryRange(c) : deliveryDisplay(c)}</td>
       <td class="c-dtime vcol" style="font-size:10px;">${c.delivTime||'—'}</td>
       <td class="c-conf" style="font-size:10px;color:${c.confirmed ? 'var(--text)' : '#D01C1F'}">${c.confirmed ? 'Confirmed' : 'ETA'}</td>
-      <td class="c-floor gapl">${c.floors || c.floor}</td>
+      <td class="c-floor gapl"><span class="fl-txt">${c.floors || c.floor}</span>${extraTag}</td>
       <td class="c-qty staff-col vcol" style="font-size:10px;">${c.unitQty||'—'}</td>
       <td class="c-kitchens mono" style="font-size:10px;color:var(--text-2)">${c.kitchens||'—'}</td>
       <td class="c-v1 mono" style="font-size:10px;color:var(--text-2)">${c.v1||'—'}</td>
