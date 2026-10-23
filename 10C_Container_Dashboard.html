@@ -574,6 +574,17 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 @media print { #pin-sheet { display: none !important; } }
 /* Phones: drop Transit Performance and the Container Status ring to cut scrolling */
 @media (max-width: 700px) { .m-hide { display: none !important; } }
+/* Desktop: Next Up capped so it doesn't stretch; Unit Status card takes the spare width */
+@media (min-width: 701px) and (min-height: 561px) {
+  #sum-row #next-up-card { flex: 0 1 460px !important; min-width: 0 !important; }
+  #sum-row #mini-matrix-card { flex: 1 1 auto !important; }
+}
+/* Copy icon in the Next Up card header (matches 111 Wall) */
+#nu-copy { display: inline-flex; align-items: center; justify-content: center; padding: 2px; margin: -2px;
+  border: 0; background: none; color: var(--text-3); cursor: pointer; }
+#nu-copy:hover, #nu-copy.done { color: var(--text); }
+#nu-copy:focus { outline: none; }
+@media print { #nu-copy { display: none !important; } }
 </style>
 </head>
 <script src="config.js"></script>
@@ -591,7 +602,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
     <div>
       <h1>1010 Church | Concerto Logistics</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Concerto Millwork Dashboards | for stakeholder communication</div>
-      <div class="sub"><em>Updated Oct 23, 2026 at 11:45 AM</em></div>
+      <div class="sub"><em>Updated Oct 23, 2026 at 4:30 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -640,7 +651,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
     <!-- Mini building matrix -->
     <div id="mini-matrix-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:8px 10px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Unit status</div>
-      <div id="mini-matrix-grid"></div>
+      <div id="mini-matrix-grid" style="width:100%;"></div>
       <div style="display:flex;gap:4px;margin-top:4px;">
         <button id="mm-K"  onclick="setMiniMode('K')"  class="mm-btn mm-on">K</button>
         <button id="mm-V1" onclick="setMiniMode('V1')" class="mm-btn">V1</button>
@@ -649,7 +660,10 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
     </div>
     <!-- Next up -->
     <div id="next-up-card" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;">
-      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Next up</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Next up</div>
+        <button id="nu-copy" type="button" onclick="copyNextUp(this)" title="Copy these deliveries for an email" aria-label="Copy Next up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
       <div id="next-up-list" style="flex:1;"></div>
     </div>
   </div>
@@ -814,7 +828,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Oct 23, 2026 at 11:45 AM) ─────────────────────
+// ── DATA (auto-generated Oct 23, 2026 at 4:30 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', note:'1008 missing vanity base in CTNR#6', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 27', etaNash:'Sep 29', yardDays:'6', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:true, code:'MSDU5321045', delivTime:'12:00pm' },
   { num: 2, status:'D', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', note:'', loadDate:'Sep 3', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Sep 30', etaNash:'Oct 5', yardDays:'9', delivery:'Oct 14, 2026', deliveryISO:'2026-10-14', ordered:true, confirmed:true, code:'MSMU6104375', delivTime:'1:00pm' },
@@ -1167,11 +1181,11 @@ const MINI_COLORS = { D:'#1A5C47', INYRD:'#22735C', RAIL:'#287A64', PORT:'#2E8C7
 function renderMiniMatrix() {
   const grid = document.getElementById('mini-matrix-grid');
   if (!grid) return;
-  let html = '<div style="display:flex;flex-direction:column;gap:1px;">';
+  let html = '<div style="display:flex;flex-direction:column;gap:1px;width:100%;">';
   for (let floor = 39; floor >= 10; floor--) {
     const ctn = ctnForFloor(floor);
     html += `<div style="display:flex;align-items:center;gap:3px;">`;
-    html += `<div style="display:flex;gap:2px;">`;
+    html += `<div style="display:flex;gap:2px;flex:1;justify-content:center;">`;
     for (let u = 1; u <= 12; u++) {
       const unitId = floor * 100 + u;
       const exc = EXCEPTIONS[unitId] || {};
@@ -1184,7 +1198,7 @@ function renderMiniMatrix() {
         st = V2_UNITS.has(u) ? (exc.v2Status || ctn.status) : null;
       }
       const bg = st === null ? '#e0ddd8' : (MINI_COLORS[st] || '#C8E8DF');
-      html += `<div style="width:10px;height:7px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
+      html += `<div style="flex:1 1 10px;max-width:20px;height:7px;background:${bg};border-radius:1px;" title="${unitId}: ${st||'—'}"></div>`;
     }
     html += '</div></div>';
   }
@@ -1520,6 +1534,47 @@ function scheduleLine(c, d) {
       DAY3[d.getDay()] + ' ' + (d.getMonth() + 1) + '/' + d.getDate() + tm;
 
   return '• ' + COPY_PREFIX + ' CTN-' + c.num + code + ' FL ' + fl + ' -' + tail;
+}
+
+// ── COPY NEXT UP (copy icon on the Next up card) ──
+// Same containers the card shows (next 5 upcoming), same line format as
+// Copy next 10. Bold support kept for bookable rows in case 1010 adds them.
+function nextUpRows() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  return CONTAINERS
+    .filter(c => c.status !== 'D' && c.delivery && c.delivery !== '—' && !isNaN(new Date(c.delivery)))
+    .sort((a, b) => new Date(a.delivery) - new Date(b.delivery))
+    .filter(c => new Date(c.delivery) >= today)
+    .slice(0, 5)
+    .map(c => ({ c, d: deliveryDate(c) || new Date(c.delivery) }));
+}
+function copyNextUp(btn) {
+  const rows = nextUpRows();
+  if (!rows.length) { alert('No upcoming deliveries to copy.'); return; }
+  const h = v => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const isBook = c => c.bookable && !c.confirmed && c.status !== 'D';
+  const lines = rows.map(x => ({ t: scheduleLine(x.c, x.d), b: isBook(x.c) }));
+  const text = lines.map(l => l.b ? l.t.replace(/^• (.*)$/, '• *$1*') : l.t).join('\n');
+  const html = '<div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;">' +
+    lines.map(l => l.b ? '<b>' + h(l.t) + '</b>' : h(l.t)).join('<br>') + '</div>';
+  const done = () => { btn.classList.add('done'); btn.title = 'Copied'; setTimeout(() => { btn.classList.remove('done'); btn.title = 'Copy these deliveries for an email'; }, 2000); };
+  const plain = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(legacy);
+    else legacy();
+  };
+  function legacy() {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+    navigator.clipboard.write([new ClipboardItem({
+      'text/html':  new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([text], { type: 'text/plain' })
+    })]).then(done).catch(plain);
+  } else plain();
 }
 
 function copySchedule(btn) {
