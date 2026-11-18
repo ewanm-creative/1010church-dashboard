@@ -585,6 +585,12 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 #nu-copy:hover, #nu-copy.done { color: var(--text); }
 #nu-copy:focus { outline: none; }
 @media print { #nu-copy { display: none !important; } }
+/* Service order schedule (Damages/Service Orders tab) */
+#so-sched thead th { background: var(--surface); color: var(--text); border-bottom: 2px solid var(--border); }
+#so-sched td { white-space: nowrap; font-size: 10px; }
+#so-sched td.so-num { font-weight: 700; font-size: 11px; }
+#so-sched tr.so-closed > td:not(.so-sts) { opacity: .5; }
+#so-sched tr.so-gc > td { font-weight: 700; }
 </style>
 </head>
 <script src="config.js"></script>
@@ -602,7 +608,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
     <div>
       <h1>1010 Church | Concerto Logistics</h1>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Concerto Millwork Dashboards | for stakeholder communication</div>
-      <div class="sub"><em>Updated Nov 18, 2026 at 10:00 AM</em></div>
+      <div class="sub"><em>Updated Nov 18, 2026 at 2:03 PM</em></div>
     </div>
   </div>
   <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
@@ -747,6 +753,11 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 <!-- ===== DAMAGE / OPEN ITEMS ===== -->
 <div id="dmg" class="panel">
 
+  <div id="so-sched" style="margin-bottom:20px;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Service order schedule</div>
+    <div class="tw"><table><thead><tr><th>SO #</th><th>Status</th><th>JO #</th><th>Description</th><th>Part Type</th><th>Reported</th><th>Confirmed</th><th class="staff-col">Est. Ready</th><th>Ship Date</th><th>Container</th><th>Delivery</th><th>Items</th></tr></thead><tbody id="so-tbody"></tbody></table></div>
+  </div>
+
   <div class="dmg-note" style="margin-bottom:16px;font-size:12px;line-height:1.6;color:var(--text);">
     <p style="margin:0 0 4px;"><strong>Check every item as soon as the container is unloaded, and report anything damaged, lost or wrong the same day.</strong></p>
     <p style="margin:0;color:var(--text-2);">Damage reported more than a couple of days after unload cannot be claimed as transportation damage; Procore or Autodesk reports made during installation are installation reports, not delivery reports.</p>
@@ -828,7 +839,7 @@ html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-ad
 </div><!-- /shell -->
 
 <script>
-// ── DATA (auto-generated Nov 18, 2026 at 10:00 AM) ─────────────────────
+// ── DATA (auto-generated Nov 18, 2026 at 2:03 PM) ─────────────────────
 const CONTAINERS = [
   { num: 1, status:'D', week:'Wk 35', floor:10, floors:'10,11', floorList:[10, 11], unitQty:17, kitchens:'1001:1003,1006:1012,1101:1103,1106,1108:1109', v1:'1001:1003,1006:1012,1101:1103,1106:1108', v2:'1006,1010,1012,1106', extra:'', note:'1008 missing vanity base in CTNR#6', loadDate:'Aug 29', shipDate:'Sep 6', vessel:'MSC ARICA', etaChs:'Sep 26', railDate:'Sep 27', etaNash:'Sep 29', yardDays:'6', delivery:'Oct 5, 2026', deliveryISO:'2026-10-05', ordered:true, confirmed:true, code:'MSDU5321045', delivTime:'12:00pm' },
   { num: 2, status:'D', week:'Wk 36', floor:10, floors:'10,11,12,13', floorList:[10, 11, 12, 13], unitQty:17, kitchens:'1005,1110:1112,1201:1203,1206,1208:1212,1301:1303', v1:'1109:1112,1201:1203,1206:1212,1301:1303,1306', v2:'1110,1112,1206,1210,1212,1306', extra:'', note:'', loadDate:'Sep 3', shipDate:'Sep 9', vessel:'MSC SWEDEN', etaChs:'Sep 30', railDate:'Sep 30', etaNash:'Oct 5', yardDays:'9', delivery:'Oct 14, 2026', deliveryISO:'2026-10-14', ordered:true, confirmed:true, code:'MSMU6104375', delivTime:'1:00pm' },
@@ -1059,6 +1070,10 @@ const CONSTRUCTION = [
 const CONSTR_UPDATED = 'Nov 16, 2026';
 const CONSTR_UPDATED_ISO = '2026-11-16';
 const CONSTR_AVG = '21.13 Days';
+
+const SERVICE_ORDERS = [
+  {"so": "10C-EX1", "jo": "J333-26", "desc": "Apartment Aluminum Trim Piece (q.ty 360)", "part": "Extra Order/New to Project", "sts": "IN PRODUCTION", "reported": "07/22/26", "confirmed": "07/22/26", "ready": "11/20/26", "ship": "11/27/26", "ctnr": "CTNR 9", "deliv": "12/29/26", "items": "--"}
+];
 
 const V2_UNITS = new Set([4, 6, 10, 12]);
 
@@ -2091,6 +2106,32 @@ function toggleBldgMode() { setBldgMode(_bldgMode === 'ctn' ? 'status' : 'ctn');
 
 setBldgDir(_bldgAsc);   // renders the matrix and syncs the toggle buttons
 initBldgPreview();
+
+// ── SERVICE ORDER SCHEDULE (SO Link tab) ──
+// SO STS from PARAMOUNT SO Logistics. Badges follow the container status ramp by stage.
+function renderSO() {
+  const tb = document.getElementById('so-tbody');
+  if (!tb) return;
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const rows = (typeof SERVICE_ORDERS !== 'undefined') ? SERVICE_ORDERS : [];
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="12" style="padding:16px;text-align:center;color:var(--text-3);">No service orders.</td></tr>';
+    return;
+  }
+  const STAGE = { 'REQUESTED':'PROJ', 'CONFIRMED':'PROJ', 'IN PRODUCTION':'PROJ', 'EN ROUTE':'ENR', 'DELIVERED':'D', 'CLOSED':'D' };
+  tb.innerHTML = rows.map(o => {
+    const gc = o.sts === 'GC TO CONFIRM';                     // in the GC's court
+    const badge = gc ? `<span class="bdg" style="background:#D01C1F;color:#fff;">${esc(o.sts)}</span>`
+                     : `<span class="bdg b-${STAGE[o.sts] || 'PROJ'}">${esc(o.sts)}</span>`;
+    const cls = o.sts === 'CLOSED' ? ' class="so-closed"' : gc ? ' class="so-gc"' : '';
+    return `<tr${cls}>` +
+      `<td class="so-num">${esc(o.so)}</td><td class="so-sts">${badge}</td><td>${esc(o.jo)}</td><td>${esc(o.desc)}</td><td>${esc(o.part)}</td>` +
+      `<td>${esc(o.reported)}</td><td>${esc(o.confirmed)}</td><td class="staff-col">${esc(o.ready)}</td><td>${esc(o.ship)}</td><td>${esc(o.ctnr)}</td>` +
+      `<td style="font-weight:700;">${esc(o.deliv)}</td><td>${esc(o.items)}</td></tr>`;
+  }).join('');
+}
+try { renderSO(); } catch (e) { console.error('renderSO', e); }
 
 // ── FLOOR DELIVERY SIDEBAR ──
 (function() {
